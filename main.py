@@ -1,4 +1,5 @@
 from pywinauto import application
+from pywinauto import keyboard
 import time
 
 app = application.Application(backend='win32')
@@ -12,7 +13,7 @@ def login(title, id):
 
 time.sleep(1)
 if app.connect(path="C:\Motion\Motion_E\Motion_E.exe"):
-    print('mtoion connect')
+    print('connect pass')
     login_window = app.window(title="로그인")
     motion_window = app.window(title='모션.ver[1.0.0.127]ipc://Motion_E-64bit')
 
@@ -22,7 +23,8 @@ if app.connect(path="C:\Motion\Motion_E\Motion_E.exe"):
 else:
     print("connect fail")
 
-
 time.sleep(5)
-print("---------------------------------------")
-motion_window.print_control_identifiers()
+print("-------------------")
+motion_window["srch-val"].set_focus()
+keyboard.send_key('테스트')
+motion_window["검색"].click()
