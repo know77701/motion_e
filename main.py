@@ -2,7 +2,7 @@ from pywinauto import application
 from pywinauto import keyboard
 import time
 
-app = application.Application(backend='win32')
+app = application.Application(backend='uia')
 app.start("C:\Motion\Motion_E\Motion_E.exe")
 
 
@@ -25,6 +25,5 @@ else:
 
 time.sleep(5)
 print("-------------------")
-motion_window["srch-val"].set_focus()
-keyboard.send_key('테스트')
-motion_window["검색"].click()
+
+motion_window['닫기'].click()
