@@ -1,6 +1,6 @@
 from pywinauto import application
+from pywinauto import Desktop
 import time
-from pywinauto import keyboard
 
 
 app = application.Application(backend='uia')
@@ -13,22 +13,31 @@ def login(title, id):
 
 def appConnect():
     try:
-        app.connect(path="C:\Motion\Motion_E\Motion_E.exe")
+        app.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
         print('기존 앱 연결')
 
     except application.ProcessNotFoundError:
-        app.start("C:\Motion\Motion_E\Motion_E.exe")
-        time.sleep(1)
+        app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
+        windows = Desktop(backend="uia").windows()
+        time.sleep(3)
         login('로그인', 'btnLogin')
+        time.sleep(3)
         print("로그인 성공")
 
 
 appConnect()
-motion_window = app.window(title='모션.ver[1.0.0.217]ipc://Motion_E-64bit')
+
+
+windows = Desktop(backend="uia").windows()
+for window in windows:
+    if('모션.ver' in window.window_text()):
+        MotionTitle = window.window_text()
+        
+
+motion_window = app.window(title=MotionTitle)
+print(motion_window)
 print('모션 연결 성공')
 print("-------------------")
-# time.sleep(3)
-
 
 def dashboardreserve(searchName):
     motion_window.child_window(
@@ -48,9 +57,10 @@ def dashboardreserve(searchName):
         control_type="ComboBox", found_index=1).select()
     motion_window.child_window(title="20", control_type="ListItem").click()
 
-
+time.sleep(5)
 dashboardreserve('김지헌')
-
-time.sleep(2)
-motion_window.child_window(auto_id="notice-content",
-                           control_type="Edit").type_keys('테스트')
+motion_window.child_window(
+        AutomationId="srch-val",  control_type="Edit").type_keys('테스트')
+motion_window.child_window(auto_id="notice-content").click()
+motion_window.child_window(
+        auto_id="notice-content",  control_type="Edit").type_keys("공지 테스트")
