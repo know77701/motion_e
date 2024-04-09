@@ -1,4 +1,5 @@
 from pywinauto import application
+from pywinauto import Desktop
 import time
 from pywinauto import keyboard
 
@@ -18,7 +19,7 @@ def appConnect():
 
     except application.ProcessNotFoundError:
         app.start("C:\Motion\Motion_E\Motion_E.exe")
-        time.sleep(1)
+        time.sleep(30)
         login('로그인', 'btnLogin')
         print("로그인 성공")
 
@@ -31,6 +32,7 @@ print("-------------------")
 
 
 def dashboardreserve(searchName):
+    print('TEST')
     motion_window.child_window(
         auto_id="srch-val",  control_type="Edit").type_keys(searchName)
     motion_window.child_window(title="검색", control_type="Button").click()
