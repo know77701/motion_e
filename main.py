@@ -18,8 +18,10 @@ def appConnect():
         print('기존 앱 연결')
 
     except application.ProcessNotFoundError:
+
         app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
         time.sleep(3)
+
         login('로그인', 'btnLogin')
         time.sleep(3)
         print("로그인 성공")
@@ -39,6 +41,7 @@ print('모션 연결 성공')
 print("-------------------")
 
 def dashboardreserve(searchName):
+    print('TEST')
     motion_window.child_window(
         auto_id="srch-val",  control_type="Edit").type_keys(searchName)
     motion_window.child_window(title="검색", control_type="Button").click()
