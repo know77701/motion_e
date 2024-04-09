@@ -21,9 +21,7 @@ def appConnect():
 
         app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
         time.sleep(3)
-
         login('로그인', 'btnLogin')
-        time.sleep(3)
         print("로그인 성공")
 
 
@@ -71,20 +69,19 @@ class notice:
             motion_window.child_window(auto_id="notice-content",  control_type="Edit").type_keys(value)
             keyboard.send_keys('{ENTER}')
         except Exception as e:
-            print('공지사항 생성 실패:', e)
+            print('공지사항 생성 실패: ', e)
 
     def noticeDelete():
         try:
             motion_window.child_window(title="닫기", control_type="Button", found_index=0).click()
             time.sleep(1)
             
-            print(motion_window.child_window(title="radButton1"))
-            motion_window.child_window(auto_id="radButton1", control_type="Button").click()
+            motion_window.child_window(auto_id="radButton1", framework_id="WinForm").click()
             print('공지사항 삭제 성공')
         except Exception as e:
-            print('공지사항 삭제 실패')
+            print('공지사항 삭제 실패: ', e)
 
 
-if notice.noticeCreate('테스트'):
-    time.sleep(1)
-    notice.noticeDelete()
+notice.noticeCreate('테스트')
+time.sleep(1)
+notice.noticeDelete()
