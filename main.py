@@ -18,27 +18,26 @@ def appConnect():
         print('기존 앱 연결')
 
     except application.ProcessNotFoundError:
-
-        app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
-
-        time.sleep(3)
+        app.start("C:\Motion\\Motion_E\\Motion_E.exe")
+        time.sleep(1)
         login('로그인', 'btnLogin')
         print("로그인 성공")
 
 
 appConnect()
 
-MotionTitle= {}
 windows = Desktop(backend="uia").windows()
+motiontitle = ""
 for window in windows:
-    if('모션.ver' in window.window_text()):
-        MotionTitle = window.window_text()
-        
+    if '모션.ver' in window.window_text():
+        print(window.window_text())
+        motiontitle = window.window_text()
 
-motion_window = app.window(title=MotionTitle)
 
+motion_window = app.window(title=motiontitle)
 print('모션 연결 성공')
 print("-------------------")
+
 
 def dashboardreserve(searchName):
     motion_window.child_window(
@@ -62,27 +61,31 @@ def dashboardreserve(searchName):
 # motion_window.child_window(
 #         auto_id="srch-val",  control_type="Edit").type_keys('테스트')
 
+
 class notice:
     @staticmethod
     def noticeCreate(value):
         try:
-            print('공지사항 생성 성공')
-            motion_window.child_window(auto_id="notice-content",  control_type="Edit").type_keys(value)
+            motion_window.child_window(
+                auto_id="notice-content",  control_type="Edit").type_keys(value)
             keyboard.send_keys('{ENTER}')
+            print('공지사항 생성 성공')
         except Exception as e:
             print('공지사항 생성 실패: ', e)
 
     def noticeDelete():
         try:
-            motion_window.child_window(title="닫기", control_type="Button", found_index=0).click()
+            motion_window.child_window(
+                title="닫기", control_type="Button", found_index=0).click()
             time.sleep(1)
-            
-            motion_window.child_window(auto_id="radButton1", framework_id="WinForm").click()
+
+            motion_window.child_window(
+                auto_id="radButton1", framework_id="WinForm").click()
             print('공지사항 삭제 성공')
         except Exception as e:
             print('공지사항 삭제 실패: ', e)
 
 
-notice.noticeCreate('테스트')
-time.sleep(1)
-notice.noticeDelete()
+if notice.noticeCreate('테스트'):
+    time.sleep(1)
+    notice.noticeDelete()
