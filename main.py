@@ -7,7 +7,7 @@ import time
 app = application.Application(backend='uia')
 
 
-class MotionStarer():
+class MotionStarter():
     @staticmethod
     def login(title, id):
         login_window = app.window(title=title)
@@ -21,19 +21,8 @@ class MotionStarer():
         except application.ProcessNotFoundError:
             app.start("C:\Motion\Motion_E\Motion_E.exe")
             time.sleep(1)
-            MotionStarer.login('로그인', 'btnLogin')
+            MotionStarter.login('로그인', 'btnLogin')
             print("로그인 성공")
-
-    def VersionSearch():
-        windows = Desktop(backend="uia").windows()
-
-        for window in windows:
-            try:
-                if '모션.ver' in window.window_text():
-                    MotionTitle = window.window_text()
-                    return MotionTitle
-            except Exception as e:
-                print('버전 찾기 실패', e)
 
 
 class DashBoard():
@@ -112,16 +101,30 @@ class Notice:
             print('공지사항 삭제 실패: ', e)
 
 
-MotionStarer.appConnect()
-motion_window = app.window(title=MotionStarer.VersionSearch())
+
+def VersionSearch():
+    windows = Desktop(backend="uia").windows()
+
+    for window in windows:
+        try:
+            if '모션.ver' in window.window_text():
+                MotionTitle = window.window_text()
+                return MotionTitle
+        except Exception as e:
+            print('버전 찾기 실패', e)
+
+
+MotionStarter.appConnect()
+motion_window = app.window(title=VersionSearch())
+print()
 print('모션 연결 성공')
 print("-------------------")
 
 time.sleep(5)
 # DashBoard.receipt('김지헌')
 
-DashBoard.reserve('김지헌')
-time.sleep(5)
-Notice.noticeCreate('테스트')
-time.sleep(3)
-Notice.noticeDelete()
+# DashBoard.reserve('김지헌')
+# time.sleep(5)
+# Notice.noticeCreate('테스트')
+# time.sleep(3)
+# Notice.noticeDelete()
