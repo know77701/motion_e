@@ -5,10 +5,10 @@ from pywinauto import findwindows
 import time
 
 
-app = application.Application(backend='uia')
+app = application.Application(backend='win32')
 
 
-class MotionStarer():
+class MotionStarter:
     @staticmethod
     def login(title, id):
         login_window = app.window(title=title)
@@ -17,30 +17,16 @@ class MotionStarer():
     @staticmethod
     def appConnect():
         try:
-            app.connect(path="C:\Motion\Motion_E\Motion_E.exe")
+            app.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
             print('기존 앱 연결')
 
         except application.ProcessNotFoundError:
-            app.start("C:\Motion\Motion_E\Motion_E.exe")
-            time.sleep(1)
-            MotionStarer.login('로그인', 'btnLogin')
-            print("로그인 성공")
-
-    @staticmethod
-    def VersionSearch():
-        windows = Desktop(backend="uia").windows()
-
-        for window in windows:
-            try:
-                if '모션.ver' in window.window_text():
-                    MotionTitle = window.window_text()
-                    return MotionTitle
-            except Exception as e:
-                print('버전 찾기 실패', e)
+            app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
+            time.sleep(3)
+            MotionStarter.login('로그인', 'btnLogin')
 
 
 class DashBoard():
-    @staticmethod
     def searchUser(searchName):
         motion_window.child_window(
             auto_id="srch-val",  control_type="Edit").type_keys(searchName)
@@ -93,7 +79,6 @@ class DashBoard():
 
 
 class Notice:
-    @staticmethod
     def noticeCreate(value):
         try:
             time.sleep(1)
@@ -119,18 +104,39 @@ class Notice:
             print('공지사항 삭제 실패: ', e)
 
 
-MotionStarer.appConnect()
-motion_window = app.window(title=MotionStarer.VersionSearch())
-print('모션 연결 성공')
+def VersionSearch():
+    windows = Desktop(backend="win32").windows()
+
+    for window in windows:
+        try:
+            window_text = window.window_text()
+            print("Window text:", window_text)
+            if '모션.ver' in window_text:
+                MotionTitle = window_text
+                return MotionTitle
+        except Exception as e:
+            print('버전 찾기 실패', e)
+
+
+MotionStarter.appConnect()
+
+time.sleep(10)  # 충분한 대기 시간 설정 (초 단위)
+
+main_dlg = app.window(title_re=VersionSearch(), visible_only=False)
+try:
+    main_dlg.restore().set_focus()
+    print('모션 연결 성공')
+    motion_window = app.window(title=VersionSearch())
+except Exception as e:
+    ("로그인 실패", e)
+
+
 print("-------------------")
 
-# time.sleep(10)
 # DashBoard.receipt('김지헌')
-# time.sleep(1)
-# DashBoard.reserve('김지헌')
-time.sleep(10)
-Notice.noticeCreate('테스트')
-time.sleep(5)
-Notice.noticeDelete()
 
-findwindows.find_element(title="네")
+# DashBoard.reserve('김지헌')
+# time.sleep(5)
+# Notice.noticeCreate('테스트')
+# time.sleep(3)
+# Notice.noticeDelete()
