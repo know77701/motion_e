@@ -1,6 +1,7 @@
 from pywinauto import application
 from pywinauto import Desktop
 from pywinauto import keyboard
+from pywinauto import findwindows
 import time
 
 
@@ -13,6 +14,7 @@ class MotionStarer():
         login_window = app.window(title=title)
         login_window.child_window(auto_id=id).click()
 
+    @staticmethod
     def appConnect():
         try:
             app.connect(path="C:\Motion\Motion_E\Motion_E.exe")
@@ -24,6 +26,7 @@ class MotionStarer():
             MotionStarer.login('로그인', 'btnLogin')
             print("로그인 성공")
 
+    @staticmethod
     def VersionSearch():
         windows = Desktop(backend="uia").windows()
 
@@ -43,9 +46,10 @@ class DashBoard():
             auto_id="srch-val",  control_type="Edit").type_keys(searchName)
         motion_window.child_window(title="검색", control_type="Button").click()
 
-    def reserve():
+    @staticmethod
+    def reserve(name):
         try:
-            DashBoard.searchUser('김지헌')
+            DashBoard.searchUser(name)
             time.sleep(1)
             motion_window.child_window(
                 title="예약하기", control_type="Button", found_index=1).click()
@@ -67,9 +71,10 @@ class DashBoard():
             keyboard.send_keys('{F5}')
             print("예약 실패: ", e)
 
-    def receipt(searchName):
+    @staticmethod
+    def receipt(receiptName):
         try:
-            DashBoard.searchUser('김지헌')
+            DashBoard.searchUser(receiptName)
             time.sleep(1)
             motion_window.child_window(
                 title="접수하기", control_type="Button", found_index=0).click()
@@ -91,8 +96,10 @@ class Notice:
     @staticmethod
     def noticeCreate(value):
         try:
+            time.sleep(1)
             motion_window.child_window(
                 auto_id="notice-content", control_type="Edit").type_keys(value)
+            time.sleep(1)
             keyboard.send_keys('{ENTER}')
             print('공지사항 생성 성공')
         except Exception as e:
@@ -106,7 +113,7 @@ class Notice:
             time.sleep(1)
 
             motion_window.child_window(
-                auto_id="radButton1", framework_id="WinForm").click()
+                title="네", control_type="Button").click()
             print('공지사항 삭제 성공')
         except Exception as e:
             print('공지사항 삭제 실패: ', e)
@@ -117,11 +124,13 @@ motion_window = app.window(title=MotionStarer.VersionSearch())
 print('모션 연결 성공')
 print("-------------------")
 
-time.sleep(5)
+# time.sleep(10)
 # DashBoard.receipt('김지헌')
-
-DashBoard.reserve('김지헌')
-time.sleep(5)
+# time.sleep(1)
+# DashBoard.reserve('김지헌')
+time.sleep(10)
 Notice.noticeCreate('테스트')
-time.sleep(3)
+time.sleep(5)
 Notice.noticeDelete()
+
+findwindows.find_element(title="네")
