@@ -4,10 +4,9 @@ from pywinauto import keyboard
 import time
 
 
-app = application.Application(backend='uia')
+app = application.Application(backend='win32')
 
-
-class MotionStarter():
+class MotionStarter:
     @staticmethod
     def login(title, id):
         login_window = app.window(title=title)
@@ -15,18 +14,16 @@ class MotionStarter():
 
     def appConnect():
         try:
-            app.connect(path="C:\Motion\Motion_E\Motion_E.exe")
+            app.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
             print('기존 앱 연결')
 
         except application.ProcessNotFoundError:
-            app.start("C:\Motion\Motion_E\Motion_E.exe")
-            time.sleep(1)
+            app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
+            time.sleep(3)
             MotionStarter.login('로그인', 'btnLogin')
-            print("로그인 성공")
 
 
 class DashBoard():
-    @staticmethod
     def searchUser(searchName):
         motion_window.child_window(
             auto_id="srch-val",  control_type="Edit").type_keys(searchName)
@@ -77,7 +74,6 @@ class DashBoard():
 
 
 class Notice:
-    @staticmethod
     def noticeCreate(value):
         try:
             motion_window.child_window(
@@ -103,24 +99,34 @@ class Notice:
 
 
 def VersionSearch():
-    windows = Desktop(backend="uia").windows()
+    windows = Desktop(backend="win32").windows()
 
     for window in windows:
         try:
-            if '모션.ver' in window.window_text():
-                MotionTitle = window.window_text()
+            window_text = window.window_text()
+            print("Window text:", window_text)
+            if '모션.ver' in window_text:
+                MotionTitle = window_text
                 return MotionTitle
         except Exception as e:
             print('버전 찾기 실패', e)
 
 
 MotionStarter.appConnect()
-motion_window = app.window(title=VersionSearch())
-print()
-print('모션 연결 성공')
+
+time.sleep(10)  # 충분한 대기 시간 설정 (초 단위)
+
+main_dlg = app.window(title_re=VersionSearch(), visible_only=False)
+try:
+    main_dlg.restore().set_focus()
+    print('모션 연결 성공')
+    motion_window = app.window(title=VersionSearch())
+except Exception as e:
+     ("로그인 실패", e)
+     
+
 print("-------------------")
 
-time.sleep(5)
 # DashBoard.receipt('김지헌')
 
 # DashBoard.reserve('김지헌')
