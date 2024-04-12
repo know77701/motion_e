@@ -4,11 +4,25 @@ from pywinauto import keyboard
 from pywinauto import findwindows
 import time
 
-
+# uia > 프로그램 종료됨
+# win32 > 객체 선택 불가
 app = application.Application(backend='win32')
 
 
 class MotionStarter:
+    def VersionSearch():
+        windows = Desktop(backend="win32").windows()
+
+        for window in windows:
+            try:
+                window_text = window.window_text()
+                if '모션.ver' in window_text:
+                    MotionTitle = window_text
+                    return MotionTitle
+            except Exception as e:
+                print('버전 찾기 실패', e)
+
+
     @staticmethod
     def login(title, id):
         login_window = app.window(title=title)
@@ -24,12 +38,17 @@ class MotionStarter:
             app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
             time.sleep(3)
             MotionStarter.login('로그인', 'btnLogin')
-
+            time.sleep(5)
+            app.window(title=MotionStarter.VersionSearch)
+            
 
 class DashBoard():
+    @staticmethod
     def searchUser(searchName):
-        motion_window.child_window(
-            auto_id="srch-val",  control_type="Edit").type_keys(searchName)
+        serach_window = motion_window.child_window(auto_id="srch-val",  control_type="Edit")
+        serach_window.set_edit_text("")
+        time.sleep(3)
+        serach_window.set_edit_text(searchName)
         motion_window.child_window(title="검색", control_type="Button").click()
 
     @staticmethod
@@ -104,39 +123,16 @@ class Notice:
             print('공지사항 삭제 실패: ', e)
 
 
-def VersionSearch():
-    windows = Desktop(backend="win32").windows()
 
-    for window in windows:
-        try:
-            window_text = window.window_text()
-            print("Window text:", window_text)
-            if '모션.ver' in window_text:
-                MotionTitle = window_text
-                return MotionTitle
-        except Exception as e:
-            print('버전 찾기 실패', e)
 
+
+time.sleep(1)  # 충분한 대기 시간 설정 (초 단위)
 
 MotionStarter.appConnect()
 
-time.sleep(10)  # 충분한 대기 시간 설정 (초 단위)
-
-main_dlg = app.window(title_re=VersionSearch(), visible_only=False)
-try:
-    main_dlg.restore().set_focus()
-    print('모션 연결 성공')
-    motion_window = app.window(title=VersionSearch())
-except Exception as e:
-    ("로그인 실패", e)
-
-
+motion_window = app.window(title=MotionStarter.VersionSearch(), backend='uia')
 print("-------------------")
 
-# DashBoard.receipt('김지헌')
 
-# DashBoard.reserve('김지헌')
-# time.sleep(5)
-# Notice.noticeCreate('테스트')
-# time.sleep(3)
-# Notice.noticeDelete()
+
+print(motion_window.backend)
