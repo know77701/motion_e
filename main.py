@@ -7,45 +7,71 @@ import time
 # uia > 프로그램 종료됨
 # win32 > 객체 선택 불가
 app = application.Application(backend='win32')
+MotionApp = application.Application(backend='uia')
+
+MAX_RETRIES = 3
 
 
 class MotionStarter:
-    def VersionSearch():
+    def VersionSearch(value):
         windows = Desktop(backend="win32").windows()
 
         for window in windows:
             try:
                 window_text = window.window_text()
-                if '모션.ver' in window_text:
+                if value in window_text:
+                    print(window_text)
                     MotionTitle = window_text
                     return MotionTitle
             except Exception as e:
                 print('버전 찾기 실패', e)
 
-
     @staticmethod
-    def login(title, id):
+    def loginClick(title, id):
         login_window = app.window(title=title)
         login_window.child_window(auto_id=id).click()
 
     @staticmethod
-    def appConnect():
-        try:
-            app.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
-            print('기존 앱 연결')
+    def appTitleAction(title, btnName):
+        app.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
+        MotionStarter.loginClick(title, btnName)
+        time.sleep(5)
+        MotionApp.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
 
-        except application.ProcessNotFoundError:
-            app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
-            time.sleep(3)
-            MotionStarter.login('로그인', 'btnLogin')
-            time.sleep(5)
-            app.window(title=MotionStarter.VersionSearch)
-            
+    @staticmethod
+    def appConnect(retries=0):
+        try:
+            if MotionStarter.VersionSearch('모션.ver'):
+                MotionApp.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
+                print('기존 앱 연결')
+            elif MotionStarter.VersionSearch('로그인'):
+                print('로그인 테스트')
+                MotionStarter.appTitleAction('로그인', 'btnLogin')
+            else:
+                app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
+                time.sleep(3)
+                MotionStarter.loginClick('로그인', 'btnLogin')
+                time.sleep(5)
+                MotionApp.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
+
+        except application.ProcessNotFoundError as e:
+            print("앱 찾기 실패 :", e)
+            if retries < MAX_RETRIES:
+                retries += 1
+                print(f"재시도 횟수: {retries}")
+                app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
+                MotionStarter.appConnect(retries)
+            else:
+                print("최대 재시도 횟수에 도달했습니다. 프로그램을 종료합니다.")
+        except application.AppStartError:
+            print("앱 미설치 또는 앱 미존재")
+
 
 class DashBoard():
     @staticmethod
     def searchUser(searchName):
-        serach_window = motion_window.child_window(auto_id="srch-val",  control_type="Edit")
+        serach_window = motion_window.child_window(
+            auto_id="srch-val",  control_type="Edit")
         serach_window.set_edit_text("")
         time.sleep(3)
         serach_window.set_edit_text(searchName)
@@ -123,16 +149,11 @@ class Notice:
             print('공지사항 삭제 실패: ', e)
 
 
-
-
-
-time.sleep(1)  # 충분한 대기 시간 설정 (초 단위)
+time.sleep(1)
 
 MotionStarter.appConnect()
 
-motion_window = app.window(title=MotionStarter.VersionSearch(), backend='uia')
+motion_window = MotionApp.window(title=MotionStarter.VersionSearch('모션.ver'))
+
+
 print("-------------------")
-
-
-
-print(motion_window.backend)
