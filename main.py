@@ -1,15 +1,12 @@
 from pywinauto import application
 from pywinauto import Desktop
 from pywinauto import keyboard
-from pywinauto import findwindows
 import time
 
-# uia > 프로그램 종료됨
-# win32 > 객체 선택 불가
 app = application.Application(backend='win32')
 MotionApp = application.Application(backend='uia')
 
-MAX_RETRIES = 3
+MAX_RETRY = 3
 
 
 class MotionStarter:
@@ -56,7 +53,7 @@ class MotionStarter:
 
         except application.ProcessNotFoundError as e:
             print("앱 찾기 실패 :", e)
-            if retries < MAX_RETRIES:
+            if retries < MAX_RETRY:
                 retries += 1
                 print(f"재시도 횟수: {retries}")
                 app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
@@ -85,21 +82,23 @@ class DashBoard():
                 control_type="ComboBox", found_index=index).type_keys("{DOWN}")
 
     @staticmethod
-    def reserve(name):
+    def reserve(name, index):
         try:
             DashBoard.searchUser(name)
             time.sleep(1)
-            motion_window.child_window(
-                title="예약하기", control_type="Button", found_index=0).click()
-            time.sleep(1)
-            motion_window.child_window(
-                title="오늘", control_type="Button").click()
-            DashBoard.comboBox(20, 0)
-            DashBoard.comboBox(10, 1)
+            if motion_window.child_window(title=name, control_type="Text"):
+                motion_window.child_window(
+                    title="예약하기", control_type="Button", found_index=index).click()
+                time.sleep(1)
+                motion_window.child_window(
+                    title="오늘", control_type="Button").click()
+                DashBoard.comboBox(20, 0)
+                DashBoard.comboBox(10, 1)
 
-            motion_window.child_window(
-                title="예약", control_type="Button").click()
-            keyboard.send_keys('{ENTER}')
+                motion_window.child_window(
+                    title="예약", control_type="Button").click()
+                time.sleep(3)
+            # keyboard.send_keys('{ENTER}')
             print("예약 성공")
         except Exception as e:
             keyboard.send_keys('{F5}')
@@ -158,6 +157,20 @@ MotionStarter.appConnect()
 
 motion_window = MotionApp.window(title=MotionStarter.VersionSearch('모션.ver'))
 
-DashBoard.reserve('김지헌')
+# 예약자 이름
+# DashBoard.reserve('2351', 0)
+time.sleep(1)
+
+testButton = MotionApp.window(auto_id="radPanel6")
+print("테스트")
+print(testButton)
+print(testButton.child_window(auto_id="265210",  control_type="Edit"))
+print(testButton.child_window(auto_id="263546",  control_type="Edit"))
+
+
+print("-------------------------------")
+print()
+testButton.child_window(
+    auto_id="263546",  control_type="Edit").set_edit_text("테스트")
 
 print("-------------------")
