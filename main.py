@@ -1,15 +1,12 @@
 from pywinauto import application
 from pywinauto import Desktop
 from pywinauto import keyboard
-from pywinauto import findwindows
 import time
 
-# uia > 프로그램 종료됨
-# win32 > 객체 선택 불가
 app = application.Application(backend='win32')
 MotionApp = application.Application(backend='uia')
 
-MAX_RETRIES = 3
+MAX_RETRY = 3
 
 
 class MotionStarter:
@@ -56,7 +53,7 @@ class MotionStarter:
 
         except application.ProcessNotFoundError as e:
             print("앱 찾기 실패 :", e)
-            if retries < MAX_RETRIES:
+            if retries < MAX_RETRY:
                 retries += 1
                 print(f"재시도 횟수: {retries}")
                 app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
@@ -75,29 +72,34 @@ class DashBoard():
         serach_window.set_edit_text("")
         time.sleep(3)
         serach_window.set_edit_text(searchName)
+        time.sleep(1)
         motion_window.child_window(title="검색", control_type="Button").click()
 
     @staticmethod
-    def reserve(name):
+    def comboBox(count, index):
+        for _ in range(count):
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+
+    @staticmethod
+    def reserve(name, index):
         try:
             DashBoard.searchUser(name)
             time.sleep(1)
-            motion_window.child_window(
-                title="예약하기", control_type="Button", found_index=1).click()
-            time.sleep(1)
-            motion_window.child_window(
-                title="오늘", control_type="Button").click()
-            motion_window.child_window(
-                title="시간", control_type="ComboBox").click_input()
+            if motion_window.child_window(title=name, control_type="Text"):
+                motion_window.child_window(
+                    title="예약하기", control_type="Button", found_index=index).click()
+                time.sleep(1)
+                motion_window.child_window(
+                    title="오늘", control_type="Button").click()
+                DashBoard.comboBox(20, 0)
+                DashBoard.comboBox(10, 1)
 
-            motion_window.child_window(
-                title="20", control_type="ListItem").click_input()
-
-            motion_window.child_window(
-                control_type="ComboBox", found_index=1).select()
-            motion_window.child_window(
-                title="20", control_type="ListItem").click()
-            print("예약 성공: ", e)
+                motion_window.child_window(
+                    title="예약", control_type="Button").click()
+                time.sleep(3)
+            # keyboard.send_keys('{ENTER}')
+            print("예약 성공")
         except Exception as e:
             keyboard.send_keys('{F5}')
             print("예약 실패: ", e)
@@ -133,8 +135,8 @@ class Notice:
             keyboard.send_keys('{ENTER}')
             print('공지사항 생성 성공')
         except Exception as e:
-            print('공지사항 생성 실패: ', e)
             keyboard.send_keys('{F5}')
+            print('공지사항 생성 실패: ', e)
 
     def noticeDelete():
         try:
@@ -155,5 +157,20 @@ MotionStarter.appConnect()
 
 motion_window = MotionApp.window(title=MotionStarter.VersionSearch('모션.ver'))
 
+# 예약자 이름
+# DashBoard.reserve('2351', 0)
+time.sleep(1)
+
+testButton = MotionApp.window(auto_id="radPanel6")
+print("테스트")
+print(testButton)
+print(testButton.child_window(auto_id="265210",  control_type="Edit"))
+print(testButton.child_window(auto_id="263546",  control_type="Edit"))
+
+
+print("-------------------------------")
+print()
+testButton.child_window(
+    auto_id="263546",  control_type="Edit").set_edit_text("테스트")
 
 print("-------------------")
