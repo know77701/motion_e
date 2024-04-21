@@ -141,10 +141,10 @@ class DashBoard():
             message_box = receipt_window.window(auto_id="RadMessageBox")
             if message_box:
                 print(message_box)
-                message_box.window(title="yes").click()
+                message_box.window(auto_id="radButton1").click()
             else:
-                print("창못찾음")
-
+                print("창 없음")
+            time.sleep(1)
             keyboard.send_keys('{Enter}')
             keyboard.send_keys('{F5}')
             print("접수 성공")
@@ -191,10 +191,3 @@ motion_window = MotionApp.window(title=MotionStarter.VersionSearch('모션.ver')
 time.sleep(1)
 # DashBoard.receipt('2351')
 receipt_window = MotionApp.window(title=MotionStarter.VersionSearch('접수'))
-
-message_box = receipt_window.window(auto_id="RadMessageBox")
-if message_box:
-    print(message_box)
-    message_box.window(auto_id="radButton1").click()
-else:
-    print("창못찾음")
