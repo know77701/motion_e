@@ -17,7 +17,6 @@ class MotionStarter:
             try:
                 window_text = window.window_text()
                 if value in window_text:
-                    print(window_text)
                     MotionTitle = window_text
                     return MotionTitle
             except Exception as e:
@@ -80,6 +79,14 @@ class DashBoard():
         for _ in range(count):
             motion_window.child_window(
                 control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
 
     @staticmethod
     def reserve(name, index):
@@ -92,13 +99,15 @@ class DashBoard():
                 time.sleep(1)
                 motion_window.child_window(
                     title="오늘", control_type="Button").click()
-                DashBoard.comboBox(20, 0)
-                DashBoard.comboBox(10, 1)
+                DashBoard.comboBox(4, 0)
+                DashBoard.comboBox(2, 1)
 
                 motion_window.child_window(
                     title="예약", control_type="Button").click()
                 time.sleep(3)
-            # keyboard.send_keys('{ENTER}')
+            keyboard.send_keys('{ENTER}')
+            time.sleep(1)
+            keyboard.send_keys('{F5}')
             print("예약 성공")
         except Exception as e:
             keyboard.send_keys('{F5}')
@@ -112,18 +121,32 @@ class DashBoard():
             motion_window.child_window(
                 title="접수하기", control_type="Button", found_index=0).click()
             time.sleep(5)
-            
+
             # 접수창 control
-            test_window = MotionApp.window(title=MotionStarter.VersionSearch('접수'))
-            test_window.child_window(
-                auto_id="133692",  control_type="Edit").set_edit_text("접수메모 테스트")
-            test_window.child_window(
-                auto_id="133696",  control_type="Edit").set_edit_text("접수메모 테스트")
-            motion_window.child_window(
+
+            receipt_window = MotionApp.window(
+                title=MotionStarter.VersionSearch('접수'))
+            # receipt_window.child_window(
+            #     auto_id="133692",  control_type="Edit").set_edit_text("접수메모 테스트")
+            # receipt_window.child_window(
+            #     auto_id="133696",  control_type="Edit").set_edit_text("접수메모 테스트")
+            receipt_window.child_window(
                 auto_id="btnAcpt", control_type="Button").click()
             time.sleep(1)
-            motion_window.child_window(
-                auto_id="btnAcpt", control_type="Button").click()
+
+            receipt_window.window(
+                auto_id="radButton1", control_type="Button").click()
+            time.sleep(1)
+
+            message_box = receipt_window.window(auto_id="RadMessageBox")
+            if message_box:
+                print(message_box)
+                message_box.window(title="yes").click()
+            else:
+                print("창못찾음")
+
+            keyboard.send_keys('{Enter}')
+            keyboard.send_keys('{F5}')
             print("접수 성공")
         except Exception as e:
             keyboard.send_keys('{F5}')
@@ -164,6 +187,14 @@ motion_window = MotionApp.window(title=MotionStarter.VersionSearch('모션.ver')
 
 
 # 예약자 이름
-DashBoard.reserve('2351', 0)
+# DashBoard.reserve('2351', 0)
 time.sleep(1)
-DashBoard.receipt('2351')
+# DashBoard.receipt('2351')
+receipt_window = MotionApp.window(title=MotionStarter.VersionSearch('접수'))
+
+message_box = receipt_window.window(auto_id="RadMessageBox")
+if message_box:
+    print(message_box)
+    message_box.window(auto_id="radButton1").click()
+else:
+    print("창못찾음")
