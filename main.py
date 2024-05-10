@@ -150,13 +150,22 @@ class DashBoard():
             keyboard.send_keys('{F5}')
             print("접수 실패: ", e)
     def registration():
-        DashBoard.searchUser('2351')
-        motion_window.child_window(
-            title="환자 등록 후 예약", control_type="Button", found_index=0).click()
-        registration_window = MotionApp.window(
-            title=MotionStarter.VersionSearch('고객 등록'))
-        edit_window =  registration_window.child_window(control_type="Edit", found_index=0)
-        edit_window.set_edit_text('test')
+        try:
+            DashBoard.searchUser('2351')
+            motion_window.child_window(
+                title="환자 등록 후 예약", control_type="Button", found_index=0).click()
+            registration_window = MotionApp.window(
+                title=MotionStarter.VersionSearch('고객 등록'))
+            edit_window = registration_window.child_window(control_type="Edit", auto_id="txtPat_Nm")
+            mobile_edit2 = registration_window.child_window(control_type="Edit", auto_id="txtMobile_No2")
+            mobile_edit3 = registration_window.child_window(control_type="Edit", auto_id="txtMobile_No3")
+
+            edit_window.set_edit_text('QA테스트')
+            mobile_edit2.set_edit_text('7441')
+            mobile_edit3.set_edit_text('7631')
+            registration_window.child_window(auto_id="btnSave", control_type="Button").click()
+        except Exception as err:
+            print('접수 실패 : ', err)
 
 class Notice:
     def noticeCreate(value):
@@ -197,4 +206,18 @@ motion_window = MotionApp.window(title=MotionStarter.VersionSearch('모션.ver')
 # DashBoard.reserve('2351', 0)
 # time.sleep(1)
 # DashBoard.receipt('2351')
-DashBoard.registration()
+# DashBoard.registration()
+
+registration_window = MotionApp.window(
+    title=MotionStarter.VersionSearch('고객 등록'))
+edit_window = registration_window.child_window(control_type="Edit", auto_id="txtPat_Nm")
+mobile_edit2 = registration_window.child_window(control_type="Edit", auto_id="txtMobile_No2")
+mobile_edit3 = registration_window.child_window(control_type="Edit", auto_id="txtMobile_No3")
+
+edit_window.set_edit_text('QA테스트')
+mobile_edit2.set_edit_text('7441')
+mobile_edit3.set_edit_text('7631')
+registration_window.child_window(auto_id="btnSave", control_type="Button").click()
+
+
+# 고객등록 > 고객등록 예약 > 고객 등록 접수 > 
