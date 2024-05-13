@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 from pywinauto import application, Desktop, keyboard, findwindows
 import ctypes
 import sys
+=======
+from pywinauto import application
+from pywinauto import Desktop
+
+from pywinauto import keyboard
+>>>>>>> 8f4d18792df708c57fcc6f90f73e7d227208244b
 import time
 import threading
 
@@ -11,6 +18,7 @@ def is_admin():
     except:
         return False
 
+<<<<<<< HEAD
 
 class ClearPopupThread(threading.Thread):
     def __init__(self, window_auto_id, button_name, quit_event):
@@ -18,6 +26,11 @@ class ClearPopupThread(threading.Thread):
         self.quit_event = quit_event
         self.window_auto_id = window_auto_id
         self.button_name = button_name
+=======
+class MotionStarter:
+    def VersionSearch(value):
+        windows = Desktop(backend="uia").windows()
+>>>>>>> 8f4d18792df708c57fcc6f90f73e7d227208244b
 
     def run(self):
         # from pywinauto import application, findwindows
@@ -27,6 +40,7 @@ class ClearPopupThread(threading.Thread):
             except findwindows.WindowNotFoundError:
                 pass
             else:
+<<<<<<< HEAD
                 for hwnd in handles:
                     app = application.Application()
                     app.Connect(handle=hwnd)
@@ -35,9 +49,47 @@ class ClearPopupThread(threading.Thread):
                     button.Click()
             if self.quit_event.is_set():
                 break
+=======
+                print("최대 재시도 횟수에 도달했습니다. 프로그램을 종료합니다.")
+        except application.AppStartError:
+            print("앱 미설치 또는 앱 미존재")
+
+
+
+class DashBoard():
+    @staticmethod
+    def searchUser(searchName):
+        serach_window = motion_window.child_window(
+            auto_id="srch-val",  control_type="Edit")
+        serach_window.set_edit_text("")
+        time.sleep(3)
+        serach_window.set_edit_text(searchName)
+        time.sleep(1)
+        motion_window.child_window(title="검색", control_type="Button").click()
+
+    @staticmethod
+    def comboBox(count, index):
+        for _ in range(count):
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+            motion_window.child_window(
+                control_type="ComboBox", found_index=index).type_keys("{DOWN}")
+
+    @staticmethod
+    def reserve(name, index):
+        try:
+            DashBoard.searchUser(name)
+>>>>>>> 8f4d18792df708c57fcc6f90f73e7d227208244b
             time.sleep(1)
 
 
+<<<<<<< HEAD
 if is_admin():
     app = application.Application(backend='win32')
     MotionApp = application.Application(backend='uia')
@@ -61,6 +113,51 @@ if is_admin():
         def loginClick(title, id):
             login_window = app.window(title=title)
             login_window.child_window(auto_id=id).click()
+=======
+            # 접수창 control
+            receipt_window = MotionApp.window(
+                title=MotionStarter.VersionSearch('접수'))
+            receipt_window.child_window(
+                auto_id="btnAcpt", control_type="Button").click()
+            time.sleep(1)
+            print("test")
+            message_box = receipt_window.window(auto_id="RadMessageBox")
+            # 백그라운드에서 열어서 이미 찾을거같은데 이부분은 더 생각해보자
+            if message_box :
+                print("test2")
+                message_box.window(
+                    auto_id="radButton1", control_type="Button").click()
+                time.sleep(1)
+                print(message_box)
+                message_box.window(auto_id="radButton1").click()
+            else :
+                print("접수되어있는 동일환자 미존재")
+            time.sleep(1)
+            keyboard.send_keys('{Enter}')
+            time.sleep(1)
+            keyboard.send_keys('{F5}')
+            print("접수 성공")
+        except Exception as e:
+            keyboard.send_keys('{F5}')
+            print("접수 실패: ", e)
+    def registration():
+        try:
+            DashBoard.searchUser('2351')
+            motion_window.child_window(
+                title="환자 등록 후 예약", control_type="Button", found_index=0).click()
+            registration_window = MotionApp.window(
+                title=MotionStarter.VersionSearch('고객 등록'))
+            edit_window = registration_window.child_window(control_type="Edit", auto_id="txtPat_Nm")
+            mobile_edit2 = registration_window.child_window(control_type="Edit", auto_id="txtMobile_No2")
+            mobile_edit3 = registration_window.child_window(control_type="Edit", auto_id="txtMobile_No3")
+
+            edit_window.set_edit_text('QA테스트')
+            mobile_edit2.set_edit_text('7441')
+            mobile_edit3.set_edit_text('7631')
+            registration_window.child_window(auto_id="btnSave", control_type="Button").click()
+        except Exception as err:
+            print('접수 실패 : ', err)
+>>>>>>> 8f4d18792df708c57fcc6f90f73e7d227208244b
 
         @staticmethod
         def appTitleAction(title, btnName):
@@ -235,7 +332,12 @@ if is_admin():
 
     time.sleep(1)
 
+<<<<<<< HEAD
     MotionStarter.appConnect()
+=======
+
+time.sleep(1)
+>>>>>>> 8f4d18792df708c57fcc6f90f73e7d227208244b
 
     motion_window = MotionApp.window(
         title=MotionStarter.VersionSearch('모션.ver'))
@@ -250,6 +352,29 @@ if is_admin():
         auto_id="btnSave", control_type="Button").click()
     quit_event.set()
 
+<<<<<<< HEAD
 else:
     ctypes.windll.shell32.ShellExecuteW(
         None, "runas", sys.executable, __file__, None, 1)
+=======
+
+# 예약자 이름
+# DashBoard.reserve('2351', 0)
+# time.sleep(1)
+# DashBoard.receipt('2351')
+# DashBoard.registration()
+
+registration_window = MotionApp.window(
+    title=MotionStarter.VersionSearch('고객 등록'))
+edit_window = registration_window.child_window(control_type="Edit", auto_id="txtPat_Nm")
+mobile_edit2 = registration_window.child_window(control_type="Edit", auto_id="txtMobile_No2")
+mobile_edit3 = registration_window.child_window(control_type="Edit", auto_id="txtMobile_No3")
+
+edit_window.set_edit_text('QA테스트')
+mobile_edit2.set_edit_text('7441')
+mobile_edit3.set_edit_text('7631')
+registration_window.child_window(auto_id="btnSave", control_type="Button").click()
+
+
+# 고객등록 > 고객등록 예약 > 고객 등록 접수 > 
+>>>>>>> 8f4d18792df708c57fcc6f90f73e7d227208244b
