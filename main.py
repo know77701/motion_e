@@ -3,6 +3,8 @@ import time
 import ctypes
 import sys
 import multiprocessing
+import random
+
 
 MAX_RETRY = 3
 
@@ -26,27 +28,26 @@ def process_func(window_title, button_auto_id):
                     auto_id=button_auto_id, control_type="Button")
                 popup_button.wait('visible')
                 popup_button.click()
+                quit_event.set()
             except findwindows.ElementNotFoundError as e:
-                print(f"버튼 미존재  : {e}")
+                print(f"버튼 미존재: {e}")
                 pass
             except application.timings.TimeoutError as e:
-                print(f"시간초과 : {e}")
+                print(f"시간초과: {e}")
                 pass
-            if quit_event.is_set():
-                break
-        time.sleep(1)
+            time.sleep(1)
     except Exception as e:
-        print("process fail")
+        print("프로세스 실패", e)
 
 
 def new_process(window_name, popup_name, btn_auto_id, click_btn_id):
     if __name__ == '__main__':
-        print('테스트 하나')
+        quit_event = multiprocessing.Event()
         process1 = multiprocessing.Process(
-            target=process_func, args=(popup_name, btn_auto_id))
+            target=process_func, args=(popup_name, btn_auto_id, quit_event))
         process1.start()
         window_name.child_window(auto_id=click_btn_id).click()
-        process1.terminate()
+        quit_event.set()
         process1.join()
 
 
@@ -112,7 +113,9 @@ class DashBoard():
     def searchUser(searchName):
         serach_window = motion_window.child_window(
             auto_id="srch-val",  control_type="Edit")
+        print("테스트")
         serach_window.set_edit_text("")
+        print("테스트")
         time.sleep(3)
         serach_window.set_edit_text(searchName)
         time.sleep(1)
@@ -200,8 +203,15 @@ class DashBoard():
     def popup_user_save(serach_name, phone_number):
         try:
             DashBoard.text_edit_popup(serach_name, phone_number)
-            new_process(registration_window, '고객등록',
-                        'radButton1', 'btnSave')
+            if __name__ == '__main__':
+                process1 = multiprocessing.Process(
+                    target=process_func, args=('고객등록', 'radButton1'))
+                process1.start()
+                registration_window.child_window(auto_id='btnSave').click()
+
+                process1.terminate()
+                process1.join()
+
         except Exception as e:
             print('저장 실패 : ', e)
             time.sleep(1)
@@ -265,7 +275,3 @@ MotionApp = application.Application(backend='uia')
 MotionStarter.appConnect()
 motion_window = MotionApp.window(
     title=MotionStarter.VersionSearch('모션.ver'))
-registration_window = MotionApp.window(
-    title=MotionStarter.VersionSearch('고객등록'))
-
-DashBoard.save_reserve_popup("김지헌테스트", '01074417631')
