@@ -16,8 +16,28 @@ def is_admin():
         return False
 
 
+if not is_admin():
+    ctypes.windll.shell32.ShellExecuteW(
+        None, "runas", sys.executable, ' '.join(sys.argv), None, 1)
+    sys.exit()
+
+win32_app = application.Application(backend='win32')
+MotionApp = application.Application(backend='uia')
+
+
+def consulting_popup_close(quit_event, motion_window):
+    chart_window = MotionApp.window(auto_id=motion_window)
+    save_popup = chart_window.child_window(
+        auto_id="RadMessageBox")
+    print(save_popup)
+    save_popup_btn = save_popup.child_window(auto_id="radButton1")
+    print(save_popup_btn)
+    save_popup_btn.click()
+    time.sleep(1)
+    quit_event.set()
+
+
 def popup_btn_click():
-    print("테스트")
     save_pen_chart_window = chart_window.child_window(
         auto_id="PenChartAddFrom")
     for _ in range(3):
@@ -60,6 +80,34 @@ def pen_chart_process_func(quit_event):
     except Exception as e:
         print(e)
         quit_event.set()
+
+
+def med_picture_process_func(quit_event):
+    time.sleep(2)
+    picture_add_from = chart_window.child_window(
+        auto_id="MedicalHistoryAddFrom")
+    test_window = picture_add_from.child_window(auto_id="radPanel1")
+    t = test_window.children()
+    print(test_window)
+    # change_image = picture_add_from.child_window(
+    #     auto_id="buttonChangeImage")
+    # print(change_image)
+    # change_image.click_input()
+    # time.sleep(2)
+    # image_select_window = chart_window.child_window(title="열기")
+    # test = image_select_window.children()
+
+    # detail_save = picture_add_from.child_window(
+    #     auto_id="buttonSave")
+    # process2 = multiprocessing.Process(
+    #     target=popup_btn_click, args=())
+    # process2.start()
+    # detail_save.click()
+    # time.sleep(1)
+    # process2.terminate()
+    # process2.join()
+
+    quit_event.set()
 
 
 def process_func(window_title, button_auto_id):
@@ -153,15 +201,6 @@ class MotionStarter:
         except application.AppStartError:
             print("앱 미설치 또는 앱 미존재")
 
-
-# 관리자 권한
-if not is_admin():
-    ctypes.windll.shell32.ShellExecuteW(
-        None, "runas", sys.executable, ' '.join(sys.argv), None, 1)
-    sys.exit()
-
-win32_app = application.Application(backend='win32')
-MotionApp = application.Application(backend='uia')
 
 MotionStarter.appConnect()
 motion_window = MotionApp.window(
@@ -261,72 +300,81 @@ chart_window = MotionApp.window(auto_id="tBeautyChartForm")
 #         ran_text = random.choice(texts)
 #         side_edits[0].set_text(ran_text)
 #         side_buttons[1].click()
-# # # 상담사 이름 배열로 처리 > 값을 못가져오는거같음
-# consulting = chart_window.child_window(
-#     auto_id="spnlCnst")
-# cnst_user = [
-#     '심수빈', '이건', '설형일', '남종호', '탁대훈', '전은일', '강기혁', '남궁상호',
-#     '정재훈', '최규영', '김지연', '류소원', '노승범', '배윤민', '백세미', '오인우',
-#     '정진용', '이은지', '이혜라', '장여령', '정근화', '정예지', '표해남'
-# ]
-# cnst_id = consulting.child_window(auto_id="cmbCnstId")
-# cnst_value = cnst_id.children()
-# ran_cnst_user = random.choice(cnst_user)
-# cnst_value[0].set_text(ran_cnst_user)
+# 상담 시작
 
-# acpt_id = consulting.child_window(auto_id="cmbAcptCfrId")
-# acpt_value = acpt_id.children()
-# ran_acpt_user = random.choice(cnst_user)
-# acpt_value[0].set_text(ran_acpt_user)
+consulting = chart_window.child_window(auto_id="spnlCnst")
+cnst_user = [
+    '심수빈', '이건', '설형일', '남종호', '탁대훈', '전은일', '강기혁', '남궁상호',
+    '정재훈', '최규영', '김지연', '류소원', '노승범', '배윤민', '백세미', '오인우',
+    '정진용', '이은지', '이혜라', '장여령', '정근화', '정예지', '표해남'
+]
+cnst_id = consulting.child_window(auto_id="cmbCnstId")
+cnst_value = cnst_id.children()
+ran_cnst_user = random.choice(cnst_user)
+cnst_value[0].set_text(ran_cnst_user)
 
-
-# # # 상담메모나 어시메모는 실제데이터 가져올지 다시 확인필요
-# # 메모 입력 시작
-# lb_memo = consulting.child_window(auto_id="tableLayoutPanel3")
-# memo_edit = lb_memo.children()
-# memo_edit[0].set_text('상담메모 테스트')
-# memo_edit[1].set_text('어시메모 테스트')
-# # 메모 입력 종료
-
-# # 시술 선택-------------- list 추가 및 for문 작성해서 여러개? 패키지 하나?
-# mopr_list = ['[여드름/색소] 여드름', '[스킨케어] 스킨케어']
-# mopr = consulting.child_window(auto_id="txtSrchMopr")
-# mopr_inupt = mopr.children()
-# random_mopr = random.choice(mopr_list)
-# mopr_inupt[0].set_text(random_mopr)
-# keyboard.send_keys('{ENTER}')
-# mpor_search = consulting.child_window(auto_id="gvRegMopr")
-# mopr_list = mpor_search.children()
-# mopr_list_choice = random.choice(mopr_list)
-# mopr_list_choice.click_input()
-# time.sleep(2)
-# # 시술 선택 종료 -------------
+acpt_id = consulting.child_window(auto_id="cmbAcptCfrId")
+acpt_value = acpt_id.children()
+ran_acpt_user = random.choice(cnst_user)
+acpt_value[0].set_text(ran_acpt_user)
 
 
-# # 패키지 선택 ---------------------------
-# pckg_list = ['리프팅 패키지']
-# pckg = consulting.child_window(auto_id="txtSrchPckg")
-# pckg_inupt = pckg.children()
-# random_pckg = random.choice(pckg_list)
-# pckg_inupt[0].set_text("")
-# time.sleep(1)
-# pckg_inupt[0].set_text(random_pckg)
-# keyboard.send_keys('{ENTER}')
+# 메모 입력 시작
+lb_memo = consulting.child_window(auto_id="tableLayoutPanel3")
+memo_edit = lb_memo.children()
+memo_edit[0].set_text('상담메모 테스트')
+memo_edit[1].set_text('어시메모 테스트')
+# 메모 입력 종료
 
-# pckg_list_window = consulting.child_window(auto_id="gvSrchPckgList")
-# pckg_list_input = pckg_list_window.children()
-# print(pckg_list_input)
-# random_list_choice = random.choice(pckg_list_input)
-# random_list_choice.click_input()
-# add_pckg = consulting.child_window(
-#     auto_id="btnAddMopr", control_type="Button")
-# add_pckg.click()
-# # 패키지 선택 종료 ----------------------------
+# 시술 선택-------------- list 추가 및 for문 작성해서 여러개? 패키지 하나?
+mopr_list = ['[여드름/색소] 여드름', '[스킨케어] 스킨케어']
+mopr = consulting.child_window(auto_id="txtSrchMopr")
+mopr_inupt = mopr.children()
+random_mopr = random.choice(mopr_list)
+mopr_inupt[0].set_text(random_mopr)
+keyboard.send_keys('{ENTER}')
+mpor_search = consulting.child_window(auto_id="gvRegMopr")
+mopr_list = mpor_search.children()
+mopr_list_choice = random.choice(mopr_list)
+mopr_list_choice.click_input()
+# 시술 선택 종료 -------------
 
-# save_btn = consulting.child_window(
-#     auto_id="btnSaveCnst", control_type="Button")
 
-# save_btn.click()
+# 패키지 선택 ---------------------------
+pckg_list = ['리프팅 패키지']
+pckg = consulting.child_window(auto_id="txtSrchPckg")
+pckg_inupt = pckg.children()
+random_pckg = random.choice(pckg_list)
+pckg_inupt[0].set_text("")
+time.sleep(1)
+pckg_inupt[0].set_text(random_pckg)
+keyboard.send_keys('{ENTER}')
+
+pckg_list_window = consulting.child_window(auto_id="gvSrchPckgList")
+pckg_list_input = pckg_list_window.children()
+random_list_choice = random.choice(pckg_list_input)
+random_list_choice.click_input()
+add_pckg = consulting.child_window(
+    auto_id="btnAddMopr", control_type="Button")
+add_pckg.click()
+# 패키지 선택 종료 ----------------------------
+
+save_btn = consulting.child_window(
+    auto_id="btnSaveCnst", control_type="Button")
+
+
+def test():
+    quit_event = multiprocessing.Event()
+
+    process1 = multiprocessing.Process(
+        target=consulting_popup_close, args=(quit_event))
+    process1.start()
+    save_btn.click()
+    process1.join()  # 새로운 프로세스가 종료될 때까지 기다립니다.
+
+
+if __name__ == '__main__':
+    test()
 # 상담 종료
 
 
@@ -375,22 +423,47 @@ chart_window = MotionApp.window(auto_id="tBeautyChartForm")
 # # 진료 종료
 
 # 펜차트 시작
-pen_chart = chart_window.child_window(
-    auto_id="PenChartControl")
-pen_chart_add_btn = pen_chart.child_window(auto_id='radButtonAdd')
+# pen_chart = chart_window.child_window(
+#     auto_id="PenChartControl")
+# pen_chart_add_btn = pen_chart.child_window(auto_id='radButtonAdd')
 
 
-def main():
-    quit_event = multiprocessing.Event()
+# def main():
+#     quit_event = multiprocessing.Event()
 
-    process1 = multiprocessing.Process(
-        target=pen_chart_process_func, args=(quit_event,))
+#     process1 = multiprocessing.Process(
+#         target=pen_chart_process_func, args=(quit_event,))
 
-    process1.start()
-    pen_chart_add_btn.click()
-    process1.terminate()
-    process1.join()
+#     process1.start()
+#     pen_chart_add_btn.click()
+#     process1.terminate()
+#     process1.join()
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
+# 펜차트 종료
+
+# 진료사진 시작 > 추후 다시
+# medical_picture = chart_window.child_window(
+#     auto_id="MedicalPicturesControl")
+# medical_picture_add_btn = medical_picture.child_window(auto_id='radButtonAdd')
+
+
+# def med_picture_add_func():
+#     quit_event = multiprocessing.Event()
+
+#     process1 = multiprocessing.Process(
+#         target=med_picture_process_func, args=(quit_event,))
+
+#     process1.start()
+#     medical_picture_add_btn.click()
+#     process1.terminate()
+#     process1.join()
+
+
+# if __name__ == '__main__':
+#     med_picture_add_func()
+# 진료사진 종료
+
+# 수납 시작
