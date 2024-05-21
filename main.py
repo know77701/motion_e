@@ -6,7 +6,7 @@ import multiprocessing
 import random
 
 
-MAX_RETRY = 2
+MAX_RETRY = 3
 
 
 def is_admin():
