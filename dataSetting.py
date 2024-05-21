@@ -202,268 +202,271 @@ class MotionStarter:
             print("앱 미설치 또는 앱 미존재")
 
 
-MotionStarter.appConnect()
-motion_window = MotionApp.window(
-    title=MotionStarter.VersionSearch('모션.ver'))
+def main():
+    MotionStarter.appConnect()
+    motion_window = MotionApp.window(
+        title=MotionStarter.VersionSearch('모션.ver'))
+    index_number = 0
+    while index_number <= MAX_RETRY:
+        try:
+            acpt_list = motion_window.child_window(
+            auto_id="acpt-list", control_type="List")
 
-# acpt_list = motion_window.child_window(
-#     auto_id="acpt-list", control_type="List")
+            print(acpt_list.children())
+            list_items = acpt_list.children(control_type="ListItem")
+            print(f"접수카드 개수: {len(list_items)}")
+            for _ in range(list_items):
+                if list_items:
+                    item = list_items[list_items]
 
-# if acpt_list.exists() and acpt_list.children() == []:
-#     document = motion_window.child_window(
-#         control_type="Document", found_index=0)
-#     document_children = document.children()
+                    text_controls = item.children(control_type="Text")
 
-#     try:
-#         buttons = []
-#         for doc_btn in document_children:
-#             if doc_btn.element_info.control_type == "Button":
-#                 buttons.append(doc_btn)
+                    if text_controls:
+                        first_text_control = text_controls[1]
+                        first_text_control.click_input()
+                else:
+                    print("접수카드가 존재하지 않습니다.")
 
-#         if len(buttons) >= 3:
-#             third_button = buttons[2]
-#             third_button.click()
-#         else:
-#             print("버튼찾기 실패")
-#     except Exception as e:
-#         print("클릭 실패 :", e)
-# else:
-#     list_items = acpt_list.children(control_type="ListItem")
-#     print(f"ListItemControlTypeId 개수: {len(list_items)}")
+                chart_window = MotionApp.window(auto_id="tBeautyChartForm")
 
-#     if list_items:
-#         first_item = list_items[0]
+                # 사이드 메모입력
+                time.sleep(1)
+                chart_doc = chart_window.child_window(control_type="Document", found_index=1)
+                chart_doc_child = chart_doc.children()
+                side_edits = []
+                side_buttons = []
+                side_links = []
+                for dco_elment in chart_doc_child:
+                    if dco_elment.element_info.control_type == "Edit":
+                        side_edits.append(dco_elment)
+                    if dco_elment.element_info.control_type == "Button":
+                        side_buttons.append(dco_elment)
+                    if dco_elment.element_info.control_type == "Hyperlink":
+                        side_links.append(dco_elment)
+                side_edits[0].click_input()
+                texts = ["테스트", "테스트2", "테스트3", "테스트4", "테스트5",
+                        "테스트6", "테스트7", "테스트8", "테스트9", "테스트10"]
+                ran_number = random.randint(1, 10)
 
-#         text_controls = first_item.children(control_type="Text")
+                if side_edits[0].is_enabled():
+                    for i in range(ran_number):
+                        ran_text = random.choice(texts)
+                        side_edits[0].set_text(ran_text)
+                        side_buttons[1].click()
 
-#         if text_controls:
-#             print(1)
-#             first_text_control = text_controls[1]
-#             first_text_control.click_input()
-#         else:
-#             print("첫 번째 ListItemControlTypeId 항목 내에 Text 컨트롤을 찾을 수 없습니다.")
-#     else:
-#         print("ListItemControlTypeId 항목이 없습니다.")
+                # # 콜메모 입력
+                side_links[2].click_input()
+                chart_window2 = MotionApp.window(auto_id="tBeautyChartForm")
 
-chart_window = MotionApp.window(auto_id="tBeautyChartForm")
+                chart_doc = chart_window.child_window(control_type="Document", found_index=1)
+                chart_doc_child = chart_doc.children()
+                side_edits = []
+                side_buttons = []
+                side_links = []
+                for dco_elment in chart_doc_child:
+                    if dco_elment.element_info.control_type == "Edit":
+                        side_edits.append(dco_elment)
+                    if dco_elment.element_info.control_type == "Button":
+                        side_buttons.append(dco_elment)
+                    if dco_elment.element_info.control_type == "Hyperlink":
+                        side_links.append(dco_elment)
+                side_edits[0].click_input()
+                texts = ["테스트", "테스트2", "테스트3", "테스트4", "테스트5",
+                        "테스트6", "테스트7", "테스트8", "테스트9", "테스트10"]
+                ran_number = random.randint(1, 10)
 
-# # 사이드 메모입력
-# time.sleep(5)
-# memo_object = chart_window.child_window(auto_id="memo")
-# chart_doc = chart_window.child_window(control_type="Document", found_index=1)
-# chart_doc_child = chart_doc.children()
-# side_edits = []
-# side_buttons = []
-# side_links = []
-# for dco_elment in chart_doc_child:
-#     if dco_elment.element_info.control_type == "Edit":
-#         side_edits.append(dco_elment)
-#     if dco_elment.element_info.control_type == "Button":
-#         side_buttons.append(dco_elment)
-#     if dco_elment.element_info.control_type == "Hyperlink":
-#         side_links.append(dco_elment)
-# side_edits[0].click_input()
-# texts = ["테스트", "테스트2", "테스트3", "테스트4", "테스트5",
-#          "테스트6", "테스트7", "테스트8", "테스트9", "테스트10"]
-# ran_number = random.randint(1, 10)
+                if side_edits[0].is_enabled():
+                    for i in range(ran_number):
+                        ran_text = random.choice(texts)
+                        side_edits[0].set_text(ran_text)
+                        side_buttons[1].click()
+                # 사이드 메모 종료
+                index_number += 1
+                
+                # 상담 시작
+                consulting = chart_window.child_window(auto_id="spnlCnst")
+                cnst_user = [
+                    '심수빈', '이건', '설형일', '남종호', '탁대훈', '전은일', '강기혁', '남궁상호',
+                    '정재훈', '최규영', '김지연', '류소원', '노승범', '배윤민', '백세미', '오인우',
+                    '정진용', '이은지', '이혜라', '장여령', '정근화', '정예지', '표해남'
+                ]
+                cnst_id = consulting.child_window(auto_id="cmbCnstId")
+                cnst_value = cnst_id.children()
+                ran_cnst_user = random.choice(cnst_user)
+                cnst_value[0].set_text(ran_cnst_user)
 
-# if side_edits[0].is_enabled():
-#     for i in range(ran_number):
-#         ran_text = random.choice(texts)
-#         side_edits[0].set_text(ran_text)
-#         side_buttons[1].click()
-
-# # # 콜메모 입력
-# side_links[2].click_input()
-# chart_window2 = MotionApp.window(auto_id="tBeautyChartForm")
-
-# memo_object = chart_window2.child_window(auto_id="memo")
-# chart_doc = chart_window.child_window(control_type="Document", found_index=1)
-# chart_doc_child = chart_doc.children()
-# side_edits = []
-# side_buttons = []
-# side_links = []
-# for dco_elment in chart_doc_child:
-#     if dco_elment.element_info.control_type == "Edit":
-#         side_edits.append(dco_elment)
-#     if dco_elment.element_info.control_type == "Button":
-#         side_buttons.append(dco_elment)
-#     if dco_elment.element_info.control_type == "Hyperlink":
-#         side_links.append(dco_elment)
-# side_edits[0].click_input()
-# texts = ["테스트", "테스트2", "테스트3", "테스트4", "테스트5",
-#          "테스트6", "테스트7", "테스트8", "테스트9", "테스트10"]
-# ran_number = random.randint(1, 10)
-
-# if side_edits[0].is_enabled():
-#     for i in range(ran_number):
-#         ran_text = random.choice(texts)
-#         side_edits[0].set_text(ran_text)
-#         side_buttons[1].click()
-# 상담 시작
-
-consulting = chart_window.child_window(auto_id="spnlCnst")
-cnst_user = [
-    '심수빈', '이건', '설형일', '남종호', '탁대훈', '전은일', '강기혁', '남궁상호',
-    '정재훈', '최규영', '김지연', '류소원', '노승범', '배윤민', '백세미', '오인우',
-    '정진용', '이은지', '이혜라', '장여령', '정근화', '정예지', '표해남'
-]
-cnst_id = consulting.child_window(auto_id="cmbCnstId")
-cnst_value = cnst_id.children()
-ran_cnst_user = random.choice(cnst_user)
-cnst_value[0].set_text(ran_cnst_user)
-
-acpt_id = consulting.child_window(auto_id="cmbAcptCfrId")
-acpt_value = acpt_id.children()
-ran_acpt_user = random.choice(cnst_user)
-acpt_value[0].set_text(ran_acpt_user)
+                acpt_id = consulting.child_window(auto_id="cmbAcptCfrId")
+                acpt_value = acpt_id.children()
+                ran_acpt_user = random.choice(cnst_user)
+                acpt_value[0].set_text(ran_acpt_user)
 
 
-# 메모 입력 시작
-lb_memo = consulting.child_window(auto_id="tableLayoutPanel3")
-memo_edit = lb_memo.children()
-memo_edit[0].set_text('상담메모 테스트')
-memo_edit[1].set_text('어시메모 테스트')
-# 메모 입력 종료
+                # 메모 입력 시작
+                lb_memo = consulting.child_window(auto_id="tableLayoutPanel3")
+                memo_edit = lb_memo.children()
+                memo_edit[0].set_text('상담메모 테스트')
+                memo_edit[1].set_text('어시메모 테스트')
+                # 메모 입력 종료
 
-# 시술 선택-------------- list 추가 및 for문 작성해서 여러개? 패키지 하나?
-mopr_list = ['[여드름/색소] 여드름', '[스킨케어] 스킨케어']
-mopr = consulting.child_window(auto_id="txtSrchMopr")
-mopr_inupt = mopr.children()
-random_mopr = random.choice(mopr_list)
-mopr_inupt[0].set_text(random_mopr)
-keyboard.send_keys('{ENTER}')
-mpor_search = consulting.child_window(auto_id="gvRegMopr")
-mopr_list = mpor_search.children()
-mopr_list_choice = random.choice(mopr_list)
-mopr_list_choice.click_input()
-# 시술 선택 종료 -------------
-
-
-# 패키지 선택 ---------------------------
-pckg_list = ['리프팅 패키지']
-pckg = consulting.child_window(auto_id="txtSrchPckg")
-pckg_inupt = pckg.children()
-random_pckg = random.choice(pckg_list)
-pckg_inupt[0].set_text("")
-time.sleep(1)
-pckg_inupt[0].set_text(random_pckg)
-keyboard.send_keys('{ENTER}')
-
-pckg_list_window = consulting.child_window(auto_id="gvSrchPckgList")
-pckg_list_input = pckg_list_window.children()
-random_list_choice = random.choice(pckg_list_input)
-random_list_choice.click_input()
-add_pckg = consulting.child_window(
-    auto_id="btnAddMopr", control_type="Button")
-add_pckg.click()
-# 패키지 선택 종료 ----------------------------
-
-save_btn = consulting.child_window(
-    auto_id="btnSaveCnst", control_type="Button")
+                # 시술 선택-------------- list 추가 및 for문 작성해서 여러개? 패키지 하나?
+                mopr_list = ['[여드름/색소] 여드름', '[스킨케어] 스킨케어']
+                mopr = consulting.child_window(auto_id="txtSrchMopr")
+                mopr_inupt = mopr.children()
+                random_mopr = random.choice(mopr_list)
+                mopr_inupt[0].set_text(random_mopr)
+                keyboard.send_keys('{ENTER}')
+                mpor_search = consulting.child_window(auto_id="gvRegMopr")
+                mopr_list = mpor_search.children()
+                mopr_list_choice = random.choice(mopr_list)
+                mopr_list_choice.click_input()
+                # 시술 선택 종료 -------------
 
 
-def test():
-    quit_event = multiprocessing.Event()
+                # 패키지 선택 ---------------------------
+                pckg_list = ['리프팅 패키지']
+                pckg = consulting.child_window(auto_id="txtSrchPckg")
+                pckg_inupt = pckg.children()
+                random_pckg = random.choice(pckg_list)
+                pckg_inupt[0].set_text("")
+                time.sleep(1)
+                pckg_inupt[0].set_text(random_pckg)
+                keyboard.send_keys('{ENTER}')
 
-    process1 = multiprocessing.Process(
-        target=consulting_popup_close, args=(quit_event))
-    process1.start()
-    save_btn.click()
-    process1.join()  # 새로운 프로세스가 종료될 때까지 기다립니다.
+                pckg_list_window = consulting.child_window(auto_id="gvSrchPckgList")
+                pckg_list_input = pckg_list_window.children()
+                random_list_choice = random.choice(pckg_list_input)
+                random_list_choice.click_input()
+                add_pckg = consulting.child_window(
+                    auto_id="btnAddMopr", control_type="Button")
+                add_pckg.click()
+                # 패키지 선택 종료 ----------------------------
 
+                save_btn = consulting.child_window(
+                    auto_id="btnSaveCnst", control_type="Button")
+            break
+        except findwindows.ElementNotFoundError :     
+            document = motion_window.child_window(
+            control_type="Document", found_index=0)
+            document_children = document.children()
 
-if __name__ == '__main__':
-    test()
-# 상담 종료
+            try:
+                buttons = []
+                for doc_btn in document_children:
+                    if doc_btn.element_info.control_type == "Button":
+                        buttons.append(doc_btn)
 
-
-# 진료 시작
-# diag = chart_window.child_window(
-#     auto_id="spnlDiag")
-
-# # 담당의 지정 ------
-# doctor_list = ['(주)트라이업', '김지헌', '김다빈', '김보람', '김산호', '김한빛',
-#                '나혜은', '배석민', '변지혜', '김시별', '김승철', '유경화',
-#                '최영지', '이선희', '오승철'
-#                ]
-# drid = diag.child_window(auto_id='cmbChrgDrId')
-# drid_input = drid.children()
-# drid_random = random.choice(doctor_list)
-# drid_input[0].set_text(drid_random)
-# # 담당의 지정 종료 ----------
-
-# # 증상경과 입력
-# symt_memo_list = ['']
-# symt_memo_detail = diag.child_window(auto_id='pnlSymtPrgsDetail')
-# symt_memo_input = symt_memo_detail.children()
-# symt_memo_input[0].set_text("진료기록")
-# drid_memo_list = ['']
-# drid_memo_detail = diag.child_window(auto_id='pnlDiagMemoDetail')
-# drid_memo_input = drid_memo_detail.children()
-# drid_memo_input[0].set_text("증상경과")
-# # 증상경과 입력 종료 --------
-
-# # 처방 입력 > 처방 어떤걸로 해야할지 고민해야함.
-# search_prsc = diag.child_window(auto_id='txtSrchPrsc')
-# search_prsc_input = search_prsc.children()
-# search_prsc_input[0].set_text('감')
-# time.sleep(1)
-# prsc_list = diag.child_window(auto_id='gvRegPrsc')
-# prsc_list_input = prsc_list.children()
-# limit_list = prsc_list_input[:5]
-# random_prsc = random.choice(limit_list)
-# random_prsc.click_input()
-# # 처방 종료
-
-# diag_save_btn = diag.child_window(
-#     auto_id='btnSaveDiagWait', control_type="Button")
-# diag_save_btn.click()
-
-# # 진료 종료
-
-# 펜차트 시작
-# pen_chart = chart_window.child_window(
-#     auto_id="PenChartControl")
-# pen_chart_add_btn = pen_chart.child_window(auto_id='radButtonAdd')
+                if len(buttons) >= 3:
+                    third_button = buttons[2]
+                    third_button.click()
+                else:
+                    print("버튼찾기 실패")
+            except Exception as e:
+                print("클릭 실패 :", e)
 
 
-# def main():
-#     quit_event = multiprocessing.Event()
-
-#     process1 = multiprocessing.Process(
-#         target=pen_chart_process_func, args=(quit_event,))
-
-#     process1.start()
-#     pen_chart_add_btn.click()
-#     process1.terminate()
-#     process1.join()
 
 
-# if __name__ == '__main__':
-#     main()
-# 펜차트 종료
+    # def test():
+    #     quit_event = multiprocessing.Event()
 
-# 진료사진 시작 > 추후 다시
-# medical_picture = chart_window.child_window(
-#     auto_id="MedicalPicturesControl")
-# medical_picture_add_btn = medical_picture.child_window(auto_id='radButtonAdd')
-
-
-# def med_picture_add_func():
-#     quit_event = multiprocessing.Event()
-
-#     process1 = multiprocessing.Process(
-#         target=med_picture_process_func, args=(quit_event,))
-
-#     process1.start()
-#     medical_picture_add_btn.click()
-#     process1.terminate()
-#     process1.join()
+    #     process1 = multiprocessing.Process(
+    #         target=consulting_popup_close, args=(quit_event))
+    #     process1.start()
+    #     save_btn.click()
+    #     process1.join()  # 새로운 프로세스가 종료될 때까지 기다립니다.
 
 
-# if __name__ == '__main__':
-#     med_picture_add_func()
-# 진료사진 종료
+    # if __name__ == '__main__':
+    #     test()
+    # 상담 종료
 
-# 수납 시작
+
+    # 진료 시작
+    # diag = chart_window.child_window(
+    #     auto_id="spnlDiag")
+
+    # # 담당의 지정 ------
+    # doctor_list = ['(주)트라이업', '김지헌', '김다빈', '김보람', '김산호', '김한빛',
+    #                '나혜은', '배석민', '변지혜', '김시별', '김승철', '유경화',
+    #                '최영지', '이선희', '오승철'
+    #                ]
+    # drid = diag.child_window(auto_id='cmbChrgDrId')
+    # drid_input = drid.children()
+    # drid_random = random.choice(doctor_list)
+    # drid_input[0].set_text(drid_random)
+    # # 담당의 지정 종료 ----------
+
+    # # 증상경과 입력
+    # symt_memo_list = ['']
+    # symt_memo_detail = diag.child_window(auto_id='pnlSymtPrgsDetail')
+    # symt_memo_input = symt_memo_detail.children()
+    # symt_memo_input[0].set_text("진료기록")
+    # drid_memo_list = ['']
+    # drid_memo_detail = diag.child_window(auto_id='pnlDiagMemoDetail')
+    # drid_memo_input = drid_memo_detail.children()
+    # drid_memo_input[0].set_text("증상경과")
+    # # 증상경과 입력 종료 --------
+
+    # # 처방 입력 > 처방 어떤걸로 해야할지 고민해야함.
+    # search_prsc = diag.child_window(auto_id='txtSrchPrsc')
+    # search_prsc_input = search_prsc.children()
+    # search_prsc_input[0].set_text('감')
+    # time.sleep(1)
+    # prsc_list = diag.child_window(auto_id='gvRegPrsc')
+    # prsc_list_input = prsc_list.children()
+    # limit_list = prsc_list_input[:5]
+    # random_prsc = random.choice(limit_list)
+    # random_prsc.click_input()
+    # # 처방 종료
+
+    # diag_save_btn = diag.child_window(
+    #     auto_id='btnSaveDiagWait', control_type="Button")
+    # diag_save_btn.click()
+
+    # # 진료 종료
+
+    # 펜차트 시작
+    # pen_chart = chart_window.child_window(
+    #     auto_id="PenChartControl")
+    # pen_chart_add_btn = pen_chart.child_window(auto_id='radButtonAdd')
+
+
+    # def main():
+    #     quit_event = multiprocessing.Event()
+
+    #     process1 = multiprocessing.Process(
+    #         target=pen_chart_process_func, args=(quit_event,))
+
+    #     process1.start()
+    #     pen_chart_add_btn.click()
+    #     process1.terminate()
+    #     process1.join()
+
+
+    # if __name__ == '__main__':
+    #     main()
+    # 펜차트 종료
+
+    # 진료사진 시작 > 추후 다시
+    # medical_picture = chart_window.child_window(
+    #     auto_id="MedicalPicturesControl")
+    # medical_picture_add_btn = medical_picture.child_window(auto_id='radButtonAdd')
+
+
+    # def med_picture_add_func():
+    #     quit_event = multiprocessing.Event()
+
+    #     process1 = multiprocessing.Process(
+    #         target=med_picture_process_func, args=(quit_event,))
+
+    #     process1.start()
+    #     medical_picture_add_btn.click()
+    #     process1.terminate()
+    #     process1.join()
+
+
+    # if __name__ == '__main__':
+    #     med_picture_add_func()
+    # 진료사진 종료
+
+    # 수납 시작
