@@ -323,8 +323,7 @@ acpt_value[0].set_text(ran_acpt_user)
 lb_memo = consulting.child_window(auto_id="tableLayoutPanel3")
 memo_edit = lb_memo.children()
 memo_edit[0].set_text('상담메모 테스트')
-memo_edit[1].set_text('어시메모 테스트')
-# 메모 입력 종료
+memo_edit[1].set_text('어시메모 테스트')  # 메모 입력 종료
 
 # 시술 선택-------------- list 추가 및 for문 작성해서 여러개? 패키지 하나?
 mopr_list = ['[여드름/색소] 여드름', '[스킨케어] 스킨케어']
@@ -364,10 +363,8 @@ save_btn = consulting.child_window(
 
 
 def test():
-    quit_event = multiprocessing.Event()
-
     process1 = multiprocessing.Process(
-        target=consulting_popup_close, args=(quit_event))
+        target=consulting_popup_close, args=())
     process1.start()
     save_btn.click()
     process1.join()  # 새로운 프로세스가 종료될 때까지 기다립니다.
@@ -375,6 +372,7 @@ def test():
 
 if __name__ == '__main__':
     test()
+
 # 상담 종료
 
 
