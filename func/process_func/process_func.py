@@ -1,14 +1,11 @@
-from pywinauto import application
 from func.start.motion_starter import *
 from func.dashboard.dashboard import *
-from func.process_func.process_func import *
-
-MAX_RETRY = 3
+import time
 
 
 class ProcessFunc():
     rad_box = None
-
+    MAX_RETRY = 3
     def main_process_func(start_sub_process_event, sub_process_done_event, motion_app, motion_window):
         DashBoard.user_save("자동화체크1", "01074417631",
                             start_sub_process_event, sub_process_done_event, "btnSave", motion_app, motion_window)
@@ -30,7 +27,7 @@ class ProcessFunc():
 
     def sub_process_func(start_sub_process_event, sub_process_done_event, window_auto_id, btn_auto_id, motion_app):
         retries = 0
-        while retries <= MAX_RETRY:
+        while retries <= ProcessFunc.MAX_RETRY:
             try:
                 start_sub_process_event.wait()
                 registration_window = motion_app.window(

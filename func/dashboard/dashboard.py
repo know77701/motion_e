@@ -1,9 +1,6 @@
-from pywinauto import application, Desktop, keyboard
+from pywinauto import keyboard
 from func.start.motion_starter import *
 import time
-
-# motion_app = application.Application(backend='uia')
-# motion_window = motion_app.window(title=MotionStarter.version_search('모션.ver'))
 
 
 class DashBoard():
