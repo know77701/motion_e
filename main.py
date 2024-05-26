@@ -4,7 +4,7 @@ import ctypes
 import sys
 import multiprocessing
 
-MAX_RETRY = 2
+MAX_RETRY = 3
 
 
 def is_admin():
@@ -34,18 +34,18 @@ class MotionStarter:
 
     @staticmethod
     def app_title_connect(title, btnName):
-        win32_app.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
+        win32_app.connect(path="Motion_E.exe")
         MotionStarter.login_click(title, btnName)
         win32_app.kill()
         time.sleep(5)
-        motion_app.connect(path="C:\\Motion\\Motion_E\\Motion_E.exe")
+        motion_app.connect(path="Motion_E.exe")
 
     @staticmethod
     def app_connect(retries=0):
         try:
             if MotionStarter.version_search('모션.ver'):
                 motion_app.connect(
-                    path="C:\\Motion\\Motion_E\\Motion_E.exe")
+                    path="Motion_E.exe")
                 print('기존 앱 연결')
             elif MotionStarter.version_search('로그인'):
                 MotionStarter.app_title_connect('로그인', 'btnLogin')
@@ -56,7 +56,7 @@ class MotionStarter:
                 MotionStarter.login_click('로그인', 'btnLogin')
                 time.sleep(1)
                 motion_app.connect(
-                    path="C:\\Motion\\Motion_E\\Motion_E.exe")
+                    path="Motion_E.exe")
 
         except application.ProcessNotFoundError as e:
             print("앱 찾기 실패 :", e)
@@ -69,8 +69,6 @@ class MotionStarter:
                 print("최대 재시도 횟수에 도달했습니다. 프로그램을 종료합니다.")
         except application.AppStartError:
             print("앱 미설치 또는 앱 미존재")
-        except Exception as e:
-            print("알수없는 에러 발생")
 
 
 class DashBoard():
@@ -97,7 +95,7 @@ class DashBoard():
     def popup_view(search_name):
         DashBoard.search_user(search_name)
         DashBoard.register_btn = motion_window.child_window(
-            title="환자 등록 후 예약", control_type="Button")
+            title="환자 등록 후 예약", control_type="Button", first_only=True)
         DashBoard.register_btn.wait(wait_for='exists enabled', timeout=30)
         DashBoard.register_btn.click()
 
@@ -237,6 +235,7 @@ class DashBoard():
 
 class ProcessFunc():
     rad_box = None
+    retries = 0
 
     def main_process_func(start_sub_process_event, sub_process_done_event):
         DashBoard.user_save("자동화체크1", "01074417631",
@@ -258,14 +257,14 @@ class ProcessFunc():
         start_sub_process_event.clear()
 
     def sub_process_func(start_sub_process_event, sub_process_done_event, window_auto_id, btn_auto_id):
-        retries = 0
-        while retries <= MAX_RETRY:
+
+        while ProcessFunc.retries <= MAX_RETRY:
             try:
                 start_sub_process_event.wait()
                 registration_window = motion_app.window(
                     title=MotionStarter.version_search('고객등록'))
                 ProcessFunc.rad_box = registration_window.child_window(
-                    auto_id=window_auto_id)
+                    auto_id=window_auto_id, first_only=True)
                 ProcessFunc.rad_box.wait(wait_for='exists enabled', timeout=30)
                 rad_btn = ProcessFunc.rad_box.child_window(auto_id=btn_auto_id)
                 rad_btn.click()

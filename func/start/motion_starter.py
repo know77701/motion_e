@@ -45,7 +45,7 @@ class MotionStarter:
             else:
                 win32_app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
                 time.sleep(1)
-                MotionStarter.login_click('로그인', 'btnLogin')
+                MotionStarter.login_click(win32_app, '로그인', 'btnLogin')
                 time.sleep(1)
                 motion_app.connect(
                     path="C:\\Motion\\Motion_E\\Motion_E.exe")
@@ -61,5 +61,3 @@ class MotionStarter:
                 print("최대 재시도 횟수에 도달했습니다. 프로그램을 종료합니다.")
         except application.AppStartError:
             print("앱 미설치 또는 앱 미존재")
-        except Exception as e:
-            print("알수없는 에러 발생")
