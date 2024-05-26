@@ -282,17 +282,6 @@ class ProcessFunc():
                 retries += 1
                 continue
 
-def modal_btn_click(index):
-    save_pen_chart_window = chart_window.child_window(
-        auto_id="PenChartAddFrom")
-    for _ in range(index):
-        save_popup = save_pen_chart_window.child_window(
-            auto_id="RadMessageBox")
-        save_popup_btn = save_popup.child_window(auto_id="radButton1")
-        save_popup_btn.click()
-        time.sleep(1)
-
-
 
 if not is_admin():
     ctypes.windll.shell32.ShellExecuteW(
