@@ -1,14 +1,22 @@
+from PIL import ImageGrab
+from functools import partial
 from pywinauto import application, Desktop, keyboard, findwindows
 import time
 import ctypes
 import sys
+import os
 import multiprocessing
-import random
 
 
 MAX_RETRY = 3
+screenshot_save_dir = "fail" 
 
-
+def winodw_screen_shot(save_file_name):
+    ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
+    screenshot_path = os.path.join(screenshot_save_dir, save_file_name)
+    save_image = ImageGrab.grab()
+    save_image.save(screenshot_path)
+    
 def is_admin():
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
@@ -108,7 +116,7 @@ class MotionStarter:
             print("앱 미설치 또는 앱 미존재")
 
 
-class DashBoard():
+class DashBoard:
     @staticmethod
     def searchUser(searchName):
         serach_window = motion_window.child_window(
@@ -199,7 +207,6 @@ class DashBoard():
         new_process(registration_window, '고객등록',
                     'radButton1', 'btnSaveAcpt')
 
-    # 전화번호 까지 입력케이스
     def popup_user_save(serach_name, phone_number):
         try:
             DashBoard.text_edit_popup(serach_name, phone_number)
@@ -222,7 +229,7 @@ class DashBoard():
     #         DashBoard.popup_view(serach_name)
     #         DashBoard.text_edit_popup(serach_name)
 
-    #         new_process(registration_window, '고객등록',
+            # new_process(registration_window, '고객등록',
     #                     'radButton1', 'btnSave')
 
     #     except Exception as e:
@@ -262,6 +269,17 @@ class Notice:
         except Exception as e:
             print('공지사항 삭제 실패: ', e)
 
+def modal_btn_click(index):
+    save_pen_chart_window = chart_window.child_window(
+        auto_id="PenChartAddFrom")
+    for _ in range(index):
+        save_popup = save_pen_chart_window.child_window(
+            auto_id="RadMessageBox")
+        save_popup_btn = save_popup.child_window(auto_id="radButton1")
+        save_popup_btn.click()
+        time.sleep(1)
+
+
 
 # 관리자 권한
 if not is_admin():
@@ -271,7 +289,17 @@ if not is_admin():
 
 win32_app = application.Application(backend='win32')
 MotionApp = application.Application(backend='uia')
-
 MotionStarter.appConnect()
 motion_window = MotionApp.window(
     title=MotionStarter.VersionSearch('모션.ver'))
+def main():
+    print("테스트")
+if __name__ == '__main__':
+    quit_event = multiprocessing.Event()
+    main_process = multiprocessing.Process(target=main,args=())
+    sub_process = multiprocessing.Process(target=modal_btn_click,args=3)
+    main_process.start()
+    
+    
+    
+    
