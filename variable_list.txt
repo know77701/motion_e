@@ -1,5 +1,0 @@
-환자차트_auto_id = tBeautyChartForm
-
-
-
-메모_class_name = Chrome_WidgetWin_0
