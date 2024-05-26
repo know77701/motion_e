@@ -212,7 +212,6 @@ def main():
             acpt_list = motion_window.child_window(
             auto_id="acpt-list", control_type="List")
 
-            print(acpt_list.children())
             list_items = acpt_list.children(control_type="ListItem")
             print(f"접수카드 개수: {len(list_items)}")
             for _ in range(list_items):

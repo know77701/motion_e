@@ -1,12 +1,21 @@
-from pywinauto import application, Desktop, keyboard
+from PIL import ImageGrab
+from functools import partial
+from pywinauto import application, Desktop, keyboard, findwindows
 import time
 import ctypes
 import sys
+import os
 import multiprocessing
 
 MAX_RETRY = 3
+screenshot_save_dir = "fail" 
 
-
+def winodw_screen_shot(save_file_name):
+    ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
+    screenshot_path = os.path.join(screenshot_save_dir, save_file_name)
+    save_image = ImageGrab.grab()
+    save_image.save(screenshot_path)
+    
 def is_admin():
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
@@ -209,10 +218,8 @@ class DashBoard():
         for i in range(len(list_items)):
             item = list_items[i]
             child_elements = item.children()
-
             for child in child_elements:
                 compare_number = child.element_info.name
-
                 if compare_number == chart_number:
                     print(f"접수확인: {compare_number}")
                     break
