@@ -105,7 +105,7 @@ class DashBoard():
     sec_mobile_edit3 = None
     
     
-    def notice_create():
+    def notice_create(motion_window):
         try:
             motion_window.child_window(auto_id='notice-content',control_type='Edit').type_keys('TEST{ENTER}')
             print("공지등록 완료")
@@ -114,7 +114,7 @@ class DashBoard():
             keyboard.send_keys('{F5}')
             print("공지등록 실패")
             
-    def notice_delete():
+    def notice_delete(motion_window,motion_app):
         try:
             motion_window.child_window(title='닫기',control_type='Button',found_index=0).click()
             time.sleep(2)
@@ -337,9 +337,9 @@ class ProcessFunc():
         # start_sub_process_event.clear()
 
         print(1)
-        DashBoard.notice_create()
+        DashBoard.notice_create(motion_window)
         time.sleep(1)
-        DashBoard.notice_delete()
+        DashBoard.notice_delete(motion_window, motion_app)
         time.sleep(1)
         
 
