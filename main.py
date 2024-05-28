@@ -103,6 +103,28 @@ class DashBoard():
     edit_window = None
     fst_mobile_edit2 = None
     sec_mobile_edit3 = None
+    
+    
+    def notice_create():
+        try:
+            motion_window.child_window(auto_id='notice-content',control_type='Edit').type_keys('TEST{ENTER}')
+            print("공지등록 완료")
+            time.sleep(3)
+        except Exception as err:
+            keyboard.send_keys('{F5}')
+            print("공지등록 실패")
+            
+    def notice_delete():
+        try:
+            motion_window.child_window(title='닫기',control_type='Button',found_index=0).click()
+            time.sleep(2)
+
+            rad = motion_app.window(auto_id="RadMessageBox")             
+            radBtn = rad.child_window(auto_id="radButton1", control_type="Button")
+            radBtn.click()
+            print("공지사항 삭제 성공")
+        except Exception as err:
+            print("공지사항 삭제 실패",err)
 
     @staticmethod
     def search_user(motion_window,search_name):
@@ -282,19 +304,20 @@ class DashBoard():
             print(web_window.element_info)
         except TimeoutError as e :
             print("타임 아웃 : ", e)
-            return
-                
-            
+            return     
+
 class ProcessFunc():
     rad_box = None
     retries = 0
 
     def main_process_func(start_sub_process_event, sub_process_done_event):
+
         win32_app = application.Application(backend='win32')
         motion_app = application.Application(backend='uia')
         MotionStarter.app_connect(win32_app, motion_app)
         motion_window = motion_app.window(title=MotionStarter.version_search('모션.ver'))
         
+
         # DashBoard.user_save("자동화체크1", "01074417631",
         #                     start_sub_process_event, sub_process_done_event, "btnSave")
         # # sub process unset
@@ -312,8 +335,17 @@ class ProcessFunc():
         #                              start_sub_process_event, sub_process_done_event, "btnSaveAcpt")
         # sub_process_done_event.clear()
         # start_sub_process_event.clear()
+
+        print(1)
+        DashBoard.notice_create()
+        time.sleep(1)
+        DashBoard.notice_delete()
+        time.sleep(1)
+        
+
         
         DashBoard.receipt_cancel(motion_window,"0000002351")
+
 
     def sub_process_func(start_sub_process_event, sub_process_done_event, window_auto_id, btn_auto_id):
         win32_app = application.Application(backend='win32')
