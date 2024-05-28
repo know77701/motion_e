@@ -42,7 +42,7 @@ class MotionStarter():
                 window_screen_shot("version_search_fail.jpg")
 
     @staticmethod
-    def login_click(title, id):
+    def login_click(win32_app, title, id):
         try:
             login_window = win32_app.window(title=title)
             login_window.child_window(auto_id=id).click()
@@ -51,32 +51,32 @@ class MotionStarter():
             window_screen_shot("login_click_fail.jpg")
 
     @staticmethod
-    def app_title_connect(title, btnName):
+    def app_title_connect(win32_app, motion_app, title, btnName):
         try:
             win32_app.connect(path="Motion_E.exe")
-            MotionStarter.login_click(title, btnName)
+            MotionStarter.login_click(win32_app,title, btnName)
             win32_app.kill()
             time.sleep(5)
             motion_app.connect(path="Motion_E.exe")
         except Exception as e:
-            print("타이틀 찾기 실패")
+            print("타이틀 찾기 실패 : ", e)
             window_screen_shot("app_title_connect_fail.jpg")
 
     @staticmethod
-    def app_connect(retries=0):
+    def app_connect(win32_app,motion_app,retries=0):
         try:
             if MotionStarter.version_search('모션.ver'):
                 motion_app.connect(
                     path="Motion_E.exe")
                 print('기존 앱 연결')
             elif MotionStarter.version_search('로그인'):
-                MotionStarter.app_title_connect('로그인', 'btnLogin')
+                MotionStarter.app_title_connect(win32_app,motion_app,'로그인', 'btnLogin')
                 print('로그인 성공')
             else:
                 win32_app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
                 time.sleep(1)
-                MotionStarter.login_click('로그인', 'btnLogin')
-                time.sleep(1)
+                MotionStarter.login_click(win32_app, '로그인', 'btnLogin')
+                time.sleep(2)
                 motion_app.connect(
                     path="Motion_E.exe")
 
@@ -86,8 +86,7 @@ class MotionStarter():
             if retries < MAX_RETRY:
                 retries += 1
                 print(f"재시도 횟수: {retries}")
-                win32_app.start("C:\\Motion\\Motion_E\\Motion_E.exe")
-                MotionStarter.app_connect(retries)
+                MotionStarter.app_connect(win32_app,motion_app,retries)
             else:
                 print("최대 재시도 횟수에 도달했습니다. 프로그램을 종료합니다.")
         except application.AppStartError:
@@ -106,7 +105,7 @@ class DashBoard():
     sec_mobile_edit3 = None
 
     @staticmethod
-    def search_user(search_name):
+    def search_user(motion_window,search_name):
         DashBoard.search_window = motion_window.child_window(
             auto_id="srch-val",  control_type="Edit")
         DashBoard.search_window.set_edit_text("")
@@ -115,15 +114,15 @@ class DashBoard():
             title="검색", control_type="Button")
         DashBoard.search_btn.click()
 
-    def popup_view(search_name):
+    def popup_view(motion_window, search_name):
         DashBoard.search_user(search_name)
         DashBoard.register_btn = motion_window.child_window(
             title="환자 등록 후 예약", control_type="Button", first_only=True)
         DashBoard.register_btn.wait(wait_for='exists enabled', timeout=30)
         DashBoard.register_btn.click()
 
-    def text_edit_popup(serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id):
-        DashBoard.popup_view(serach_name)
+    def text_edit_popup(motion_window, motion_app,serach_name, phone_number, start_sub_process_event, sub_process_done_eventm,btn_auto_id):
+        DashBoard.popup_view(motion_window, serach_name)
         registration_window = motion_app.window(
             title=MotionStarter.version_search('고객등록'))
         edit_window = registration_window.child_window(
@@ -147,14 +146,14 @@ class DashBoard():
                     DashBoard.fst_mobile_edit2.set_edit_text(phone_number[1:4])
                     DashBoard.sec_mobile_edit3.set_edit_text(phone_number[4:8])
         save_btn = registration_window.child_window(
-            control_type="Button", auto_id="btn_auto_id")
+            control_type="Button", auto_id=btn_auto_id)
         start_sub_process_event.set()
         save_btn.click()
         sub_process_done_event.wait()
 
-    def save_receipt_popup(serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id):
+    def save_receipt_popup(motion_window, motion_app, serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id):
         try:
-            DashBoard.text_edit_popup(
+            DashBoard.text_edit_popup(motion_window, motion_app,
                 serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id)
             receipt_window = motion_app.window(
                 title=MotionStarter.version_search('접수'))
@@ -192,9 +191,9 @@ class DashBoard():
                 close_btn.click()
                 print(e)
 
-    def save_reserve_popup(serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id):
+    def save_reserve_popup(motion_window, motion_app, serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id):
         try:
-            DashBoard.text_edit_popup(
+            DashBoard.text_edit_popup(motion_window, motion_app,
                 serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id)
             time.sleep(1)
 
@@ -211,9 +210,9 @@ class DashBoard():
                 dashboard_menu = top_menu.child_window(title="Dashboard")
                 dashboard_menu.click_input()
 
-    def user_save(serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id):
+    def user_save(motion_window, motion_app,serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id):
         try:
-            DashBoard.text_edit_popup(
+            DashBoard.text_edit_popup(motion_window, motion_app,
                 serach_name, phone_number, start_sub_process_event, sub_process_done_event, btn_auto_id)
             time.sleep(1)
 
@@ -228,7 +227,7 @@ class DashBoard():
                 close_btn.click()
             keyboard.send_keys('{F5}')
 
-    def receipt_check(chart_number):
+    def receipt_check(motion_window,chart_number):
         acpt_list = motion_window.child_window(
             auto_id="acpt-list", control_type="List")
         list_items = acpt_list.children(control_type="ListItem")
@@ -241,7 +240,7 @@ class DashBoard():
                     print(f"접수확인: {compare_number}")
                     break
 
-    def reserve_check(chart_number):
+    def reserve_check(motion_window, chart_number):
         rsrv_list = motion_window.child_window(
             auto_id="rsrv-list", control_type="List")
         list_items = rsrv_list.children(control_type="ListItem")
@@ -256,26 +255,46 @@ class DashBoard():
                     print(f"예약 확인: {compare_number}")
                     break
                 
-    def receipt_cancel(chart_number):
-        acpt_list = motion_window.child_window(
-            auto_id="acpt-list", control_type="List")
-        list_items = acpt_list.children(control_type="ListItem")
-        for i in range(len(list_items)):
-            item = list_items[i]
-            child_elements = item.children()
-            for child in child_elements:
-                compare_number = child.element_info.name
-                print(child.element_info.type)
-                if compare_number == chart_number:
-                    print(f"접수확인: {compare_number}")
-                    if type(child).__name__ == "닫기":
-                        child.click()
+    def receipt_cancel(motion_window, chart_number):
+        try:
+            acpt_list = motion_window.child_window(
+                auto_id="acpt-list", control_type="List")
+            acpt_list.wait(wait_for='exists enabled', timeout=30)
+            
+            list_item = acpt_list.children(control_type="ListItem")
+            found_chat_number = False
+            
+            for item in list_item:
+                child_elements = item.children()
+                for child in child_elements:
+                    compare_number = child.element_info.name
+                    if compare_number == chart_number:
+                        found_chat_number = True
                         break
+                if found_chat_number:
+                    for child in child_elements:
+                        if child.element_info.name == "닫기":
+                            child.click()
+            
+            motion_web_window = motion_window.child_window(class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            motion_web_window.wait(wait_for='exists enabled', timeout=30)
+            web_window = motion_web_window.children()
+            print(web_window.element_info)
+        except TimeoutError as e :
+            print("타임 아웃 : ", e)
+            return
+                
+            
 class ProcessFunc():
     rad_box = None
     retries = 0
 
     def main_process_func(start_sub_process_event, sub_process_done_event):
+        win32_app = application.Application(backend='win32')
+        motion_app = application.Application(backend='uia')
+        MotionStarter.app_connect(win32_app, motion_app)
+        motion_window = motion_app.window(title=MotionStarter.version_search('모션.ver'))
+        
         # DashBoard.user_save("자동화체크1", "01074417631",
         #                     start_sub_process_event, sub_process_done_event, "btnSave")
         # # sub process unset
@@ -293,9 +312,13 @@ class ProcessFunc():
         #                              start_sub_process_event, sub_process_done_event, "btnSaveAcpt")
         # sub_process_done_event.clear()
         # start_sub_process_event.clear()
-        DashBoard.receipt_cancel("0000002351")
+        
+        DashBoard.receipt_cancel(motion_window,"0000002351")
 
     def sub_process_func(start_sub_process_event, sub_process_done_event, window_auto_id, btn_auto_id):
+        win32_app = application.Application(backend='win32')
+        motion_app = application.Application(backend='uia')
+        MotionStarter.app_connect(win32_app, motion_app)
 
         while ProcessFunc.retries <= MAX_RETRY:
             try:
@@ -321,10 +344,7 @@ if not is_admin():
     sys.exit()
 
 
-win32_app = application.Application(backend='win32')
-motion_app = application.Application(backend='uia')
-MotionStarter.app_connect()
-motion_window = motion_app.window(title=MotionStarter.version_search('모션.ver'))
+
 
 if __name__ == "__main__":
 
