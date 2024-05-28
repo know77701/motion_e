@@ -238,6 +238,27 @@ class DashBoard():
                 if compare_number == chart_number:
                     print(f"예약 확인: {compare_number}")
                     break
+                
+    def notice_create():
+        try:
+            motion_window.child_window(auto_id='notice-content',control_type='Edit').type_keys('TEST{ENTER}')
+            print("공지등록 완료")
+            time.sleep(3)
+        except Exception as err:
+            keyboard.send_keys('{F5}')
+            print("공지등록 실패")
+            
+    def notice_delete():
+        try:
+            motion_window.child_window(title='닫기',control_type='Button',found_index=0).click()
+            time.sleep(2)
+
+            rad = motion_app.window(auto_id="RadMessageBox")             
+            radBtn = rad.child_window(auto_id="radButton1", control_type="Button")
+            radBtn.click()
+            print("공지사항 삭제 성공")
+        except Exception as err:
+            print("공지사항 삭제 실패",err)
 
 
 class ProcessFunc():
@@ -245,23 +266,29 @@ class ProcessFunc():
     retries = 0
 
     def main_process_func(start_sub_process_event, sub_process_done_event):
-        DashBoard.user_save("자동화체크1", "01074417631",
-                            start_sub_process_event, sub_process_done_event, "btnSave")
-        # sub process unset
-        sub_process_done_event.clear()
-        start_sub_process_event.clear()
-        time.sleep(1)
+        # DashBoard.user_save("자동화체크1", "01074417631",
+        #                     start_sub_process_event, sub_process_done_event, "btnSave")
+        # # sub process unset
+        # sub_process_done_event.clear()
+        # start_sub_process_event.clear()
+        # time.sleep(1)
 
-        DashBoard.save_reserve_popup("자동화체크2", "01074417631",
-                                     start_sub_process_event, sub_process_done_event, "btnSaveRsrv")
-        sub_process_done_event.clear()
-        start_sub_process_event.clear()
-        time.sleep(1)
+        # DashBoard.save_reserve_popup("자동화체크2", "01074417631",
+        #                              start_sub_process_event, sub_process_done_event, "btnSaveRsrv")
+        # sub_process_done_event.clear()
+        # start_sub_process_event.clear()
+        # time.sleep(1)
 
-        DashBoard.save_receipt_popup("자동화체크3", "01074417631",
-                                     start_sub_process_event, sub_process_done_event, "btnSaveAcpt")
-        sub_process_done_event.clear()
-        start_sub_process_event.clear()
+        # DashBoard.save_receipt_popup("자동화체크3", "01074417631",
+        #                              start_sub_process_event, sub_process_done_event, "btnSaveAcpt")
+        # sub_process_done_event.clear()
+        # start_sub_process_event.clear()
+        print(1)
+        DashBoard.notice_create()
+        time.sleep(1)
+        DashBoard.notice_delete()
+        time.sleep(1)
+        
 
     def sub_process_func(start_sub_process_event, sub_process_done_event, window_auto_id, btn_auto_id):
 
