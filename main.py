@@ -107,10 +107,7 @@ class DashBoard():
     web_window = None
     acpt_list = None
     
-<<<<<<< HEAD
-=======
-    
->>>>>>> 2af5bb818b5d7812e1bce921de126b9e87cc32ab
+
     def notice_create(motion_window):
         try:
             motion_window.child_window(auto_id='notice-content',control_type='Edit').type_keys('TEST{ENTER}')
@@ -271,6 +268,7 @@ class DashBoard():
                 compare_number = child.element_info.name
                 if compare_number == chart_number:
                     print(f"접수확인: {compare_number}")
+                    chart_number.click_input()
                     break
 
     def reserve_check(motion_window, chart_number):
@@ -286,6 +284,7 @@ class DashBoard():
 
                 if compare_number == chart_number:
                     print(f"예약 확인: {compare_number}")
+                    chart_number.click_input()
                     break
                 
     def user_card_cancel(motion_window, chart_number, auto_id):
@@ -352,27 +351,10 @@ class DashBoard():
             cancel_popup = DashBoard.motion_web_window.children()
             DashBoard.popup_cancle_action(cancel_popup, "예약을 취소 하시겠습니까?")
 
-            # rsrv_cancle_Group = DashBoard.motion_web_window.child_window(auto_id="cancel_rsrvD", control_type="Group")
-            # rsrv_cancle_Group.wiat(timeout=20,)
-            # btn_group = rsrv_cancle_Group.child_window(auto_id="md_reasonD", control_type="Group")
-            # cancle_btn = btn_group.child_window(auto_id="saved_cancelD", control_type="Button")
-            
-            # cancle_btn.click()
-            # DashBoard.web_window = DashBoard.motion_web_window.children()
-            # print(DashBoard.web_window)
-            # for wrapper in DashBoard.web_window:
-            #     if wrapper.element_info.name == "접수를 취소 하시겠습니까? (접수취소는 예약데이터가 없을경우 접수정보가 삭제됩니다)":
-            #         popup = wrapper.children()
-            #         for child in popup:
-            #             if child.element_info.control_type == 'Group':
-            #                 fr_child = child.children()
-            #                 for child in fr_child:
-            #                     if child.element_info.name == "예" and child.element_info.control_type == 'Button':
-            #                         child.click()
         except TimeoutError as e :
             print("타임 아웃 : ", e)
             return     
-
+    
 class ProcessFunc():
     rad_box = None
     retries = 0
@@ -403,20 +385,12 @@ class ProcessFunc():
         # sub_process_done_event.clear()
         # start_sub_process_event.clear()
 
-<<<<<<< HEAD
         # print(1)
         # DashBoard.notice_create(motion_window)
         # time.sleep(1)
         # DashBoard.notice_delete(motion_window, motion_app)
         # time.sleep(1)
-=======
-        print(1)
-        DashBoard.notice_create(motion_window)
-        time.sleep(1)
-        DashBoard.notice_delete(motion_window, motion_app)
-        time.sleep(1)
         
->>>>>>> 2af5bb818b5d7812e1bce921de126b9e87cc32ab
 
         DashBoard.reserve_cancel(motion_window,"0000002347")
 
