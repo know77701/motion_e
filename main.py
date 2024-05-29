@@ -107,6 +107,10 @@ class DashBoard():
     web_window = None
     acpt_list = None
     
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 2af5bb818b5d7812e1bce921de126b9e87cc32ab
     def notice_create(motion_window):
         try:
             motion_window.child_window(auto_id='notice-content',control_type='Edit').type_keys('TEST{ENTER}')
@@ -399,11 +403,20 @@ class ProcessFunc():
         # sub_process_done_event.clear()
         # start_sub_process_event.clear()
 
+<<<<<<< HEAD
         # print(1)
         # DashBoard.notice_create(motion_window)
         # time.sleep(1)
         # DashBoard.notice_delete(motion_window, motion_app)
         # time.sleep(1)
+=======
+        print(1)
+        DashBoard.notice_create(motion_window)
+        time.sleep(1)
+        DashBoard.notice_delete(motion_window, motion_app)
+        time.sleep(1)
+        
+>>>>>>> 2af5bb818b5d7812e1bce921de126b9e87cc32ab
 
         DashBoard.reserve_cancel(motion_window,"0000002347")
 
