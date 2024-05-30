@@ -6,7 +6,7 @@ import time
 import ctypes
 import sys
 import os
-
+import random
 
 MAX_RETRY = 3
 screenshot_save_dir = "fail"
@@ -325,6 +325,7 @@ class DashBoard():
                             for child in fr_child:
                                 if child.element_info.name == "예" and child.element_info.control_type == 'Button':
                                     child.click()
+                                    break
         except Exception as e:
             print(window_name)
 
@@ -371,19 +372,60 @@ class DashBoard():
         for child in parent_child:
             if child.element_info.control_type == "Document":
                 document_list.append(child)
-        test = document_list[0]
-        child_list = test.children()
+                
+        document_new_list = document_list[0]
+        child_list = document_new_list.children()
+        
         for wrapper in child_list:
             if wrapper.element_info.control_type == "List":
                 wrapper_item = wrapper.children()
                 for list_items in wrapper_item:
                     items =  list_items.children()
                     for item in items:
-                        if item.element_info.name == chat_number:
+                        if chat_number in item.element_info.name :
                             for item_value in items:
                                 if item_value.element_info.name == btn_title and item_value.element_info.control_type == "Button":
                                     item_value.click()
-    
+                                    break
+                                    
+    def reserve(motion_window, chat_number, btn_title):
+        # DashBoard.search_btn_click(motion_window, chat_number, btn_title)
+        DashBoard.motion_web_window = motion_window.child_window(class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+        parent_child = DashBoard.motion_web_window.children()
+        document_list = [];
+        for child in parent_child:
+            if child.element_info.control_type == "Document":
+                document_list.append(child)
+        document_new_list = document_list[2]
+        child_list = document_new_list.children()
+        fr_combo = []
+        for list in child_list:
+            if list.element_info.control_type == "ComboBox":
+                fr_combo = list
+                break
+        fr_combo.click_input()
+        fr_combo_items = fr_combo.children()
+        for combo_items in fr_combo_items:
+            item_children = combo_items.children()
+            print(item_children)
+        # item = fr_combo_items.children()
+        # print(item)
+        
+                
+            
+         
+        # for wrapper in child_list:
+        #     if wrapper.element_info.control_type == "List":
+        #         wrapper_item = wrapper.children()
+        #         for list_items in wrapper_item:
+        #             items =  list_items.children()
+        #             for item in items:
+        #                 if item.element_info.name in chat_number:
+        #                     for item_value in items:
+        #                         if item_value.element_info.name == btn_title and item_value.element_info.control_type == "Button":
+        #                             item_value.click()
+        #                             break
+        
     
 class ProcessFunc():
     rad_box = None
@@ -400,7 +442,7 @@ class ProcessFunc():
         start_sub_process_event.set()
         sub_process_done_event.wait()
 
-        DashBoard.search_btn_click(motion_window, '0000002351','접수하기')
+        DashBoard.reserve(motion_window, '2351','예약하기')
 
 
     def sub_process_func(start_sub_process_event, sub_process_done_event, window_auto_id, btn_auto_id):
