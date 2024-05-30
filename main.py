@@ -380,23 +380,9 @@ class DashBoard():
                     items =  list_items.children()
                     for item in items:
                         if item.element_info.name == chat_number:
-                            print("여긴")
                             for item_value in items:
                                 if item_value.element_info.name == btn_title and item_value.element_info.control_type == "Button":
-                                    print("되나")
                                     item_value.click()
-                            
-                            
-                            
-                    
-                
-
-
-        
-        # parent_child.wait(wait_for='exists enabled', timeout=30)
-        # list_child = parent_child.child_window(auto_id="search-list", control_type="list")
-        # childs = list_child.children()
-        return
     
     
 class ProcessFunc():
