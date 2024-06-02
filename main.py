@@ -25,7 +25,7 @@ class ProcessFunc():
         start_sub_process_event.set()
         sub_process_done_event.wait()
 
-        DashBoard.reserve(motion_window, "2351", "예약하기")
+        DashBoard.receipt_check(motion_window, "0000002351")
 
     def sub_process_func(start_sub_process_event, sub_process_done_event, window_auto_id, btn_auto_id):
         start_sub_process_event.wait()

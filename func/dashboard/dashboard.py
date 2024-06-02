@@ -184,55 +184,78 @@ class DashBoard():
             keyboard.send_keys('{F5}')
 
     def receipt_check(motion_window, chart_number):
-        acpt_list = motion_window.child_window(
-            auto_id="acpt-list", control_type="List")
-        list_items = acpt_list.children(control_type="ListItem")
-        for i in range(len(list_items)):
-            item = list_items[i]
+        motion_web_window = motion_window.child_window(
+            class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+        web_window = motion_web_window.children()
+        doc_list = []
+        for child in web_window:
+            if child.element_info.control_type == 'Document':
+                doc_list.append(child)
+
+        list_wrapper = doc_list[3].children(control_type="List")
+
+        for item in list_wrapper:
             child_elements = item.children()
-            for child in child_elements:
-                compare_number = child.element_info.name
-                if compare_number == chart_number:
-                    print(f"접수확인: {compare_number}")
-                    chart_number.click_input()
-                    break
+            for list_item in child_elements:
+                items = list_item.children()
+                for items_child in items:
+                    compare_number = items_child.element_info.name
+                    if chart_number in compare_number:
+                        print(f"접수 확인: {compare_number}")
+                        items_child.click_input()
+                        break
 
     def reserve_check(motion_window, chart_number):
-        rsrv_list = motion_window.child_window(
-            auto_id="rsrv-list", control_type="List")
-        list_items = rsrv_list.children(control_type="ListItem")
-        for i in range(len(list_items)):
-            item = list_items[i]
+        motion_web_window = motion_window.child_window(
+            class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+        web_window = motion_web_window.children()
+        doc_list = []
+        for child in web_window:
+            if child.element_info.control_type == 'Document':
+                doc_list.append(child)
+
+        list_wrapper = doc_list[2].children(control_type="List")
+
+        for item in list_wrapper:
             child_elements = item.children()
+            for list_item in child_elements:
+                items = list_item.children()
+                for items_child in items:
+                    compare_number = items_child.element_info.name
+                    if chart_number in compare_number:
+                        print(f"예약 확인: {compare_number}")
+                        items_child.click_input()
+                        break
 
-            for child in child_elements:
-                compare_number = child.element_info.name
-                if compare_number == chart_number:
-                    print(f"예약 확인: {compare_number}")
-                    child.click_input()
-                    break
-
-    def user_card_cancel(motion_window, chart_number, auto_id):
+    # index_number 예약취소 = 2 / 접수취소 = 3
+    def user_card_cancel(motion_window, chart_number, index_number):
         try:
-            card_list = motion_window.child_window(
-                auto_id=auto_id, control_type="List")
-            card_list.wait(wait_for='exists enabled', timeout=20)
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            web_window = motion_web_window.children()
+            doc_list = []
+            for child in web_window:
+                if child.element_info.control_type == 'Document':
+                    doc_list.append(child)
 
-            list_item = card_list.children(control_type="ListItem")
+            list_wrapper = doc_list[index_number].children(control_type="List")
             found_chat_number = False
 
-            for item in list_item:
+            for item in list_wrapper:
                 child_elements = item.children()
-                for child in child_elements:
-                    compare_number = child.element_info.name
-                    if compare_number == chart_number:
-                        found_chat_number = True
-                        break
-                if found_chat_number:
-                    for child in child_elements:
-                        if compare_number == chart_number:
-                            if child.element_info.name == "닫기":
-                                child.click()
+                for list_item in child_elements:
+                    items = list_item.children()
+                    for items_child in items:
+                        compare_number = items_child.element_info.name
+                        if chart_number in compare_number:
+                            found_chat_number = True
+                            break
+                    if found_chat_number:
+                        for item in items:
+                            if chart_number in compare_number:
+                                if item.element_info.name == "닫기":
+                                    item.click()
+                                    break
         except Exception as e:
             window_screen_shot("cancle_fail.jpg")
             print(e)
@@ -254,8 +277,9 @@ class DashBoard():
 
     def receipt_cancel(motion_window, chart_number):
         try:
+            # 접수취소 index_number 3 고정
             DashBoard.user_card_cancel(
-                motion_window, chart_number, "acpt-list")
+                motion_window, chart_number, 3)
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             motion_web_window.wait(
@@ -269,12 +293,10 @@ class DashBoard():
 
     def reserve_cancel(motion_window, chart_number):
         try:
-            DashBoard.user_card_cancel(
-                motion_window, chart_number, "rsrv-list")
+            # 예약취소 index_number 2 고정
+            DashBoard.user_card_cancel(motion_window, chart_number, 2)
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-            motion_web_window.wait(
-                wait_for='exists enabled', timeout=30)
             web_window = motion_web_window.children()
             for child in web_window:
                 if child.element_info.name == '저장' and child.element_info.control_type == 'Button':
@@ -314,7 +336,7 @@ class DashBoard():
                                     break
 
     def reserve(motion_window, chat_number, btn_title):
-        # DashBoard.search_btn_click(motion_window, chat_number, btn_title)
+        DashBoard.search_btn_click(motion_window, chat_number, btn_title)
         motion_web_window = motion_window.child_window(
             class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
         parent_child = motion_web_window.children()
@@ -325,28 +347,46 @@ class DashBoard():
         document_new_list = document_list[2]
         child_list = document_new_list.children()
         fr_combo = []
+        memo_list = []
+        btn_list = []
         for list in child_list:
             if list.element_info.control_type == "ComboBox":
-                fr_combo = list
-                break
-        fr_combo.click_input()
-        fr_combo_items = fr_combo.children()
+                fr_combo.append(list)
+            if list.element_info.control_type == "Edit":
+                memo_list.append(list)
+            if list.element_info.control_type == "Button":
+                btn_list.append(list)
+
+        fr_combo[0].click_input()
+        fr_combo_items = fr_combo[0].children()
+        filter_list = []
         for combo_items in fr_combo_items:
             item_children = combo_items.children()
             random_item = random.choice(item_children)
             print(random_item)
-                
+            for item in item_children:
+                name = item.element_info.name
+                if name == random_item.element_info.name:
+                    time.sleep(0.5)
+                    item.select()
+                    break
+                # item.set_focus()
+
+        # if filter_list:
+        #     random_item = random.choice(filter_list)
+        #     random_item.set_focus()
+        #     random_item.click_input()
+        # print(random_item)
+        # for i in item_children:
+        # item_children.click_input()
+        # if random_item.element_info.name != "시간":
+        # print("테스트")
+        # i.click_input()
+
         # item = fr_combo_items.children()
         # print(item)
 
-        # for wrapper in child_list:
-        #     if wrapper.element_info.control_type == "List":
-        #         wrapper_item = wrapper.children()
-        #         for list_items in wrapper_item:
-        #             items =  list_items.children()
-        #             for item in items:
-        #                 if item.element_info.name in chat_number:
-        #                     for item_value in items:
-        #                         if item_value.element_info.name == btn_title and item_value.element_info.control_type == "Button":
-        #                             item_value.click()
-        #                             break
+        # memo_list[4].set_text("예약메모 테스트")
+        # memo_list[5].set_text("전달메모 테스트")
+        # 예약버튼
+        # btn_list[0].click_input()
