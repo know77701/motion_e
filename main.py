@@ -25,7 +25,7 @@ class ProcessFunc():
         start_sub_process_event.set()
         sub_process_done_event.wait()
 
-        DashBoard.receipt_check(motion_window, "0000002351")
+        DashBoard.user_save(dto)
 
     def sub_process_func(start_sub_process_event, sub_process_done_event, window_auto_id, btn_auto_id):
         start_sub_process_event.wait()
@@ -41,7 +41,7 @@ class ProcessFunc():
                 registration_window = motion_app.window(
                     title=MotionStarter.version_search('고객등록'))
                 ProcessFunc.rad_box = registration_window.child_window(
-                    auto_id=window_auto_id, first_only=True)
+                    auto_id=window_auto_id)
                 ProcessFunc.rad_box.wait(wait_for='exists enabled', timeout=30)
                 rad_btn = ProcessFunc.rad_box.child_window(auto_id=btn_auto_id)
                 rad_btn.click()
