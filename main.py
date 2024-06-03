@@ -25,8 +25,8 @@ class ProcessFunc():
         MotionStarter.app_connect(win32_app, motion_app)
         motion_window = motion_app.window(
             title=MotionStarter.version_search('모션.ver'))
-        
-        dto = DashboardDto(motion_window, motion_app, "김퉤스트", "01074417631",
+
+        dto = DashboardDto(motion_window, motion_app, "자동화QA", "01074417631",
                            start_sub_process_event, sub_process_done_event, "")
         dto.start_sub_process_event.set()
         dto.sub_process_done_event.wait()
@@ -40,37 +40,31 @@ class ProcessFunc():
         MotionStarter.app_connect(win32_app, motion_app)
         sub_process_done_event.set()
         start_sub_process_event.clear()
+        start_sub_process_event.wait()
 
-        while ProcessFunc.retries <= MAX_RETRY:
-            try:
-                print(start_sub_process_event)
-                start_sub_process_event.wait()
-                print(start_sub_process_event)
-                print("테스트")
-                registration_window = motion_app.window(
-                    title=MotionStarter.version_search('고객등록'))
-                print(registration_window)
-                child_window = registration_window.children()
-                close_btn = None
-                print("여기왜안돌지")
-                for child in child_window:
-                    child_list = child.children()
-                    print(child_list)
-                    for item in child_list:
+        # while ProcessFunc.retries <= MAX_RETRY:
+        try:
+            registration_window = motion_app.window(
+                title=MotionStarter.version_search('고객등록'))
+            child_window = registration_window.children()
+            close_btn = None
+            for child in child_window:
+                child_list = child.children()
+                for items in child_list:
+                    for item in items.children():
                         if item.element_info.control_type == "Button" and item.element_info.name == "확인":
                             close_btn = item
-                            if item.element_info.control_type == "Text" and item.element_info.name == "입력한 고객과 동일한 고객 정보(이름, 휴대폰번호)가 존재합니다" or item.element_info.name == "이름을 입력하세요.":
-                                close_btn.click()
-                                raise
-                            if item.element_info.control_type == "Text" and item.element_info.name == "저장되었습니다.":
-                                close_btn.clikc()
-                                break
-                sub_process_done_event.set()
-                start_sub_process_event.clear()
-            except Exception as e:
-                print("서브 모듈 동작 실패 : ", e)
-                retries += 1
-                continue
+                            if item.element_info.name == "입력한 고객과 동일한 고객 정보(이름, 휴대폰번호)가 존재합니다" or item.element_info.name == "이름을 입력하세요.":
+                                print(item)
+            close_btn.click()
+            sub_process_done_event.set()
+            start_sub_process_event.clear()
+
+            start_sub_process_event.wait()
+        except Exception as e:
+            print("서브 모듈 동작 실패 : ", e)
+            retries += 1
+            # continue
 
 
 if __name__ == "__main__":

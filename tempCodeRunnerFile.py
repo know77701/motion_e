@@ -1,2 +1,2 @@
 
-        start_sub_process_event.clear()
+        DashBoard.save_receipt_popup(dto)

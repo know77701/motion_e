@@ -4,6 +4,8 @@ import time
 import random
 from func.dto.dto import DashboardDto
 
+retries = 0
+
 
 class DashBoard():
     """
@@ -23,9 +25,8 @@ class DashBoard():
         """
         DashBoard.notice_create(dto.motion_window)
         DashBoard.notice_delete(dto.motion_window, dto.motion_app)
-        
+
         DashBoard.user_save(dto)
-        
 
     def notice_create(motion_window):
         try:
@@ -102,6 +103,7 @@ class DashBoard():
         user_name.set_text(dto.search_name)
         sec_mobile_edit3 = edit_list[11]
         fst_mobile_edit2 = edit_list[13]
+
         match len(dto.phone_number):
             case 13:
                 fst_mobile_edit2.set_edit_text(
@@ -118,6 +120,7 @@ class DashBoard():
                     dto.phone_number[1:4])
                 sec_mobile_edit3.set_edit_text(
                     dto.phone_number[4:8])
+        # sub_process start
         dto.start_sub_process_event.set()
         save_btn.click()
         dto.sub_process_done_event.wait()
@@ -126,12 +129,14 @@ class DashBoard():
         try:
             dto.btn_title = "저장+접수"
             DashBoard.text_edit_popup(dto)
-            time.sleep(2)
+            print("여긴")
+            time.sleep(1)
             DashBoard.receipt(dto)
 
         except Exception as e:
             window_screen_shot("save_receipt_popup_fail.jpg")
             if MotionStarter.version_search('고객등록'):
+                print("왜안돌지")
                 registration_window = dto.motion_app.window(
                     title=MotionStarter.version_search('고객등록'))
                 close_btn = registration_window.child_window(
@@ -169,6 +174,7 @@ class DashBoard():
 
     def user_save(dto: DashboardDto):
         try:
+            print(dto)
             dto.btn_title = "저장"
             DashBoard.text_edit_popup(dto)
             time.sleep(1)
@@ -400,17 +406,19 @@ class DashBoard():
         # btn_list[0].click_input()
 
     def receipt(dto: DashboardDto):
+        time.sleep(3)
         receipt_window = dto.motion_app.window(
             title=MotionStarter.version_search('접수'))
 
-
+        print("테스트")
         receipt_list = receipt_window.children()
         fr_list = receipt_list[0].children()
         receipt_btn = None
         for child in fr_list:
             if child.element_info.control_type == "Button" and child.element_info.name == "접수":
-             receipt_btn = child
-        
+                receipt_btn = child
+
+        print("테스트2")
         sec_list = receipt_list[1].children()
         edit_list = []
         for wrapper in sec_list:
@@ -424,13 +432,13 @@ class DashBoard():
         dto.start_sub_process_event.set()
         receipt_btn.click()
         dto.sub_process_done_event.wait()
-        
+
         # reservation = cusm.child_window(auto_id="search-list")
 # reservation.child_window(title = "예약하기",found_index = 0).click()
 
-# time_check = cusm.child_window(auto_id="reservation")   
+# time_check = cusm.child_window(auto_id="reservation")
 # combo = time_check.child_window(control_type = "ComboBox",found_index = 0)
-# combo.click_input() 
+# combo.click_input()
 # combo_list = combo.child_window(control_type = "List")
 # post= combo_list.children()
 # for kkee in post :
