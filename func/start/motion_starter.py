@@ -39,7 +39,7 @@ class MotionStarter():
         try:
             win32_app.connect(path=MotionStarter.process_title)
             MotionStarter.login_click(win32_app, title, btnName)
-            win32_app.kill()
+            # win32_app.kill()
             time.sleep(5)
             motion_app.connect(path=MotionStarter.process_title)
         except Exception as e:

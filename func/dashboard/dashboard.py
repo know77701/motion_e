@@ -8,6 +8,25 @@ retries = 0
 
 
 class DashBoard():
+    """
+    Motion E 차트 대시보드 동작
+    """
+    def dashboard_start(dto: DashboardDto):
+        """
+        Args:
+            dto (DashboardDto): 
+            dto.motion_window = 모션 window 창
+            dto.motion_app = process connect
+            dto.search_name = 대시보드 검색 이름
+            dto.phone_number = 환자 핸드폰 번호(고객 등록 시)
+            dto.start_sub_process_event = 서브 프로세스 시작값
+            dto.sub_process_done_event = 서브 프로세스 종료값
+            dto.bnt_title = 신환 접수/예약/등록에 따라 변경되는 값
+        """
+        DashBoard.notice_create(dto.motion_window)
+        DashBoard.notice_delete(dto.motion_window, dto.motion_app)
+
+        DashBoard.user_save(dto)
 
     def notice_create(motion_window):
         try:
@@ -79,12 +98,12 @@ class DashBoard():
                                     edit_list.append(value)
                                 if value.element_info.control_type == "Button" and value.element_info.name == dto.btn_title:
                                     save_btn = value
-
-        time.sleep(2)
+        time.sleep(4)
         user_name = edit_list[19]
         user_name.set_text(dto.search_name)
         sec_mobile_edit3 = edit_list[11]
         fst_mobile_edit2 = edit_list[13]
+
         match len(dto.phone_number):
             case 13:
                 fst_mobile_edit2.set_edit_text(
@@ -101,6 +120,7 @@ class DashBoard():
                     dto.phone_number[1:4])
                 sec_mobile_edit3.set_edit_text(
                     dto.phone_number[4:8])
+        # sub_process start
         dto.start_sub_process_event.set()
         save_btn.click()
         dto.sub_process_done_event.wait()
@@ -109,31 +129,14 @@ class DashBoard():
         try:
             dto.btn_title = "저장+접수"
             DashBoard.text_edit_popup(dto)
-            receipt_window = dto.motion_app.window(
-                title=MotionStarter.version_search('접수'))
-
-            edit_field = receipt_window.child_window(auto_id="radPanel6")
-            receipt_btn = receipt_window.child_window(
-                auto_id="btnAcpt", control_type="Button")
-            receipt_memo = edit_field.child_window(control_type="Edit")
-            user_memo = edit_field.child_window(control_type="Edit")
-
-            receipt_memo.set_text("테스트")
-            user_memo.set_text("테스트")
-
-            dto.start_sub_process_event.set()
-            receipt_btn.click()
-            dto.sub_process_done_event.wait()
-
-            web_window = dto.motion_window.child_winodw(
-                title="Motion E web", control_type="Document")
-            acpt_list = web_window.child_window(
-                control_type="List", auto_id="acpt-list")
-            list_childs = acpt_list.children()
+            print("여긴")
+            time.sleep(1)
+            DashBoard.receipt(dto)
 
         except Exception as e:
             window_screen_shot("save_receipt_popup_fail.jpg")
             if MotionStarter.version_search('고객등록'):
+                print("왜안돌지")
                 registration_window = dto.motion_app.window(
                     title=MotionStarter.version_search('고객등록'))
                 close_btn = registration_window.child_window(
@@ -231,8 +234,12 @@ class DashBoard():
                         items_child.click_input()
                         break
 
-    # index_number 예약취소 = 2 / 접수취소 = 3
     def user_card_cancel(motion_window, chart_number, index_number):
+        """
+        Args
+            index_number - 리스트 하위 고정 값
+            - 예약취소 = 2 / 접수취소 = 3
+        """
         try:
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
@@ -265,6 +272,9 @@ class DashBoard():
             print(e)
 
     def popup_cancle_action(window_name, popup_text):
+        """
+        예약 취소 시 발생되는 팝업 동작
+        """
         try:
             for wrapper in window_name:
                 if wrapper.element_info.name == popup_text:
@@ -281,7 +291,6 @@ class DashBoard():
 
     def receipt_cancel(motion_window, chart_number):
         try:
-            # 접수취소 index_number 3 고정
             DashBoard.user_card_cancel(
                 motion_window, chart_number, 3)
             motion_web_window = motion_window.child_window(
@@ -297,7 +306,6 @@ class DashBoard():
 
     def reserve_cancel(motion_window, chart_number):
         try:
-            # 예약취소 index_number 2 고정
             DashBoard.user_card_cancel(motion_window, chart_number, 2)
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
@@ -314,6 +322,9 @@ class DashBoard():
             return
 
     def search_btn_click(motion_window, chat_number, btn_title):
+        """
+            btn_title (string): 예약하기 / 접수하기 텍스트 입력
+        """
         DashBoard.search_user(motion_window, chat_number)
         motion_web_window = motion_window.child_window(
             class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
@@ -371,7 +382,6 @@ class DashBoard():
             for item in item_children:
                 name = item.element_info.name
                 if name == random_item.element_info.name:
-                    time.sleep(0.5)
                     item.select()
                     break
                 # item.set_focus()
@@ -394,3 +404,49 @@ class DashBoard():
         # memo_list[5].set_text("전달메모 테스트")
         # 예약버튼
         # btn_list[0].click_input()
+
+    def receipt(dto: DashboardDto):
+        time.sleep(3)
+        receipt_window = dto.motion_app.window(
+            title=MotionStarter.version_search('접수'))
+
+        print("테스트")
+        receipt_list = receipt_window.children()
+        fr_list = receipt_list[0].children()
+        receipt_btn = None
+        for child in fr_list:
+            if child.element_info.control_type == "Button" and child.element_info.name == "접수":
+                receipt_btn = child
+
+        print("테스트2")
+        sec_list = receipt_list[1].children()
+        edit_list = []
+        for wrapper in sec_list:
+            item_list = wrapper.children()
+            for item in item_list:
+                if item.element_info.control_type == "Edit":
+                    edit_list.append(item)
+        edit_list[0].set_text("직원메모 입력")
+        edit_list[1].set_text("접수메모 입력")
+        print(dto.start_sub_process_event)
+        dto.start_sub_process_event.set()
+        receipt_btn.click()
+        dto.sub_process_done_event.wait()
+
+        # reservation = cusm.child_window(auto_id="search-list")
+# reservation.child_window(title = "예약하기",found_index = 0).click()
+
+# time_check = cusm.child_window(auto_id="reservation")
+# combo = time_check.child_window(control_type = "ComboBox",found_index = 0)
+# combo.click_input()
+# combo_list = combo.child_window(control_type = "List")
+# post= combo_list.children()
+# for kkee in post :
+#     print(kkee)
+#     ran_btn = random.choice(post)
+#     if kkee.element_info_name != "시간":
+#         kkee.click_input()
+
+#     # if rrdk.element_info.name != "시간":
+#     #     rrdk.click_input()
+#     #     break
