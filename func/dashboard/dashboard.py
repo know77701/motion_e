@@ -27,6 +27,7 @@ class DashBoard():
         DashBoard.notice_delete(dto.motion_window, dto.motion_app)
 
         DashBoard.user_save(dto)
+        
 
     def notice_create(motion_window):
         try:
@@ -85,6 +86,7 @@ class DashBoard():
         DashBoard.popup_view(dto.motion_window, dto.search_name)
         registration_window = dto.motion_app.window(
             title=MotionStarter.version_search('고객등록'))
+        print("text_edit_popup 1")
         window_list = registration_window.children()
         edit_list = []
         save_btn = None
@@ -98,12 +100,14 @@ class DashBoard():
                                     edit_list.append(value)
                                 if value.element_info.control_type == "Button" and value.element_info.name == dto.btn_title:
                                     save_btn = value
-        time.sleep(4)
+        print("text_edit_popup 2")
+        time.sleep(2)
+        print("text_edit_popup 3")
         user_name = edit_list[19]
         user_name.set_text(dto.search_name)
         sec_mobile_edit3 = edit_list[11]
         fst_mobile_edit2 = edit_list[13]
-
+        dto.start_sub_process_event.set()
         match len(dto.phone_number):
             case 13:
                 fst_mobile_edit2.set_edit_text(
@@ -120,8 +124,7 @@ class DashBoard():
                     dto.phone_number[1:4])
                 sec_mobile_edit3.set_edit_text(
                     dto.phone_number[4:8])
-        # sub_process start
-        dto.start_sub_process_event.set()
+       
         save_btn.click()
         dto.sub_process_done_event.wait()
 

@@ -20,3 +20,4 @@ def is_admin():
     except:
         window_screen_shot("login_click_fail")
         return False
+
