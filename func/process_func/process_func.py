@@ -21,7 +21,7 @@ class ProcessFunc():
             title=MotionStarter.version_search('모션.ver'))
 
         dto = DashboardDto(motion_window, motion_app, "QA7", "01074417631",
-                           start_sub_process_event, sub_process_done_event, "")
+                           start_sub_process_event, sub_process_done_event, "", "")
 
         # 서브프로세스 통신용
         dto.start_sub_process_event.set()
@@ -30,7 +30,7 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         # 여기서부터 시작
-        DashBoard.save_receipt_popup(dto)
+        DashBoard.user_save(dto)
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
