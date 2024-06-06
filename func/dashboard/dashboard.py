@@ -10,8 +10,8 @@ retries = 0
 class DashBoard():
     """
     Motion E 차트 대시보드 동작
-    
-    
+
+
     """
     def dashboard_start(dto: DashboardDto):
         """
@@ -29,7 +29,6 @@ class DashBoard():
         DashBoard.notice_delete(dto.motion_window, dto.motion_app)
 
         DashBoard.user_save(dto)
-        
 
     def notice_create(motion_window):
         try:
@@ -106,7 +105,7 @@ class DashBoard():
         user_name = edit_list[19]
         sec_mobile_edit3 = edit_list[11]
         fst_mobile_edit2 = edit_list[13]
-        
+
         match len(dto.phone_number):
             case 13:
                 fst_mobile_edit2.set_edit_text(
@@ -126,12 +125,14 @@ class DashBoard():
         user_name.set_text(dto.search_name)
         save_btn.click()
         dto.sub_process_done_event.wait()
+        print("sub_process close")
 
     def save_receipt_popup(dto: DashboardDto):
         try:
             dto.btn_title = "저장+접수"
             DashBoard.text_edit_popup(dto)
             time.sleep(1)
+            print("테스트")
             DashBoard.receipt(dto)
 
         except Exception as e:
@@ -406,7 +407,7 @@ class DashBoard():
         # btn_list[0].click_input()
 
     def receipt(dto: DashboardDto):
-        time.sleep(3)
+        time.sleep(2)
         dto.start_sub_process_event.set()
         receipt_window = dto.motion_app.window(
             title=MotionStarter.version_search('접수'))
