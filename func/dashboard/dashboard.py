@@ -1,4 +1,6 @@
-from pywinauto import keyboard
+from pywinauto import keyboard, findwindows
+from pywinauto.controls.uia_controls import EditWrapper, ButtonWrapper
+from pywinauto.controls.hwndwrapper import HwndWrapper
 from func.start.motion_starter import *
 import time
 import random
@@ -88,7 +90,7 @@ class DashBoard():
                 break
 
     def text_edit_popup(dto: DashboardDto):
-        # DashBoard.popup_view(dto.motion_window, dto.search_name)
+        DashBoard.popup_view(dto.motion_window, dto.search_name)
         registration_window = dto.motion_app.window(
             title=MotionStarter.version_search('고객등록'))
         window_list = registration_window.children()
@@ -102,8 +104,7 @@ class DashBoard():
                             for value in child_list.children():
                                 if value.element_info.control_type == "Edit":
                                     edit_list.append(value)
-                                # if value.element_info.control_type == "Button" and value.element_info.name == dto.btn_title:
-                                if value.element_info.control_type == "Button" and value.element_info.name == "저장":
+                                if value.element_info.control_type == "Button" and value.element_info.name == dto.btn_title:
                                     save_btn = value
         time.sleep(3)
         dto.start_sub_process_event.set()
@@ -164,7 +165,6 @@ class DashBoard():
         except:
             window_screen_shot("save_reserve_popup_fail.jpg")
             if MotionStarter.version_search('고객등록'):
-
                 receipt_window = dto.motion_app.window(
                     title=MotionStarter.version_search('고객등록'))
                 close_btn = receipt_window.child_window(
@@ -276,7 +276,7 @@ class DashBoard():
 
     def popup_cancle_action(window_name, popup_text):
         """
-        예약 취소 시 발생되는 팝업 동작
+            예약 취소 시 발생되는 팝업 동작
         """
         try:
             for wrapper in window_name:
@@ -346,16 +346,17 @@ class DashBoard():
                 for list_items in wrapper_item:
                     items = list_items.children()
                     for item in items:
-                        if chart_number in item.element_info.name:
-                            for item_value in items:
-                                # btn_title = 예약하기 / 접수하기
-                                if item_value.element_info.name == btn_title and item_value.element_info.control_type == "Button":
-                                    item_value.click()
-                                    break
+                        if chart_number in items[0].element_info.name:
+                            # btn_title = 예약하기 / 접수하기
+                            if item.element_info.name == btn_title and item.element_info.control_type == "Button":
+                                item.click()
+                                break
 
     def reserve(dto: DashboardDto):
-        DashBoard.search_btn_click(
-            dto.motion_window, dto.chart_number, dto.btn_title)
+        dto.chart_number = "2351"
+        dto.btn_title = "예약하기"
+        # DashBoard.search_btn_click(
+        #     dto.motion_window, dto.chart_number, dto.btn_title)
         motion_web_window = dto.motion_window.child_window(
             class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
         parent_child = motion_web_window.children()
@@ -393,26 +394,31 @@ class DashBoard():
         btn_list[0].click_input()
 
     def receipt(dto: DashboardDto):
+        dto.chart_number = "2351"
         time.sleep(2)
+        dto.btn_title = "접수하기"
+        DashBoard.search_btn_click(
+            dto.motion_window, dto.chart_number, dto.btn_title)
         receipt_window = dto.motion_app.window(
             title=MotionStarter.version_search('접수'))
-
-        receipt_list = receipt_window.children()
-        fr_list = receipt_list[0].children()
         receipt_btn = None
-        for child in fr_list:
-            if child.element_info.control_type == "Button" and child.element_info.name == "접수":
-                receipt_btn = child
-
-        sec_list = receipt_list[1].children()
         edit_list = []
-        dto.start_sub_process_event.set()
-        for wrapper in sec_list:
-            item_list = wrapper.children()
-            for item in item_list:
-                if item.element_info.control_type == "Edit":
-                    edit_list.append(item)
-        edit_list[0].set_text("직원메모 입력")
-        edit_list[1].set_text("접수메모 입력")
-        receipt_btn.click()
-        dto.sub_process_done_event.wait()
+        procs = findwindows.find_elements()
+        for procs_list in procs:
+            if procs_list.name == "접수":
+                procs_item = procs_list.children()
+                for item in procs_item:
+                    if item.control_type == "Telerik.WinControls.UI.RadButton" and item.name == "접수":
+                        receipt_btn = ButtonWrapper(item)
+                    if item.control_type == "MotionChart.Chart_2.Controls.TRadTextBox":
+                        edit_item = HwndWrapper(item)
+                        edit_list.append(edit_item)
+        print(receipt_btn)
+        
+        # edit_list[0].set_text("직원메모 입력")
+        # edit_list[1].set_text("접수메모 입력")
+        # receipt_btn.click()
+        # sec_list = receipt_list[1].children()
+        # dto.start_sub_process_event.set()
+
+        # dto.sub_process_done_event.wait()

@@ -19,6 +19,7 @@ if __name__ == "__main__":
         target=ProcessFunc.main_process_func, args=(start_sub_process_event, sub_process_done_event))
     sub_process = multiprocessing.Process(
         target=ProcessFunc.sub_process_func, args=(start_sub_process_event, sub_process_done_event))
+    
 
     main_process.start()
 

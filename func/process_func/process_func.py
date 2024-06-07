@@ -13,7 +13,6 @@ class ProcessFunc():
     retries = 0
 
     def main_process_func(start_sub_process_event, sub_process_done_event):
-
         win32_app = application.Application(backend='win32')
         motion_app = application.Application(backend='uia')
         MotionStarter.app_connect(win32_app, motion_app)
@@ -30,7 +29,7 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         # 여기서부터 시작
-        DashBoard.user_save(dto)
+        DashBoard.receipt(dto)
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
