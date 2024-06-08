@@ -21,6 +21,7 @@ if __name__ == "__main__":
         target=ProcessFunc.sub_process_func, args=(start_sub_process_event, sub_process_done_event))
 
     main_process.start()
+
     sub_process.start()
 
     main_process.join()
