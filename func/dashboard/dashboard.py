@@ -27,24 +27,31 @@ class DashBoard():
             dto.chart_number = 접수/예약 후 비교 숫자
 
         """
+
         # 화면 초기화
         DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
         time.sleep(1)
+
+        # 공지사항 등록/비교/삭제
         DashBoard.notice_create(dto.motion_window)
         DashBoard.notice_delete(dto.motion_window, dto.motion_app)
-
         time.sleep(1)
+
+        # 신환 등록
         DashBoard.user_save(dto)
         time.sleep(1)
+
+        # 등록 환자 예약/비교/취소
         dto.btn_title = "예약하기"
         DashBoard.search_btn_click(
             dto.motion_window, dto.chart_number, dto.btn_title)
         time.sleep(1)
-
         DashBoard.reserve(dto)
         time.sleep(1)
         DashBoard.reserve_cancel(dto.motion_window, dto.chart_number)
         time.sleep(1)
+
+        # 등록 환자 접수/비교/취소
         dto.btn_title = "접수하기"
         DashBoard.search_btn_click(
             dto.motion_window, dto.chart_number, dto.btn_title)
@@ -52,9 +59,13 @@ class DashBoard():
         time.sleep(1)
         DashBoard.receipt_cancel(dto.motion_window, dto.chart_number)
         time.sleep(1)
+
+        # 고객등록 예약
         dto.search_name = dto.search_name + "예약"
         DashBoard.save_reserve_popup(dto)
         time.sleep(1)
+
+        # 고객등록 접수
         dto.search_name = dto.search_name + "접수"
         DashBoard.save_receipt_popup(dto)
 
@@ -457,7 +468,7 @@ class DashBoard():
             if sec_random_item.element_info.name in sec_key_press_counts:
                 sec_key_presses = sec_key_press_counts[sec_random_item.element_info.name]
                 keyboard.send_keys('{DOWN}' * sec_key_presses)
-
+        time.sleep(1)
         if not memo_list[4].is_visible() or not memo_list[5].is_visible():
             if not notice_list == None:
                 notice_list[0].click_input()
