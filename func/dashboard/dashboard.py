@@ -91,11 +91,10 @@ class DashBoard():
 
     def notice_create(motion_window):
         try:
-            now = datetime.now()
-            notice_create_time = str(now.date()) + " " + \
-                str(now.hour) + ":" + str(now.minute)
-            motion_window.child_window(
-                auto_id='notice-content', control_type='Edit').type_keys('TEST{ENTER}')
+            notice_window = motion_window.child_window(
+                auto_id='notice-content', control_type='Edit')
+            notice_window.wait(wait_for='exists enabled', timeout=30)
+            notice_window.type_keys('TEST{ENTER}')
 
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
@@ -366,7 +365,7 @@ class DashBoard():
                     child.click()
                     break
             cancel_popup = motion_web_window.children()
-            popup_cancle_action(cancel_popup, "예약을 취소 하시겠습니까?")
+            DashBoard.popup_cancle_action(cancel_popup, "예약을 취소 하시겠습니까?")
 
         except TimeoutError as e:
             print("타임 아웃 : ", e)
@@ -376,7 +375,6 @@ class DashBoard():
         """
             btn_title (string): 예약하기 / 접수하기 텍스트 입력
         """
-        print(chart_number)
         DashBoard.search_user(motion_window, chart_number)
         motion_web_window = motion_window.child_window(
             class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
@@ -415,7 +413,7 @@ class DashBoard():
         combo = []
         memo_list = []
         btn_list = []
-
+        notice_list = []
         fr_key_press_counts = {
             "09": 1, "10": 2, "11": 3, "12": 4, "13": 5, "14": 6, "15": 7,
             "16": 8, "17": 9, "18": 10, "19": 11, "20": 12, "21": 13
@@ -430,9 +428,11 @@ class DashBoard():
                 memo_list.append(list)
             if list.element_info.control_type == "Button":
                 btn_list.append(list)
+            if list.element_info.control_type == "Document":
+                notice_list = list.children()
 
         combo[0].click_input()
-        time.sleep(1)
+        time.sleep(1.5)
         random_item = None
         for fr_item in combo[0].children():
             item_children = fr_item.children()
@@ -443,9 +443,9 @@ class DashBoard():
                 key_presses = fr_key_press_counts[random_item.element_info.name]
                 keyboard.send_keys('{DOWN}' * key_presses)
 
-        time.sleep(1)
+        time.sleep(0.5)
         combo[1].click_input()
-        time.sleep(1)
+        time.sleep(1.5)
         for sec_item in combo[1].children():
             sec_item_children = sec_item.children()
             sec_random_item = random.choice(sec_item_children)
@@ -457,6 +457,10 @@ class DashBoard():
             if sec_random_item.element_info.name in sec_key_press_counts:
                 sec_key_presses = sec_key_press_counts[sec_random_item.element_info.name]
                 keyboard.send_keys('{DOWN}' * sec_key_presses)
+
+        if not memo_list[4].is_visible() or not memo_list[5].is_visible():
+            if not notice_list == None:
+                notice_list[0].click_input()
         dto.start_sub_process_event.set()
         memo_list[4].set_text("예약메모 테스트")
         memo_list[5].set_text("전달메모 테스트")
