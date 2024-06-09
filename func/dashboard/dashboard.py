@@ -472,9 +472,9 @@ class DashBoard():
         if not memo_list[4].is_visible() or not memo_list[5].is_visible():
             if not notice_list == None:
                 notice_list[0].click_input()
-        dto.start_sub_process_event.set()
         memo_list[4].set_text("예약메모 테스트")
         memo_list[5].set_text("전달메모 테스트")
+        dto.start_sub_process_event.set()
         btn_list[0].click_input()
 
         dto.sub_process_done_event.wait()
