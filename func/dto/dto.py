@@ -7,4 +7,4 @@ class DashboardDto:
         self.start_sub_process_event = start_sub_process_event
         self.sub_process_done_event = sub_process_done_event
         self.btn_title = btn_title
-        self.chat_number = chart_number
+        self.chart_number = chart_number
