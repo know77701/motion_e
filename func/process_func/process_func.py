@@ -11,16 +11,20 @@ MAX_RETRY = 3
 class ProcessFunc():
     rad_box = None
     retries = 0
+    win32_value = 'win32'
+    uia_value = 'uia'
+    motion_value = '모션.ver'
 
     def main_process_func(start_sub_process_event, sub_process_done_event):
-        win32_app = application.Application(backend='win32')
-        motion_app = application.Application(backend='uia')
+
+        win32_app = application.Application(backend=ProcessFunc.win32_value)
+        motion_app = application.Application(backend=ProcessFunc.uia_value)
         MotionStarter.app_connect(win32_app, motion_app)
         motion_window = motion_app.window(
-            title=MotionStarter.version_search('모션.ver'))
+            title=MotionStarter.version_search(ProcessFunc.motion_value))
 
         dto = DashboardDto(motion_window, motion_app, "QA7", "01074417631",
-                           start_sub_process_event, sub_process_done_event, "", "")
+                           start_sub_process_event, sub_process_done_event, "", "2351")
 
         # 서브프로세스 통신용
         dto.start_sub_process_event.set()
@@ -29,15 +33,15 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         # 여기서부터 시작
-        DashBoard.receipt(dto)
+        DashBoard.view_user_chart(motion_window, 2, "2351")
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
-        win32_app = application.Application(backend='win32')
-        motion_app = application.Application(backend='uia')
+        win32_app = application.Application(backend=ProcessFunc.win32_value)
+        motion_app = application.Application(backend=ProcessFunc.uia_value)
         MotionStarter.app_connect(win32_app, motion_app)
-        motion_window = motion_app.window(
-            title=MotionStarter.version_search('모션.ver'))
+        # motion_window = motion_app.window(
+        #     title=MotionStarter.version_search(ProcessFunc.motion_value))
         sub_process_done_event.set()
 
         start_sub_process_event.clear()
@@ -51,6 +55,7 @@ class ProcessFunc():
                 start_sub_process_event.clear()
                 ProcessFunc.retries = 0
                 continue
+
             except Exception as e:
                 print("서브 모듈 동작 실패 : ", e)
                 sub_process_done_event.set()
