@@ -24,7 +24,7 @@ class ProcessFunc():
             title=MotionStarter.version_search(ProcessFunc.motion_value))
 
         dto = DashboardDto(motion_window, motion_app, "QA7", "01074417631",
-                           start_sub_process_event, sub_process_done_event, "", "2351")
+                           start_sub_process_event, sub_process_done_event, "", "")
 
         # 서브프로세스 통신용
         dto.start_sub_process_event.set()

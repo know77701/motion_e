@@ -6,6 +6,7 @@ from func.dto.dto import DashboardDto
 
 retries = 0
 
+
 class DashBoard():
     """
     Motion E 차트 대시보드 동작
@@ -47,7 +48,7 @@ class DashBoard():
         time.sleep(1)
         DashBoard.reserve_cancel(dto.motion_window, dto.chart_number)
         time.sleep(0.5)
-        
+
         # 등록 환자 접수/비교
         dto.btn_title = "접수하기"
         DashBoard.search_btn_click(
@@ -56,7 +57,7 @@ class DashBoard():
         DashBoard.receipt(dto)
         time.sleep(1)
         DashBoard.receipt_cancel(dto.motion_window, dto.chart_number)
-        
+
         # 고객등록 예약
         dto.search_name = dto.search_name + "예약"
         DashBoard.save_reserve_popup(dto)
@@ -65,6 +66,10 @@ class DashBoard():
         # 고객등록 접수
         dto.search_name = dto.search_name + "접수"
         DashBoard.save_receipt_popup(dto)
+        time.sleep(1)
+
+        DashBoard.view_user_chart(dto.motion_window,  2, dto.chart_number)
+        time.sleep(1)
 
     def dashboard_reset(motion_window, motion_app):
         compare_window = motion_window.children()
@@ -349,11 +354,12 @@ class DashBoard():
     def receipt_cancel(motion_window, chart_number):
         try:
             DashBoard.user_card_cancel(motion_window, chart_number, 3)
-            motion_web_window = motion_window.child_window(class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             motion_web_window.wait(wait_for='exists enabled', timeout=30)
             DashBoard.popup_cancle_action(
                 motion_web_window, "접수를 취소 하시겠습니까? (접수취소는 예약데이터가 없을경우 접수정보가 삭제됩니다)")
-        
+
         except TimeoutError as e:
             print("타임 아웃 : ", e)
             return
@@ -362,7 +368,8 @@ class DashBoard():
 
         try:
             DashBoard.user_card_cancel(motion_window, chart_number, 2)
-            motion_web_window = motion_window.child_window(class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             motion_web_window.wait(wait_for='exists enabled', timeout=30)
             web_window = motion_web_window.children()
             for child in web_window:
@@ -485,7 +492,7 @@ class DashBoard():
         sec_list = receipt_list[1].children()
         receipt_btn = None
         edit_list = []
-        
+
         for item in fr_list:
             if item.element_info.control_type == "Button" and item.element_info.name == "접수":
                 receipt_btn = item
@@ -494,7 +501,7 @@ class DashBoard():
                 for item in wrapper.children():
                     if item.element_info.control_type == "Edit":
                         edit_list.append(item)
-                        
+
         time.sleep(0.5)
         dto.start_sub_process_event.set()
         edit_list[0].set_text("직원메모 입력")
@@ -509,24 +516,26 @@ class DashBoard():
             index_number = 예약리스트 2 / 접수리스트 3
         """
         motion_web_window = motion_window.child_window(
-                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
         motion_web_list = motion_web_window.children()
         chart_item = None
         doc_list = []
         for web_item in motion_web_list:
             if web_item.element_info.control_type == "Document":
                 doc_list.append(web_item)
-        
+
         doc_item = doc_list[index_number].children()
         for items in doc_item:
             if items.element_info.control_type == "List":
                 for item in items.children():
-                        for i in item.children():
-                            if item.element_info.name in chart_number:
-                                print(i)
-                
+                    for i in item.children():
+                        if chart_number in i.element_info.name:
+                            chart_item = i
+
         if not chart_item == None:
-            chart_item.click();
-            print("환자 차트")
-        else:
-            print()
+            chart_item.click_input()
+            print(f"{chart_item.element_info.name} chart view")
+        elif chart_number == 2:
+            print(f"{chart_item.element_info.name} 예약카드 미존재")
+        elif chart_number == 3:
+            print(f"{chart_item.element_info.name} 접수카드 미존재")
