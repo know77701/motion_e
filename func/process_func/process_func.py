@@ -4,6 +4,7 @@ from func.dto.dto import DashboardDto
 from func.start.motion_starter import *
 from func.dashboard.dashboard import *
 from func.publicFunc.public_func import *
+from func.chart.chart_func import *
 
 MAX_RETRY = 3
 
@@ -33,15 +34,13 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         # 여기서부터 시작
-        DashBoard.view_user_chart(motion_window, 2, "2351")
+        ChartFunc.side_memo_save(dto.motion_window)
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
         win32_app = application.Application(backend=ProcessFunc.win32_value)
         motion_app = application.Application(backend=ProcessFunc.uia_value)
         MotionStarter.app_connect(win32_app, motion_app)
-        # motion_window = motion_app.window(
-        #     title=MotionStarter.version_search(ProcessFunc.motion_value))
         sub_process_done_event.set()
 
         start_sub_process_event.clear()
@@ -68,7 +67,13 @@ class ProcessFunc():
         for proc_list in procs:
             if proc_list.control_type == "Telerik.WinControls.RadMessageBoxForm":
                 for item in proc_list.children():
+                    # if item.name == "입력한 고객과 동일한 고객 정보(이름, 휴대폰번호)가 존재합니다":
+                    #     return
+                    # elif item.name == "이름을 입력해주세요":
+                    #     return
+                    # elif item.name == "저장이 완료되었습니다":
                     if item.name == "확인":
                         btn = HwndWrapper(item)
                         btn.click()
                         break
+                    

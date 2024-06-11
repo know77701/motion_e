@@ -168,7 +168,7 @@ class DashBoard():
 
     def text_edit_popup(dto: DashboardDto):
         try:
-            DashBoard.popup_view(dto.motion_window, dto.search_name)
+            # DashBoard.popup_view(dto.motion_window, dto.search_name)
             registration_window = dto.motion_app.window(
                 title=MotionStarter.version_search('고객등록'))
             window_list = registration_window.children()
