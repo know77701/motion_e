@@ -1,42 +1,69 @@
 import random
+from pywinauto import Application, findwindows
+import time
 
 
 class ChartFunc():
     """
         환자 차트 진입 후 동작
     """
+    link_list = []
+    save_btn = None
+    save_edit = None
 
-    def side_memo_save(motion_window):
-        chart_window = motion_window.window(auto_id="tBeautyChartForm")
-        chart_window.wait(wait_for='exists enabled', timeout=30)
-        chart_doc = chart_window.child_window(control_type="Document", found_index=1)
-        chart_doc_child = chart_doc.children()
-        side_edits = []
-        side_buttons = []
-        side_links = []
-        for dco_elment in chart_doc_child:
-            if dco_elment.element_info.control_type == "Edit":
-                side_edits.append(dco_elment)
-            if dco_elment.element_info.control_type == "Button":
-                side_buttons.append(dco_elment)
-            if dco_elment.element_info.control_type == "Hyperlink":
-                side_links.append(dco_elment)
-        side_edits[0].click_input()
-        texts = ["테스트", "테스트2", "테스트3", "테스트4", "테스트5",
-                "테스트6", "테스트7", "테스트8", "테스트9", "테스트10"]
-        ran_number = random.randint(1, 10)
+    def chart_starter():
+        ChartFunc.side_memo_save()
 
-        if side_edits[0].is_enabled():
-            for i in range(ran_number):
-                ran_text = random.choice(texts)
-                side_edits[0].set_text(ran_text)
-                side_buttons[1].click()
+    def find_window():
+        procs = findwindows.find_elements()
+        chart_window = None
+        for window in procs:
+            if window.control_type == "MotionChart.Chart_2.HMI.tBeautyChartForm":
+                chart_window = window
+        return chart_window
+
+    def find_memo_field():
+        chart_window = ChartFunc.find_window()
+
+        if chart_window is not None:
+            app = Application(backend="uia").connect(
+                handle=chart_window.handle)
+            side_chart_window = app.window(handle=chart_window.handle).child_window(
+                class_name="Chrome_WidgetWin_0", found_index=1)
+
+            for side_memo_list in side_chart_window.children():
+                print(side_memo_list)
+                for item_list in side_memo_list.children():
+                    if item_list.element_info.control_type == "Hyperlink":
+                        ChartFunc.link_list.append(item_list)
+                    if item_list.element_info.control_type == "Button" and item_list.element_info.name == "저장":
+                        ChartFunc.save_btn = item_list
+                    if item_list.element_info.control_type == "Edit" and item_list.element_info.name == "메모 입력":
+                        ChartFunc.save_edit = item_list
+            return ChartFunc.link_list, ChartFunc.save_btn, ChartFunc.save_edit
+
+    def side_memo_save():
+        ChartFunc.link_list, ChartFunc.save_btn, ChartFunc.save_edit = ChartFunc.find_memo_field()
+        if ChartFunc.link_list is not None and ChartFunc.save_btn is not None and ChartFunc.save_edit is not None:
+
+            ChartFunc.link_list[0].click_input()
+            texts = ["테스트1", "테스트2", "테스트3", "테스트4", "테스트5",
+                     "테스트6", "테스트7", "테스트8", "테스트9", "테스트10"]
+            ran_number = random.randint(1, 10)
+
+            if ChartFunc.save_edit.is_enabled():
+                for i in range(ran_number):
+                    ran_text = random.choice(texts)
+                    ChartFunc.save_edit.set_text(ran_text)
+                    ChartFunc.save_btn.click()
+        else:
+            print("차트 미실행상태")
 
     def resr_rece_memo_save():
         return
 
     def call_memo_save():
-        
+
         return
 
     def side_memo_update():
