@@ -6,10 +6,9 @@ from func.dashboard.dashboard import *
 from func.publicFunc.public_func import *
 from func.chart.chart_func import *
 
-MAX_RETRY = 3
-
 
 class ProcessFunc():
+    MAX_RETRY = 3
     rad_box = None
     retries = 0
     win32_value = 'win32'
@@ -24,7 +23,7 @@ class ProcessFunc():
         motion_window = motion_app.window(
             title=MotionStarter.version_search(ProcessFunc.motion_value))
 
-        dto = DashboardDto(motion_window, motion_app, "QA7", "01074417631",
+        dto = DashboardDto(motion_window, motion_app, "QA9", "01074417631",
                            start_sub_process_event, sub_process_done_event, "", "")
 
         # 서브프로세스 통신용
@@ -34,7 +33,8 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         # 여기서부터 시작
-        ChartFunc.side_memo_save(dto.motion_window)
+        DashBoard.dashboard_starter(dto)
+        ChartFunc.chart_starter()
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
@@ -45,7 +45,7 @@ class ProcessFunc():
 
         start_sub_process_event.clear()
 
-        while ProcessFunc.retries <= MAX_RETRY:
+        while ProcessFunc.retries <= ProcessFunc.MAX_RETRY:
             try:
                 start_sub_process_event.wait()
                 time.sleep(2)
@@ -76,4 +76,3 @@ class ProcessFunc():
                         btn = HwndWrapper(item)
                         btn.click()
                         break
-                    
