@@ -120,16 +120,27 @@ class DashBoard():
 
     def notice_delete(motion_window, motion_app):
         try:
-            motion_window.child_window(
-                title='닫기', control_type='Button', found_index=0).click()
-            time.sleep(0.5)
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            
+            notice_list = motion_web_window.child_window(
+                auto_id="notice-list", control_type="List")
+            
 
-            rad = motion_app.window(auto_id="RadMessageBox")
-            radBtn = rad.child_window(
-                auto_id="radButton1", control_type="Button")
-            radBtn.click()
-            print("공지사항 삭제 성공")
-            time.sleep(1)
+            for list_item in notice_list.children():
+                for item in list_item.children():
+                    if item.element_info.control_type == "Text" and item.element_info.name == "TEST":
+                        for item in list_item.children():
+                            print(item)
+                            if item.element_info.control_type == "Button" and item.element_info.name == "닫기":
+                                item.click()                                               
+                                rad = motion_app.window(auto_id="RadMessageBox")
+                                radBtn = rad.child_window(
+                                auto_id="radButton1", control_type="Button")
+                                radBtn.click()
+                                print("공지사항 삭제 성공")
+                                break
+            time.sleep(1)                    
         except Exception as err:
             print("공지사항 삭제 실패", err)
 
