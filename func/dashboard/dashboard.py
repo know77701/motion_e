@@ -2,16 +2,18 @@ from pywinauto import keyboard, findwindows
 from func.start.motion_starter import *
 import time
 import random
+from func.publicFunc.public_func import *
 from func.dto.dto import DashboardDto
-
-retries = 0
 
 
 class DashBoard():
     """
     Motion E 차트 대시보드 동작
     """
-    def dashboard_start(dto: DashboardDto):
+    RETRIES = 0
+    MAX_RETRY = 3
+
+    def dashboard_starter(dto: DashboardDto):
         """
         Args:
             dto (DashboardDto): 
@@ -28,48 +30,37 @@ class DashBoard():
 
         # 화면 초기화
         DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
-        time.sleep(1)
 
         # 공지사항 등록/비교/삭제
         DashBoard.notice_create(dto.motion_window)
         DashBoard.notice_delete(dto.motion_window, dto.motion_app)
-        time.sleep(1)
 
         # 신환 등록
         DashBoard.user_save(dto)
-        time.sleep(1)
 
         # 등록 환자 예약/비교
         dto.btn_title = "예약하기"
         DashBoard.search_btn_click(
             dto.motion_window, dto.chart_number, dto.btn_title)
-        time.sleep(1)
         DashBoard.reserve(dto)
-        time.sleep(1)
         DashBoard.reserve_cancel(dto.motion_window, dto.chart_number)
-        time.sleep(0.5)
 
         # 등록 환자 접수/비교
         dto.btn_title = "접수하기"
         DashBoard.search_btn_click(
             dto.motion_window, dto.chart_number, dto.btn_title)
-        time.sleep(0.5)
         DashBoard.receipt(dto)
-        time.sleep(1)
         DashBoard.receipt_cancel(dto.motion_window, dto.chart_number)
 
         # 고객등록 예약
         dto.search_name = dto.search_name + "예약"
         DashBoard.save_reserve_popup(dto)
-        time.sleep(1)
 
         # 고객등록 접수
         dto.search_name = dto.search_name + "접수"
         DashBoard.save_receipt_popup(dto)
-        time.sleep(1)
-
-        DashBoard.view_user_chart(dto.motion_window,  2, dto.chart_number)
-        time.sleep(1)
+        # 환자차트 진입
+        DashBoard.view_user_chart(dto.motion_window, 2, dto.chart_number)
 
     def dashboard_reset(motion_window, motion_app):
         compare_window = motion_window.children()
@@ -81,6 +72,7 @@ class DashBoard():
                         for title_bar in item.children():
                             if title_bar.element_info.name == "닫기" and title_bar.element_info.control_type == "Button":
                                 title_bar.click()
+                                break
         if MotionStarter.version_search('접수'):
             receipt_window = motion_app.window(
                 title="접수", control_type="Window", auto_id="PopAcpt")
@@ -89,6 +81,7 @@ class DashBoard():
                     for title_bar in item.children():
                         if title_bar.element_info.name == "닫기" and title_bar.element_info.control_type == "Button":
                             title_bar.click()
+                            break
         for windows in compare_window:
             for window_list in windows.children():
                 if window_list.element_info.automation_id == "menuBar":
@@ -99,15 +92,17 @@ class DashBoard():
                     for item in window_list.children():
                         if window_list.elemen_info.automation_id == "Maximize-Restore" and item.element.control_type == "Button":
                             item.click()
+                            break
 
         time.sleep(2)
 
     def notice_create(motion_window):
         try:
+            notice_content = "테스트"
             notice_window = motion_window.child_window(
                 auto_id='notice-content', control_type='Edit')
             notice_window.wait(wait_for='exists enabled', timeout=30)
-            notice_window.type_keys('TEST{ENTER}')
+            notice_window.type_keys(notice_content + "{ENTER}")
 
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
@@ -116,39 +111,36 @@ class DashBoard():
 
             for list_item in notice_list.children():
                 for item in list_item.children():
-                    if item.element_info.control_type == "Text" and item.element_info.name == "TEST":
+                    if item.element_info.control_type == "Text" and item.element_info.name == notice_content:
                         print("공지등록 완료")
             time.sleep(1)
         except Exception as err:
             keyboard.send_keys('{F5}')
-            print("공지등록 실패")
+            print("공지등록 실패", err)
 
     def notice_delete(motion_window, motion_app):
         try:
-            notice_window = motion_window.child_window(
-                title='닫기', control_type='Button', found_index=[list_item]).click()
-            print("1")
-            print(found_index=[list_item])
-            time.sleep(1)
-            # notice_window.wait(wait_for='exists enabled', timeout=30)
-            print("2")
-            
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-            print("3")
+            
             notice_list = motion_web_window.child_window(
                 auto_id="notice-list", control_type="List")
-            print("4")
+            
 
             for list_item in notice_list.children():
                 for item in list_item.children():
                     if item.element_info.control_type == "Text" and item.element_info.name == "TEST":
-                        
-                        rad = motion_app.window(auto_id="RadMessageBox")
-                        radBtn = rad.child_window(
-                        auto_id="radButton1", control_type="Button")
-                        radBtn.click()
-                        print("공지사항 삭제 성공")
+                        for item in list_item.children():
+                            print(item)
+                            if item.element_info.control_type == "Button" and item.element_info.name == "닫기":
+                                item.click()                                               
+                                rad = motion_app.window(auto_id="RadMessageBox")
+                                radBtn = rad.child_window(
+                                auto_id="radButton1", control_type="Button")
+                                radBtn.click()
+                                print("공지사항 삭제 성공")
+                                break
+            time.sleep(1)                    
         except Exception as err:
             print("공지사항 삭제 실패", err)
 
@@ -165,6 +157,7 @@ class DashBoard():
             if item.element_info.control_type == "Button" and item.element_info.name == "검색":
                 search_btn = item
         search_btn.click()
+        time.sleep(1)
 
     def popup_view(motion_window, search_name):
         DashBoard.search_user(motion_window, search_name)
@@ -183,7 +176,7 @@ class DashBoard():
 
     def text_edit_popup(dto: DashboardDto):
         try:
-            # DashBoard.popup_view(dto.motion_window, dto.search_name)
+            DashBoard.popup_view(dto.motion_window, dto.search_name)
             registration_window = dto.motion_app.window(
                 title=MotionStarter.version_search('고객등록'))
             window_list = registration_window.children()
@@ -203,12 +196,19 @@ class DashBoard():
                                     if value.element_info.control_type == "Button" and value.element_info.name == dto.btn_title:
                                         save_btn = value
             time.sleep(3)
-            dto.start_sub_process_event.set()
             dto.chart_number = chart_number
-            user_name = edit_list[19]
-            sec_mobile_edit3 = edit_list[11]
-            fst_mobile_edit2 = edit_list[13]
+            while DashBoard.RETRIES <= DashBoard.MAX_RETRY:
+                if edit_list is not []:
+                    user_name = edit_list[19]
+                    sec_mobile_edit3 = edit_list[11]
+                    fst_mobile_edit2 = edit_list[13]
+                    DashBoard.RETRIES = 0
+                    break
+                else:
+                    DashBoard.RETRIES += 1
+                    print(DashBoard.RETRIES)
 
+            dto.start_sub_process_event.set()
             match len(dto.phone_number):
                 case 13:
                     fst_mobile_edit2.set_edit_text(
@@ -231,6 +231,7 @@ class DashBoard():
 
         except Exception as e:
             print(f"exception : {e}")
+            window_screen_shot("text_edit_popup_fail")
             DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
 
     def save_receipt_popup(dto: DashboardDto):
@@ -242,7 +243,7 @@ class DashBoard():
             time.sleep(1)
 
         except Exception as e:
-            window_screen_shot("save_receipt_popup_fail.jpg")
+            window_screen_shot("save_receipt_popup_fail")
             DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
 
     def save_reserve_popup(dto: DashboardDto):
@@ -254,62 +255,71 @@ class DashBoard():
             time.sleep(1)
 
         except:
-            window_screen_shot("save_reserve_popup_fail.jpg")
+            window_screen_shot("save_reserve_popup_fail")
             DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
 
     def user_save(dto: DashboardDto):
         try:
             dto.btn_title = "저장"
             DashBoard.text_edit_popup(dto)
-
+            time.sleep(2)
         except Exception as e:
             print('저장 실패 : ', e)
-            window_screen_shot("user_save_fail.jpg")
+            window_screen_shot("user_save_fail")
             DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
 
     def receipt_check(motion_window, chart_number):
-        motion_web_window = motion_window.child_window(
-            class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-        web_window = motion_web_window.children()
-        doc_list = []
-        for child in web_window:
-            if child.element_info.control_type == 'Document':
-                doc_list.append(child)
+        try:
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            web_window = motion_web_window.children()
+            doc_list = []
+            for child in web_window:
+                if child.element_info.control_type == 'Document':
+                    doc_list.append(child)
 
-        list_wrapper = doc_list[3].children(control_type="List")
+            list_wrapper = doc_list[3].children(control_type="List")
 
-        for item in list_wrapper:
-            child_elements = item.children()
-            for list_item in child_elements:
-                items = list_item.children()
-                for items_child in items:
-                    compare_number = items_child.element_info.name
-                    if chart_number in compare_number:
-                        print(f"접수 확인: {compare_number}")
-                        # items_child.click_input()
-                        break
+            for item in list_wrapper:
+                child_elements = item.children()
+                for list_item in child_elements:
+                    items = list_item.children()
+                    for items_child in items:
+                        compare_number = items_child.element_info.name
+                        if chart_number in compare_number:
+                            print(f"접수 확인: {compare_number}")
+                            # items_child.click_input()
+                            break
+        except Exception as e:
+            print(f"접수 체크 실패 {e}")
+            window_screen_shot("receipt_check_fail")
 
     def reserve_check(motion_window, chart_number):
-        motion_web_window = motion_window.child_window(
-            class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-        web_window = motion_web_window.children()
-        doc_list = []
-        for child in web_window:
-            if child.element_info.control_type == 'Document':
-                doc_list.append(child)
+        try:
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            web_window = motion_web_window.children()
+            doc_list = []
+            for child in web_window:
+                if child.element_info.control_type == 'Document':
+                    doc_list.append(child)
 
-        list_wrapper = doc_list[2].children(control_type="List")
+            list_wrapper = doc_list[2].children(control_type="List")
 
-        for item in list_wrapper:
-            child_elements = item.children()
-            for list_item in child_elements:
-                items = list_item.children()
-                for items_child in items:
-                    compare_number = items_child.element_info.name
-                    if chart_number in compare_number:
-                        print(f"예약 확인: {compare_number}")
-                        # items_child.click_input()
-                        break
+            for item in list_wrapper:
+                child_elements = item.children()
+                for list_item in child_elements:
+                    items = list_item.children()
+                    for items_child in items:
+                        compare_number = items_child.element_info.name
+                        if chart_number in compare_number:
+                            print(f"예약 확인: {compare_number}")
+                            # items_child.click_input()
+                            break
+            time.sleep(1)
+        except Exception as e:
+            print(f"접수 체크 실패 {e}")
+            window_screen_shot("reserve_check_fail")
 
     def user_card_cancel(motion_window, chart_number, index_number):
         """
@@ -345,7 +355,7 @@ class DashBoard():
                                     item.click()
                                     break
         except Exception as e:
-            window_screen_shot("cancle_fail.jpg")
+            window_screen_shot("cancle_fail")
             print(e)
 
     def popup_cancle_action(window_name, popup_text):
@@ -365,6 +375,7 @@ class DashBoard():
                                     break
         except Exception as e:
             print(e)
+            window_screen_shot("popup_cancle_action_fail")
 
     def receipt_cancel(motion_window, chart_number):
         try:
@@ -378,6 +389,9 @@ class DashBoard():
         except TimeoutError as e:
             print("타임 아웃 : ", e)
             return
+        except Exception as e:
+            print(e)
+            window_screen_shot("receipt_cancel")
 
     def reserve_cancel(motion_window, chart_number):
 
@@ -394,8 +408,9 @@ class DashBoard():
             cancel_popup = motion_web_window.children()
             DashBoard.popup_cancle_action(cancel_popup, "예약을 취소 하시겠습니까?")
 
-        except TimeoutError as e:
-            print("타임 아웃 : ", e)
+        except Exception as e:
+            print(e)
+            window_screen_shot("reserve_cancel")
             return
 
     def search_btn_click(motion_window, chart_number, btn_title):
@@ -426,131 +441,178 @@ class DashBoard():
                                 item.click()
                                 break
 
+        time.sleep(2)
+
     def reserve(dto: DashboardDto):
-        time.sleep(1)
-        motion_web_window = dto.motion_window.child_window(
-            class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-        parent_child = motion_web_window.children()
-        document_list = []
-        for child in parent_child:
-            if child.element_info.control_type == "Document":
-                document_list.append(child)
-        document_new_list = document_list[2]
-        child_list = document_new_list.children()
-        combo = []
-        memo_list = []
-        btn_list = []
-        notice_list = []
-        fr_key_press_counts = {
-            "09": 1, "10": 2, "11": 3, "12": 4, "13": 5, "14": 6, "15": 7,
-            "16": 8, "17": 9, "18": 10, "19": 11, "20": 12, "21": 13
-        }
-        sec_key_press_counts = {
-            "00": 1, "15": 2, "30": 3, "45": 4
-        }
-        for list in child_list:
-            if list.element_info.control_type == "ComboBox":
-                combo.append(list)
-            if list.element_info.control_type == "Edit":
-                memo_list.append(list)
-            if list.element_info.control_type == "Button":
-                btn_list.append(list)
-            if list.element_info.control_type == "Document":
-                notice_list = list.children()
+        try:
+            time.sleep(1)
+            motion_web_window = dto.motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            parent_child = motion_web_window.children()
+            document_list = []
+            for child in parent_child:
+                if child.element_info.control_type == "Document":
+                    document_list.append(child)
+            document_new_list = document_list[2]
+            child_list = document_new_list.children()
+            combo = []
+            memo_list = []
+            btn_list = []
+            notice_list = []
+            fr_key_press_counts = {
+                "09": 1, "10": 2, "11": 3, "12": 4, "13": 5, "14": 6, "15": 7,
+                "16": 8, "17": 9, "18": 10, "19": 11, "20": 12, "21": 13
+            }
+            sec_key_press_counts = {
+                "00": 1, "15": 2, "30": 3, "45": 4
+            }
+            for list in child_list:
+                if list.element_info.control_type == "ComboBox":
+                    combo.append(list)
+                if list.element_info.control_type == "Edit":
+                    memo_list.append(list)
+                if list.element_info.control_type == "Button":
+                    btn_list.append(list)
+                if list.element_info.control_type == "Document":
+                    notice_list = list.children()
 
-        combo[0].click_input()
-        time.sleep(1.5)
-        random_item = None
-        for fr_item in combo[0].children():
-            item_children = fr_item.children()
-            random_item = random.choice(item_children)
-            if random_item.element_info.name == "시간":
-                continue
-            if random_item.element_info.name in fr_key_press_counts:
-                key_presses = fr_key_press_counts[random_item.element_info.name]
-                keyboard.send_keys('{DOWN}' * key_presses)
-
-        time.sleep(0.5)
-        combo[1].click_input()
-        time.sleep(1.5)
-        for sec_item in combo[1].children():
-            sec_item_children = sec_item.children()
-            sec_random_item = random.choice(sec_item_children)
-            if random_item.element_info.name == "09":
-                if sec_random_item.element_info.name == "00":
+            combo[0].click_input()
+            time.sleep(1.5)
+            random_item = None
+            while DashBoard.RETRIES <= DashBoard.MAX_RETRY:
+                success = False
+                for fr_item in combo[0].children():
+                    if fr_item.is_visible():
+                        item_children = fr_item.children()
+                        random_item = random.choice(item_children)
+                        if random_item.element_info.name == "시간":
+                            continue
+                        if random_item.element_info.name in fr_key_press_counts:
+                            key_presses = fr_key_press_counts[random_item.element_info.name]
+                            keyboard.send_keys('{DOWN}' * key_presses)
+                            success = True
+                            break
+                if success:
+                    break
+                else:
+                    DashBoard.RETRIES += 1
                     continue
-            if sec_random_item.element_info.name == "분":
-                continue
-            if sec_random_item.element_info.name in sec_key_press_counts:
-                sec_key_presses = sec_key_press_counts[sec_random_item.element_info.name]
-                keyboard.send_keys('{DOWN}' * sec_key_presses)
-        time.sleep(1)
-        if not memo_list[4].is_visible() or not memo_list[5].is_visible():
-            if not notice_list == None:
-                notice_list[0].click_input()
-        memo_list[4].set_text("예약메모 테스트")
-        memo_list[5].set_text("전달메모 테스트")
-        dto.start_sub_process_event.set()
-        btn_list[0].click_input()
 
-        dto.sub_process_done_event.wait()
-        time.sleep(1)
-        DashBoard.reserve_check(dto.motion_window, dto.chart_number)
+            time.sleep(0.5)
+            combo[1].click_input()
+            while DashBoard.RETRIES <= DashBoard.MAX_RETRY:
+                success = False
+                for sec_item in combo[1].children():
+                    if sec_item.is_visible():
+                        sec_item_children = sec_item.children()
+                        sec_random_item = random.choice(sec_item_children)
+                        if random_item.element_info.name == "09":
+                            if sec_random_item.element_info.name == "00":
+                                continue
+                        if sec_random_item.element_info.name == "분":
+                            continue
+                        if sec_random_item.element_info.name in sec_key_press_counts:
+                            sec_key_presses = sec_key_press_counts[sec_random_item.element_info.name]
+                            keyboard.send_keys('{DOWN}' * sec_key_presses)
+                            success = True
+                            break
+                if success:
+                    break
+                else:
+                    DashBoard.RETRIES += 1
+                    continue
+
+            time.sleep(1)
+            if not memo_list[4].is_visible() or not memo_list[5].is_visible():
+                if not notice_list == None:
+                    notice_list[0].click_input()
+            memo_list[4].set_text("예약메모 테스트")
+            memo_list[5].set_text("전달메모 테스트")
+            dto.start_sub_process_event.set()
+            btn_list[0].click_input()
+
+            dto.sub_process_done_event.wait()
+            time.sleep(1)
+            DashBoard.reserve_check(dto.motion_window, dto.chart_number)
+            time.sleep(1)
+            compare_window = dto.motion_window.children()
+            for windows in compare_window:
+                for window_list in windows.children():
+                    if window_list.element_info.automation_id == "menuBar":
+                        for item in window_list.children():
+                            if item.element_info.control_type == "MenuItem" and item.element_info.name == "Dashboard":
+                                item.select()
+                    if window_list.element_info.automation_id == "TitleBar":
+                        for item in window_list.children():
+                            if window_list.elemen_info.automation_id == "Maximize-Restore" and item.element.control_type == "Button":
+                                item.click()
+                                break
+        except Exception as e:
+            print(e)
+            window_screen_shot("reserve_fail")
 
     def receipt(dto: DashboardDto):
-        time.sleep(1)
-        receipt_window = dto.motion_app.window(
-            title="접수", control_type="Window", auto_id="PopAcpt")
-        receipt_window.wait(wait_for='exists enabled', timeout=30)
-        receipt_list = receipt_window.children()
-        fr_list = receipt_list[0].children()
-        sec_list = receipt_list[1].children()
-        receipt_btn = None
-        edit_list = []
+        try:
+            time.sleep(1)
+            receipt_window = dto.motion_app.window(
+                title="접수", control_type="Window", auto_id="PopAcpt")
+            receipt_window.wait(wait_for='exists enabled', timeout=30)
+            receipt_list = receipt_window.children()
+            fr_list = receipt_list[0].children()
+            sec_list = receipt_list[1].children()
+            receipt_btn = None
+            edit_list = []
 
-        for item in fr_list:
-            if item.element_info.control_type == "Button" and item.element_info.name == "접수":
-                receipt_btn = item
-        for wrapper in sec_list:
-            if wrapper.element_info.control_type == "Pane":
-                for item in wrapper.children():
-                    if item.element_info.control_type == "Edit":
-                        edit_list.append(item)
+            for item in fr_list:
+                if item.element_info.control_type == "Button" and item.element_info.name == "접수":
+                    receipt_btn = item
+            for wrapper in sec_list:
+                if wrapper.element_info.control_type == "Pane":
+                    for item in wrapper.children():
+                        if item.element_info.control_type == "Edit":
+                            edit_list.append(item)
 
-        time.sleep(0.5)
-        dto.start_sub_process_event.set()
-        edit_list[0].set_text("직원메모 입력")
-        edit_list[1].set_text("접수메모 입력")
-        receipt_btn.click()
-        dto.sub_process_done_event.wait()
-        time.sleep(0.5)
-        DashBoard.receipt_check(dto.motion_window, dto.chart_number)
+            time.sleep(0.5)
+            dto.start_sub_process_event.set()
+            edit_list[0].set_text("직원메모 입력")
+            edit_list[1].set_text("접수메모 입력")
+            receipt_btn.click()
+            dto.sub_process_done_event.wait()
+            time.sleep(0.5)
+            DashBoard.receipt_check(dto.motion_window, dto.chart_number)
+        except Exception as e:
+            print(e)
+            window_screen_shot("receipt_fail")
 
     def view_user_chart(motion_window, index_number, chart_number):
         """
             index_number = 예약리스트 2 / 접수리스트 3
         """
-        motion_web_window = motion_window.child_window(
-            class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-        motion_web_list = motion_web_window.children()
-        chart_item = None
-        doc_list = []
-        for web_item in motion_web_list:
-            if web_item.element_info.control_type == "Document":
-                doc_list.append(web_item)
+        try:
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            motion_web_list = motion_web_window.children()
+            chart_item = None
+            doc_list = []
+            for web_item in motion_web_list:
+                if web_item.element_info.control_type == "Document":
+                    doc_list.append(web_item)
 
-        doc_item = doc_list[index_number].children()
-        for items in doc_item:
-            if items.element_info.control_type == "List":
-                for item in items.children():
-                    for i in item.children():
-                        if chart_number in i.element_info.name:
-                            chart_item = i
+            doc_item = doc_list[index_number].children()
+            for items in doc_item:
+                if items.element_info.control_type == "List":
+                    for item in items.children():
+                        for i in item.children():
+                            if chart_number in i.element_info.name:
+                                chart_item = i
 
-        if not chart_item == None:
-            chart_item.click_input()
-            print(f"{chart_item.element_info.name} chart view")
-        elif chart_number == 2:
-            print(f"{chart_item.element_info.name} 예약카드 미존재")
-        elif chart_number == 3:
-            print(f"{chart_item.element_info.name} 접수카드 미존재")
+            if not chart_item == None:
+                chart_item.click_input()
+                print(f"{chart_item.element_info.name} chart view")
+            elif chart_number == 2:
+                print(f"{chart_item.element_info.name} 예약카드 미존재")
+            elif chart_number == 3:
+                print(f"{chart_item.element_info.name} 접수카드 미존재")
+        except Exception as e:
+            print(e)
+            window_screen_shot("view_user_chart_fail")

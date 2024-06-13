@@ -34,8 +34,7 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         # 여기서부터 시작
-        # ChartFunc.side_memo_save(dto.motion_window)
-        DashBoard.notice_delete(motion_window,motion_app)
+        ChartFunc.side_memo_save(dto.motion_window)
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
