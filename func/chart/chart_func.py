@@ -10,9 +10,14 @@ class ChartFunc():
     link_list = []
     save_btn = None
     save_edit = None
-
+    delete_btn = None
+    
     def chart_starter():
         ChartFunc.side_memo_save()
+
+    def window_resize(motion_app):
+        
+        return
 
     def find_window():
         procs = findwindows.find_elements()
@@ -32,7 +37,6 @@ class ChartFunc():
                 class_name="Chrome_WidgetWin_0", found_index=1)
 
             for side_memo_list in side_chart_window.children():
-                print(side_memo_list)
                 for item_list in side_memo_list.children():
                     if item_list.element_info.control_type == "Hyperlink":
                         ChartFunc.link_list.append(item_list)
@@ -42,14 +46,14 @@ class ChartFunc():
                         ChartFunc.save_edit = item_list
             return ChartFunc.link_list, ChartFunc.save_btn, ChartFunc.save_edit
 
-    def side_memo_save():
+    def memo_save(index_number):
         ChartFunc.link_list, ChartFunc.save_btn, ChartFunc.save_edit = ChartFunc.find_memo_field()
         if ChartFunc.link_list is not None and ChartFunc.save_btn is not None and ChartFunc.save_edit is not None:
 
-            ChartFunc.link_list[0].click_input()
+            ChartFunc.link_list[index_number].click_input()
             texts = ["테스트1", "테스트2", "테스트3", "테스트4", "테스트5",
                      "테스트6", "테스트7", "테스트8", "테스트9", "테스트10"]
-            ran_number = random.randint(1, 10)
+            ran_number = random.randint(1, 1000)
 
             if ChartFunc.save_edit.is_enabled():
                 for i in range(ran_number):
@@ -58,15 +62,20 @@ class ChartFunc():
                     ChartFunc.save_btn.click()
         else:
             print("차트 미실행상태")
+    def memo_update(index_number):
+        return
+    
+    def side_memo_save(index):
+        ChartFunc.memo_save(0)
 
     def resr_rece_memo_save():
         return
-
+    
     def call_memo_save():
-
-        return
+        ChartFunc.memo_save(2)
 
     def side_memo_update():
+        
         return
 
     def side_memo_delete():

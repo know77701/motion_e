@@ -33,9 +33,8 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         # 여기서부터 시작
-        user_delete(motion_window)
         # DashBoard.dashboard_starter(dto)
-        # ChartFunc.chart_starter()
+        user_delete(start_sub_process_event, sub_process_done_event, motion_window)
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
@@ -48,13 +47,16 @@ class ProcessFunc():
 
         while ProcessFunc.retries <= ProcessFunc.MAX_RETRY:
             try:
+                print("0")
                 start_sub_process_event.wait()
+                print("1")
                 time.sleep(2)
                 ProcessFunc.rad_button_click(
                     start_sub_process_event, sub_process_done_event)
                 sub_process_done_event.set()
                 start_sub_process_event.clear()
                 ProcessFunc.retries = 0
+                print("2")
                 continue
 
             except Exception as e:
@@ -69,15 +71,13 @@ class ProcessFunc():
         for proc_list in procs:
             if proc_list.control_type == "Telerik.WinControls.RadMessageBoxForm":
                 for item in proc_list.children():
-                    if item.name == "입력한 고객과 동일한 고객 정보(이름, 휴대폰번호)가 존재합니다":
-
-                        ProcessFunc.main_process_func(
-                            start_sub_process_event, sub_process_done_event)
-                        return
-                    elif item.name == "이름을 입력해주세요":
-                        return
-                    elif item.name == "저장이 완료되었습니다":
-                        if item.name == "확인":
-                            btn = HwndWrapper(item)
-                            btn.click()
-                            break
+                    # if item.name == "입력한 고객과 동일한 고객 정보(이름, 휴대폰번호)가 존재합니다":
+                    #     ProcessFunc.main_process_func(
+                    #         start_sub_process_event, sub_process_done_event)
+                    #     return
+                    # elif item.name == "이름을 입력해주세요":
+                    #     return
+                    if item.name == "확인":
+                        btn = HwndWrapper(item)
+                        btn.click()
+                        break
