@@ -84,17 +84,6 @@ def user_delete(start_sub_process_event, sub_process_done_event, motion_window):
         sub_process_done_event.wait()
         print("첫 번째 완료")
         
-        # 두 번째 호출
-        print("두 번째 호출")
-        start_sub_process_event.set()
-        sub_process_done_event.wait()
-        print("두 번째 완료")
-        
-        # 세 번째 호출
-        print("세 번째 호출")
-        start_sub_process_event.set()
-        sub_process_done_event.wait()
-        print("세 번째 완료")                          
                                 
     except Exception as e:
         print(e)

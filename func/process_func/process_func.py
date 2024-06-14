@@ -14,6 +14,7 @@ class ProcessFunc():
     win32_value = 'win32'
     uia_value = 'uia'
     motion_value = '모션.ver'
+    notice_value = '안내사항'
 
     def main_process_func(start_sub_process_event, sub_process_done_event):
 
@@ -26,15 +27,16 @@ class ProcessFunc():
         dto = DashboardDto(motion_window, motion_app, "QA9", "01074417631",
                            start_sub_process_event, sub_process_done_event, "", "")
 
+        ProcessFunc.notice_popup_close(motion_app)
+
         # 서브프로세스 통신용
         dto.start_sub_process_event.set()
 
         # 서브프로세스 대기용
         dto.sub_process_done_event.wait()
 
-        # 여기서부터 시작
         # DashBoard.dashboard_starter(dto)
-        user_delete(start_sub_process_event, sub_process_done_event, motion_window)
+        # user_delete(start_sub_process_event, sub_process_done_event, motion_window)
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
@@ -47,16 +49,15 @@ class ProcessFunc():
 
         while ProcessFunc.retries <= ProcessFunc.MAX_RETRY:
             try:
-                print("0")
                 start_sub_process_event.wait()
-                print("1")
-                time.sleep(2)
-                ProcessFunc.rad_button_click(
-                    start_sub_process_event, sub_process_done_event)
-                sub_process_done_event.set()
-                start_sub_process_event.clear()
-                ProcessFunc.retries = 0
-                print("2")
+                for i in range(3):
+                    time.sleep(2)
+                    ProcessFunc.rad_button_click(
+                        start_sub_process_event, sub_process_done_event)
+                    sub_process_done_event.set()
+                    start_sub_process_event.clear()
+                    ProcessFunc.retries = 0
+                    print("2")
                 continue
 
             except Exception as e:
@@ -81,3 +82,21 @@ class ProcessFunc():
                         btn = HwndWrapper(item)
                         btn.click()
                         break
+                    
+    def notice_popup_close(motion_app):
+        procs = findwindows.find_elements()
+        notice_procs = None
+        for pro in procs:
+            if pro.name == "안내사항" and pro.automation_id == "PopEventViewer":
+                notice_procs = pro
+                break
+        
+        if notice_procs is not None:
+            notice_window = motion_app.window(title=MotionStarter.version_search(ProcessFunc.notice_value))
+            for item_list in notice_window.children():
+                print(item_list)
+                if item_list.element_info.control_type == "TitleBar":
+                    for item in item_list.children():
+                        if item.element_info.control_type == "Button" and item.element_info.name == "닫기":
+                            item.click()
+                            break
