@@ -36,7 +36,7 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         # DashBoard.dashboard_starter(dto)
-        # user_delete(start_sub_process_event, sub_process_done_event, motion_window)
+        user_delete(start_sub_process_event, sub_process_done_event, motion_window)
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
@@ -50,14 +50,12 @@ class ProcessFunc():
         while ProcessFunc.retries <= ProcessFunc.MAX_RETRY:
             try:
                 start_sub_process_event.wait()
-                for i in range(3):
-                    time.sleep(2)
-                    ProcessFunc.rad_button_click(
-                        start_sub_process_event, sub_process_done_event)
-                    sub_process_done_event.set()
-                    start_sub_process_event.clear()
-                    ProcessFunc.retries = 0
-                    print("2")
+                time.sleep(2)
+                ProcessFunc.rad_button_click(
+                    start_sub_process_event, sub_process_done_event)
+                sub_process_done_event.set()
+                start_sub_process_event.clear()
+                ProcessFunc.retries = 0
                 continue
 
             except Exception as e:
@@ -71,17 +69,39 @@ class ProcessFunc():
         procs = findwindows.find_elements()
         for proc_list in procs:
             if proc_list.control_type == "Telerik.WinControls.RadMessageBoxForm":
-                for item in proc_list.children():
-                    # if item.name == "입력한 고객과 동일한 고객 정보(이름, 휴대폰번호)가 존재합니다":
-                    #     ProcessFunc.main_process_func(
-                    #         start_sub_process_event, sub_process_done_event)
-                    #     return
-                    # elif item.name == "이름을 입력해주세요":
-                    #     return
-                    if item.name == "확인":
-                        btn = HwndWrapper(item)
-                        btn.click()
-                        break
+                proc = proc_list.children()
+                for item in proc:
+                    item_tle = item.automation_id == "radLabel1"
+                    item_btn = item.automation_id == "radButton1"
+                    if item_tle == "삭제할 환자를 선택해주세요.":
+                        print(proc)
+                        
+                    
+                    # if item_tle == "radLabel1" and item.automation_id in "삭제할 환자를 선택해주세요.":
+                    #     print("테스트")
+                    #     if item.name == "확인" or item.name == "OK":
+                    #         btn = HwndWrapper(item)
+                    #         btn.click()
+                    #         break
+                    # if "삭제되었습니다." in item.name or "삭제할 환자를 선택해주세요." in item.name or "저장되었습니다" in item.name:
+                    #     if item.name == "확인" or item.name == "OK":
+                    #         btn = HwndWrapper(item)
+                    #         btn.click()
+                    #         break
+                    # if "삭제에 대한 모든 책임은 병원에 있습니다. 삭제하시겠습니까?" in item.name:
+                    #     if item.name == "확인" or item.name == "OK":
+                    #         btn = HwndWrapper(item)
+                    #         btn.click()
+                    #         start_sub_process_event.set()
+                    #         sub_process_done_event.wait()
+                    #         break
+                    # if "해당 고객을 삭제하시겠습니까?" in item.name:
+                    #     if item.name == "확인" or item.name == "OK":
+                    #         btn = HwndWrapper(item)
+                    #         btn.click()
+                    #         start_sub_process_event.set()
+                    #         sub_process_done_event.wait()
+                    #         break
                     
     def notice_popup_close(motion_app):
         procs = findwindows.find_elements()
