@@ -72,6 +72,8 @@ class DashBoard():
                         for title_bar in item.children():
                             if title_bar.element_info.name == "닫기" and title_bar.element_info.control_type == "Button":
                                 title_bar.click()
+                            if title_bar.element_info.name == "최대화" and title_bar.element_info.control_type == "Button":
+                                title_bar.click()
                                 break
         if MotionStarter.version_search('접수'):
             receipt_window = motion_app.window(
@@ -93,7 +95,6 @@ class DashBoard():
                         if window_list.elemen_info.automation_id == "Maximize-Restore" and item.element.control_type == "Button":
                             item.click()
                             break
-
         time.sleep(2)
 
     def notice_create(motion_window):
@@ -222,7 +223,7 @@ class DashBoard():
                         dto.phone_number[7:11])
                 case 8:
                     fst_mobile_edit2.set_edit_text(
-                        dto.phone_number[1:4])
+                        dto.phone_number[0:3])
                     sec_mobile_edit3.set_edit_text(
                         dto.phone_number[4:8])
             user_name.set_text(dto.search_name)
