@@ -326,7 +326,9 @@ class DashBoard():
                 if child.element_info.control_type == 'Document':
                     doc_list.append(child)
 
-            list_wrapper = doc_list[index_number].children(control_type="List")
+            doc_item = doc_list[index_number]
+
+            list_wrapper = doc_item.children(control_type="List")
             found_chart_number = False
 
             for item in list_wrapper:
@@ -369,7 +371,7 @@ class DashBoard():
 
     def receipt_cancel(motion_window, chart_number):
         try:
-            DashBoard.user_card_cancel(motion_window, chart_number, 3)
+            DashBoard.user_card_cancel(motion_window, chart_number, 2)
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             motion_web_window.wait(wait_for='exists enabled', timeout=30)
@@ -386,7 +388,7 @@ class DashBoard():
     def reserve_cancel(motion_window, chart_number):
 
         try:
-            DashBoard.user_card_cancel(motion_window, chart_number, 2)
+            DashBoard.user_card_cancel(motion_window, chart_number, 1)
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             motion_web_window.wait(wait_for='exists enabled', timeout=30)

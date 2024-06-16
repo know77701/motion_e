@@ -73,6 +73,7 @@ class ProcessFunc():
                 for item in proc:
                     item_tle = item.automation_id == "radLabel1"
                     item_btn = item.automation_id == "radButton1"
+                    print(proc)
                     if item_tle == "삭제할 환자를 선택해주세요.":
                         print(proc)
                         
