@@ -115,7 +115,7 @@ class DashBoard():
         try:
             motion_window.child_window(
                 title='닫기', control_type='Button', found_index=0).click()
-            time.sleep(0.5)
+            time.sleep(1)
 
             rad = motion_app.window(auto_id="RadMessageBox")
             radBtn = rad.child_window(

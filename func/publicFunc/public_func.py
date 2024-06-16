@@ -12,6 +12,10 @@ def window_screen_shot(save_file_name):
         screenshot_save_dir, save_file_name + ".jpg")
     save_image = ImageGrab.grab()
     save_image.save(screenshot_path)
+    
+def mkdir(comare_folder_make):
+    os.mkdir("fail")
+    
 
 
 def is_admin():
