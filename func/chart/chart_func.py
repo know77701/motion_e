@@ -16,12 +16,17 @@ class ChartFunc():
     memo_content_list = []
 
     def chart_starter():
-        # ChartFunc.side_memo_save()
+        ChartFunc.side_memo_save()
         ChartFunc.memo_update(0)
         ChartFunc.memo_delete(0)
+        time.sleep(1)
+    
+        ChartFunc.call_memo_save()
+        ChartFunc.call_memo_update(2)
+        ChartFunc.call_memo_delete(2)
+        time.sleep(1)
 
     def window_resize(motion_app):
-
         return
 
     def find_window():
@@ -59,10 +64,7 @@ class ChartFunc():
                     if item_list.element_info.control_type == "Text" and item_list.element_info.name != "삭제보기" and not current_year in item_list.element_info.name:
                         ChartFunc.memo_content_list.append(item_list)
 
-            # return ChartFunc.memo_link_list, ChartFunc.memo_save_btn, ChartFunc.memo_save_edit, Chart
-
     def memo_save(index_number):
-        # ChartFunc.memo_link_list, ChartFunc.memo_save_btn, ChartFunc.memo_save_edit = ChartFunc.find_memo_field()
         ChartFunc.find_memo_field()
         if ChartFunc.memo_link_list is not None and ChartFunc.memo_save_btn is not None and ChartFunc.memo_save_edit is not None:
 

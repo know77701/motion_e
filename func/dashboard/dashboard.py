@@ -26,9 +26,8 @@ class DashBoard():
             dto.sub_process_done_event = 서브 프로세스 종료값
             dto.bnt_title = 신환 접수/예약/등록에 따라 변경되는 값
             dto.chart_number = 접수/예약 후 비교 숫자
-
         """
-
+        
         # 화면 초기화
         DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
 
@@ -41,18 +40,15 @@ class DashBoard():
 
         # 등록 환자 예약/비교
         dto.btn_title = "예약하기"
-        DashBoard.search_btn_click(
-            dto.motion_window, dto.chart_number, dto.btn_title)
+        DashBoard.search_btn_click(dto.motion_window, dto.chart_number, dto.btn_title)
         DashBoard.reserve(dto)
         DashBoard.reserve_cancel(dto.motion_window, dto.chart_number)
 
 
         # 등록 환자 접수/비교
         dto.btn_title = "접수하기"
-        DashBoard.search_btn_click(
-            dto.motion_window, dto.chart_number, dto.btn_title)
+        DashBoard.search_btn_click(dto.motion_window, dto.chart_number, dto.btn_title)
         DashBoard.receipt(dto)
-        DashBoard.receipt_cancel(dto.motion_window, dto.chart_number)
         DashBoard.receipt_cancel(dto.motion_window, dto.chart_number)
 
         # # 고객등록 예약
@@ -339,13 +335,12 @@ class DashBoard():
             window_screen_shot("cancle_fail")
             print(e)
 
-    def popup_cancle_action(window_name, popup_text):
+    def popup_cancle_action(window_name):
         """
             예약 취소 시 발생되는 팝업 동작
         """
         try:
             for wrapper in window_name:
-                # if wrapper.element_info.name in popup_text:
                 popup = wrapper.children()
                 for child in popup:
                     if child.element_info.control_type == 'Group':
@@ -365,8 +360,7 @@ class DashBoard():
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             motion_web_window.wait(wait_for='exists enabled', timeout=30)
             cancel_popup = motion_web_window.children()
-            DashBoard.popup_cancle_action(
-                cancel_popup, "접수를 취소 하시겠습니까?")
+            DashBoard.popup_cancle_action(cancel_popup)
 
         except TimeoutError as e:
             print("타임 아웃 : ", e)
@@ -387,7 +381,7 @@ class DashBoard():
                     child.click()
                     break
             cancel_popup = motion_web_window.children()
-            DashBoard.popup_cancle_action(cancel_popup, "예약을 취소 하시겠습니까?")
+            DashBoard.popup_cancle_action(cancel_popup)
 
         except Exception as e:
             print(e)
@@ -514,8 +508,6 @@ class DashBoard():
 
             dto.sub_process_done_event.wait()
             time.sleep(1)
-            DashBoard.card_check(dto.motion_window, dto.chart_number, 1, "예약")
-            time.sleep(1)
             compare_window = dto.motion_window.children()
             for windows in compare_window:
                 for window_list in windows.children():
@@ -523,21 +515,19 @@ class DashBoard():
                         for item in window_list.children():
                             if item.element_info.control_type == "MenuItem" and item.element_info.name == "Dashboard":
                                 item.select()
-                    if window_list.element_info.automation_id == "TitleBar":
-                        for item in window_list.children():
-                            if window_list.elemen_info.automation_id == "Maximize-Restore" and item.element.control_type == "Button":
-                                item.click()
                                 break
+            time.sleep(1)
+            DashBoard.card_check(dto.motion_window, dto.chart_number, 1, "예약")
+            time.sleep(1)
         except Exception as e:
             print(e)
             window_screen_shot("reserve_fail")
 
     def receipt(dto: DashboardDto):
         try:
-            time.sleep(1)
-            receipt_window = dto.motion_app.window(
-                title="접수", control_type="Window", auto_id="PopAcpt")
+            receipt_window = dto.motion_app.window(title="접수", control_type="Window", auto_id="PopAcpt")
             receipt_window.wait(wait_for='exists enabled', timeout=30)
+            time.sleep(3)
             receipt_list = receipt_window.children()
             fr_list = receipt_list[0].children()
             sec_list = receipt_list[1].children()
