@@ -40,7 +40,6 @@ class DashBoard():
         DashBoard.user_save(dto)
 
         # 등록 환자 예약/비교
-        dto.chart_number = "0000003007"
         dto.btn_title = "예약하기"
         DashBoard.search_btn_click(
             dto.motion_window, dto.chart_number, dto.btn_title)

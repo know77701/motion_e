@@ -11,11 +11,19 @@ screenshot_save_dir = "fail"
 
 
 def window_screen_shot(save_file_name):
-    ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
-    screenshot_path = os.path.join(
-        screenshot_save_dir, save_file_name + ".jpg")
-    save_image = ImageGrab.grab()
-    save_image.save(screenshot_path)
+    if os.path.exists(screenshot_save_dir):
+        ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
+        screenshot_path = os.path.join(
+            screenshot_save_dir, save_file_name + ".jpg")
+        save_image = ImageGrab.grab()
+        save_image.save(screenshot_path)
+    else:
+        print("스크린샷 동작되지 않아 경로 생성")
+        compare_folder()
+        
+    
+def compare_folder():
+    os.makedirs("fail")
 
 
 def is_admin():
