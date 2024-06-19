@@ -29,36 +29,37 @@ class DashBoard():
         """
 
         # 화면 초기화
-        DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
+        # DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
 
         # 공지사항 등록/비교/삭제
-        DashBoard.notice_create(dto.motion_window)
-        DashBoard.notice_delete(dto.motion_window, dto.motion_app)
+        # DashBoard.notice_create(dto.motion_window)
+        # DashBoard.notice_delete(dto.motion_window, dto.motion_app)
 
         # 신환 등록
-        DashBoard.user_save(dto)
+        # DashBoard.user_save(dto)
 
         # 등록 환자 예약/비교
         dto.btn_title = "예약하기"
-        DashBoard.search_btn_click(
-            dto.motion_window, dto.chart_number, dto.btn_title)
-        DashBoard.reserve(dto)
+        # DashBoard.search_btn_click(
+        #     dto.motion_window, dto.chart_number, dto.btn_title)
+        # DashBoard.reserve(dto)
+        dto.chart_number = '0000003001'
         DashBoard.reserve_cancel(dto.motion_window, dto.chart_number)
 
         # 등록 환자 접수/비교
-        dto.btn_title = "접수하기"
-        DashBoard.search_btn_click(
-            dto.motion_window, dto.chart_number, dto.btn_title)
-        DashBoard.receipt(dto)
+        # dto.btn_title = "접수하기"
+        # DashBoard.search_btn_click(
+        #     dto.motion_window, dto.chart_number, dto.btn_title)
+        # DashBoard.receipt(dto)
         DashBoard.receipt_cancel(dto.motion_window, dto.chart_number)
 
         # 고객등록 예약
         dto.search_name = dto.search_name + "예약"
-        DashBoard.save_reserve_popup(dto)
+        # DashBoard.save_reserve_popup(dto)
 
         # 고객등록 접수
-        dto.search_name = dto.search_name + "접수"
-        DashBoard.save_receipt_popup(dto)
+        # dto.search_name = dto.search_name + "접수"
+        # DashBoard.save_receipt_popup(dto)
         # 환자차트 진입
         DashBoard.view_user_chart(dto.motion_window, 2, dto.chart_number)
 
@@ -121,15 +122,26 @@ class DashBoard():
 
     def notice_delete(motion_window, motion_app):
         try:
-            motion_window.child_window(
-                title='닫기', control_type='Button', found_index=0).click()
-            time.sleep(0.5)
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
 
-            rad = motion_app.window(auto_id="RadMessageBox")
-            radBtn = rad.child_window(
-                auto_id="radButton1", control_type="Button")
-            radBtn.click()
-            print("공지사항 삭제 성공")
+            notice_list = motion_web_window.child_window(
+                auto_id="notice-list", control_type="List")
+
+            for list_item in notice_list.children():
+                for item in list_item.children():
+                    if item.element_info.control_type == "Text" and item.element_info.name == "TEST":
+                        for item in list_item.children():
+                            print(item)
+                            if item.element_info.control_type == "Button" and item.element_info.name == "닫기":
+                                item.click()
+                                rad = motion_app.window(
+                                    auto_id="RadMessageBox")
+                                radBtn = rad.child_window(
+                                    auto_id="radButton1", control_type="Button")
+                                radBtn.click()
+                                print("공지사항 삭제 성공")
+                                break
             time.sleep(1)
         except Exception as err:
             print("공지사항 삭제 실패", err)
@@ -268,7 +280,7 @@ class DashBoard():
                 if child.element_info.control_type == 'Document':
                     doc_list.append(child)
 
-            list_wrapper = doc_list[3].children(control_type="List")
+            list_wrapper = doc_list[2].children(control_type="List")
 
             for item in list_wrapper:
                 child_elements = item.children()
@@ -278,7 +290,6 @@ class DashBoard():
                         compare_number = items_child.element_info.name
                         if chart_number in compare_number:
                             print(f"접수 확인: {compare_number}")
-                            # items_child.click_input()
                             break
         except Exception as e:
             print(f"접수 체크 실패 {e}")
@@ -294,7 +305,7 @@ class DashBoard():
                 if child.element_info.control_type == 'Document':
                     doc_list.append(child)
 
-            list_wrapper = doc_list[2].children(control_type="List")
+            list_wrapper = doc_list[1].children(control_type="List")
 
             for item in list_wrapper:
                 child_elements = item.children()
@@ -304,7 +315,6 @@ class DashBoard():
                         compare_number = items_child.element_info.name
                         if chart_number in compare_number:
                             print(f"예약 확인: {compare_number}")
-                            # items_child.click_input()
                             break
             time.sleep(1)
         except Exception as e:
@@ -325,8 +335,10 @@ class DashBoard():
             for child in web_window:
                 if child.element_info.control_type == 'Document':
                     doc_list.append(child)
-
-            list_wrapper = doc_list[index_number].children(control_type="List")
+            doc = None
+            doc = doc_list[index_number]
+            time.sleep(1)
+            list_wrapper = doc.children(control_type="List")
             found_chart_number = False
 
             for item in list_wrapper:
@@ -352,41 +364,44 @@ class DashBoard():
         """
             예약 취소 시 발생되는 팝업 동작
         """
-        try:
-            for wrapper in window_name:
-                if wrapper.element_info.name == popup_text:
+        # try:
+        for wrapper in window_name:
+                if wrapper.element_info.name in popup_text:
                     popup = wrapper.children()
-                    for child in popup:
-                        if child.element_info.control_type == 'Group':
-                            fr_child = child.children()
+                    for pop_child in popup:
+                        if pop_child.element_info.control_type == 'Group':
+                            fr_child = pop_child.children()
                             for child in fr_child:
                                 if child.element_info.name == "예" and child.element_info.control_type == 'Button':
                                     child.click()
                                     break
-        except Exception as e:
-            print(e)
-            window_screen_shot("popup_cancle_action_fail")
+        # except Exception as e:
+        #     print(e)
+        #     window_screen_shot("popup_cancle_action_fail")
 
     def receipt_cancel(motion_window, chart_number):
-        try:
-            DashBoard.user_card_cancel(motion_window, chart_number, 3)
-            motion_web_window = motion_window.child_window(
-                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-            motion_web_window.wait(wait_for='exists enabled', timeout=30)
-            DashBoard.popup_cancle_action(
-                motion_web_window, "접수를 취소 하시겠습니까? (접수취소는 예약데이터가 없을경우 접수정보가 삭제됩니다)")
+        # try:
+        time.sleep(0.5)
+        DashBoard.user_card_cancel(motion_window, chart_number, 2)
+        motion_web_window = motion_window.child_window(
+            class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+        motion_web_window.wait(wait_for='exists enabled', timeout=30)
+        time.sleep(1.5)
+        cancel_popup = motion_web_window.children()
+        DashBoard.popup_cancle_action(
+            cancel_popup, "접수를 취소 하시겠습니까")
 
-        except TimeoutError as e:
-            print("타임 아웃 : ", e)
-            return
-        except Exception as e:
-            print(e)
-            window_screen_shot("receipt_cancel")
+        # except TimeoutError as e:
+        #     print("타임 아웃 : ", e)
+        #     return
+        # except Exception as e:
+        #     print(e)
+        #     window_screen_shot("receipt_cancel")
 
     def reserve_cancel(motion_window, chart_number):
 
         try:
-            DashBoard.user_card_cancel(motion_window, chart_number, 2)
+            DashBoard.user_card_cancel(motion_window, chart_number, 1)
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             motion_web_window.wait(wait_for='exists enabled', timeout=30)
