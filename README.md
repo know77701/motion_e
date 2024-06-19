@@ -1,5 +1,5 @@
 # motion
-motion_automation program
+motion_E 차트 프로그램 automation
 
 
 # 다운로드

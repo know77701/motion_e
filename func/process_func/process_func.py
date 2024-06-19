@@ -39,7 +39,7 @@ class ProcessFunc():
         #             sub_process_done_event, motion_window)
         # DashBoard.dashboard_starter(dto)
         # ChartFunc.chart_starter()
-        DashBoard.notice_delete(motion_window,motion_app)
+        DashBoard.notice_create(motion_window)
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
