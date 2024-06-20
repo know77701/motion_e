@@ -108,25 +108,7 @@ class DashBoard():
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             web_window = motion_web_window.children()
-            notice_list = []
-            for window_group in web_window:
-                if window_group.element_info.control_type == "Document":
-                    window_group
-                    print(window_group.children())
-            
-            # notice_window = motion_window.child_window(
-            #     auto_id='notice-content', control_type='Edit')
-            # notice_window.wait(wait_for='exists enabled', timeout=30)
-            # notice_window.type_keys(notice_content + "{ENTER}")
 
-            # notice_list = motion_web_window.child_window(
-            #     auto_id="notice-list", control_type="List")
-
-            # for list_item in notice_list.children():
-                
-            #     for item in list_item.children():
-            #         if item.element_info.control_type == "Text" and item.element_info.name == notice_content:
-            #             print("공지등록 완료")
             # time.sleep(1)
         except Exception as err:
             keyboard.send_keys('{F5}')
@@ -184,9 +166,9 @@ class DashBoard():
             if item.element_info.control_type == "Document":
                 document_list.append(item)
         document_item = document_list[0].children()
-        for item in document_item:
-            if item.element_info.control_type == "Button" and item.element_info.name == "환자 등록 후 예약":
-                item.click()
+        for doc_item in document_item:
+            if doc_item.element_info.control_type == "Button" and doc_item.element_info.name == "환자 등록 후 예약":
+                doc_item.click()
                 break
 
     def text_edit_popup(dto: DashboardDto):
