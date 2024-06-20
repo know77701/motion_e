@@ -34,12 +34,14 @@ class ProcessFunc():
         # 서브프로세스 대기용
         dto.sub_process_done_event.wait()
 
-        # ProcessFunc.notice_popup_close(motion_app)
+        ProcessFunc.notice_popup_close(motion_app)
         # user_delete(start_sub_process_event,
         #             sub_process_done_event, motion_window)
         # DashBoard.dashboard_starter(dto)
-        # ChartFunc.chart_starter()
-        DashBoard.notice_create(motion_window)
+        # window_screen_shot("FAIL")
+        # DashBoard.notice_create(motion_window)
+        DashBoard.notice_delete(motion_window,motion_app)
+
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
