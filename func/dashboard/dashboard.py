@@ -110,6 +110,7 @@ class DashBoard():
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             web_window = motion_web_window.children()
+<<<<<<< HEAD
             notice_list = []
             for window_group in web_window:
                 if window_group.element_info.control_type == "Document":
@@ -129,6 +130,9 @@ class DashBoard():
             #     for item in list_item.children():
             #         if item.element_info.control_type == "Text" and item.element_info.name == notice_content:
             #             print("공지등록 완료")
+=======
+
+>>>>>>> 6c7f4cd377341f9d39a6661d116e48207f58cb57
             # time.sleep(1)
         except Exception as err:
             keyboard.send_keys('{F5}')
@@ -185,9 +189,9 @@ class DashBoard():
             if item.element_info.control_type == "Document":
                 document_list.append(item)
         document_item = document_list[0].children()
-        for item in document_item:
-            if item.element_info.control_type == "Button" and item.element_info.name == "환자 등록 후 예약":
-                item.click()
+        for doc_item in document_item:
+            if doc_item.element_info.control_type == "Button" and doc_item.element_info.name == "환자 등록 후 예약":
+                doc_item.click()
                 break
 
     def text_edit_popup(dto: DashboardDto):

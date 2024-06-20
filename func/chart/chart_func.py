@@ -14,20 +14,22 @@ class ChartFunc():
     memo_save_edit = None
     memo_delete_btn_list = []
     memo_content_list = []
-    update_memo_content = "수정메모"
+    chart_child_list = []
+    # chart_compare_list = []
+    # chart_btn_list = []
+    side_memo_value = "사이드메모"
+    call_memo_value = "콜메모"
+    rsvr_memo_value = "예약/접수 메모"
 
     def chart_starter():
+        # ChartFunc.side_memo_save(0)
+        # ChartFunc.memo_update()
+        # ChartFunc.memo_delete()
 
-        # ChartFunc.side_memo_save()
-        ChartFunc.side_memo_save()
-        # ChartFunc.memo_update(0)
-        ChartFunc.memo_delete(0)
-        time.sleep(1)
-
-        # ChartFunc.call_memo_save()
-        # ChartFunc.call_memo_update(2)
-        # ChartFunc.call_memo_delete(2)
-        time.sleep(1)
+        # ChartFunc.call_memo_save(2)
+        # ChartFunc.call_memo_update()
+        # ChartFunc.call_memo_delete()
+        ChartFunc.past_chart_view()
 
     def window_resize(motion_app):
         return
@@ -40,33 +42,45 @@ class ChartFunc():
                 chart_window = window
         return chart_window
 
-    def find_link():
+    def return_window(index_number):
+        chart_window = ChartFunc.find_window()
+        app = Application(backend="uia").connect(
+            handle=chart_window.handle)
+        chart_list = app.window(handle=chart_window.handle).child_window(
+            class_name="Chrome_WidgetWin_0", found_index=index_number)
+        return chart_list
+
+    def find_link(index_number):
         chart_window = ChartFunc.find_window()
         chart_hwnd_wrapper = HwndWrapper(chart_window.handle)
         chart_hwnd_wrapper.set_focus()
 
         if chart_window is not None:
-            app = Application(backend="uia").connect(
-                handle=chart_window.handle)
-            side_chart_window = app.window(handle=chart_window.handle).child_window(
-                class_name="Chrome_WidgetWin_0", found_index=1)
+            chart_list = ChartFunc.return_window(index_number)
+            for side_memo_list in chart_list.children():
+                for item_list in side_memo_list.children():
+                    if item_list.element_info.control_type == "Hyperlink":
+                        ChartFunc.memo_link_list.append(item_list)
 
-        for side_memo_list in side_chart_window.children():
-            for item_list in side_memo_list.children():
-                if item_list.element_info.control_type == "Hyperlink":
-                    ChartFunc.memo_link_list.append(item_list)
-
-    def find_memo_field():
+    def find_field(index_number):
         now = datetime.datetime.now()
         current_year = now.strftime("%Y")
-        chart_window = ChartFunc.find_window()
+        if index_number == 0:
+            btach_list = []
+            list_item = None
+            chart_list = ChartFunc.return_window(index_number)
+            for chart_item in chart_list.children():
+                if chart_item.element_info.control_type == "Document":
+                    for item in chart_item.children():
+                        if current_year in item.element_info.name:
+                            ChartFunc.chart_child_list.append(item)
+                        if item.element_info.control_type == "Button":
+                            ChartFunc.chart_child_list.append(item)
+            for index in range(ChartFunc.chart_child_list):
+                print(index)
 
-        if chart_window is not None:
-            app = Application(backend="uia").connect(
-                handle=chart_window.handle)
-            side_chart_window = app.window(handle=chart_window.handle).child_window(
-                class_name="Chrome_WidgetWin_0", found_index=1)
-
+        if index_number == 1:
+            side_chart_window = ChartFunc.return_window(index_number)
             for side_memo_list in side_chart_window.children():
                 for item_list in side_memo_list.children():
                     if item_list.element_info.control_type == "Button" and item_list.element_info.name == "저장":
@@ -78,9 +92,10 @@ class ChartFunc():
                     if item_list.element_info.control_type == "Text" and item_list.element_info.name != "삭제보기" and not current_year in item_list.element_info.name:
                         ChartFunc.memo_content_list.append(item_list)
 
-    def memo_save(index_number):
+    def memo_save(index_number, memo_value):
         try:
-            ChartFunc.find_memo_field()
+            print(f"{memo_value} 저장 시작")
+            ChartFunc.find_field(index_number)
             if ChartFunc.memo_save_btn is not None and ChartFunc.memo_save_edit is not None:
                 ChartFunc.find_link()
                 memo_link = ChartFunc.memo_link_list[index_number]
@@ -95,17 +110,17 @@ class ChartFunc():
                         ran_text = random.choice(texts)
                         ChartFunc.memo_save_edit.set_text(ran_text)
                         ChartFunc.memo_save_btn.click()
-                print("메모 저장 성공")
+                print(f"{memo_value} 저장 성공")
             else:
                 print("차트 미실행상태")
         except Exception as e:
-            print(f"메모 저장 실패 :{e}")
+            print(f"{memo_value} 저장 실패 :{e}")
 
-    def memo_update():
+    def memo_update(memo_value):
         try:
-            print("메모 수정 시작")
+            print(f"{memo_value} 수정 시작")
             save_btn = []
-            ChartFunc.find_memo_field()
+            ChartFunc.find_field(1)
             content_list = []
             if ChartFunc.memo_content_list is not None and ChartFunc.memo_link_list is not None:
                 for i in range(len(ChartFunc.memo_content_list)):
@@ -130,92 +145,93 @@ class ChartFunc():
             if not save_btn:
                 edit_btn = save_btn[1]
                 edit_btn.click_input()
-                print("메모 수정 완료")
+                print(f"{memo_value} 수정 완료")
         except Exception as e:
-            print(f"메모수정 실패 : {e}")
+            print(f"{memo_value} 메모수정 실패 : {e}")
 
-        random_item.click_input()
-        keyboard.send_keys('^a'+ChartFunc.update_memo_content)
+    def memo_delete(memo_value):
+        try:
+            print(f"{memo_value} 삭제 시작")
+            ChartFunc.find_field(1)
 
-        ChartFunc.find_memo_field()
-        ChartFunc.memo_save_btn.click()
-        ChartFunc.memo_compare(ChartFunc.update_memo_content)
-        ChartFunc.memo_delete()
+            btn_list = []
+            if ChartFunc.memo_delete_btn_list is not None:
+                for i in range(len(ChartFunc.memo_delete_btn_list)):
+                    if i % 2 != 0:
+                        btn_list.append(ChartFunc.memo_delete_btn_list[i])
 
-    def memo_delete():
-        ChartFunc.find_memo_field()
+            random_btn = random.choice(btn_list)
+            if random_btn is not []:
+                random_btn.click()
+            else:
+                print("버튼미존재")
 
-        btn_list = []
-        if ChartFunc.memo_link_list is not None and ChartFunc.memo_delete_btn_list is not None:
-            for i in range(len(ChartFunc.memo_delete_btn_list)):
-                if i % 2 != 0:
-                    btn_list.append(ChartFunc.memo_delete_btn_list[i])
-        ran_item = random.choice(btn_list)
-
-        # for item in btn_list:
-        #     if item == ran_item:
-        ran_item.click_input()
-        ChartFunc.delete_popup_action()
-        if ChartFunc.memo_delete_btn_list is not None:
-            for i in range(len(ChartFunc.memo_delete_btn_list)):
-                if i % 2 != 0:
-                    btn_list.append(ChartFunc.memo_delete_btn_list[i])
-        btn_list[0].click()
-        # for i in range(btn_list):
-        #     i.click()
-
-    def side_memo_save():
-        print("사이드메모 저장 시작")
-        ChartFunc.memo_save(0)
-        time.sleep(1)
-        print("사이드메모 저장 종료")
-
-    def call_memo_save():
-        ChartFunc.memo_save(2)
-
-    def side_memo_update():
-        ChartFunc.memo_update(0)
-        return
-
-    def side_memo_delete():
-
-        return
-
-    def memo_compare(memo_content):
-        ChartFunc.find_memo_field()
-        if ChartFunc.memo_content_list is not None and ChartFunc.memo_link_list is not None:
-            for content_item in ChartFunc.memo_content_list:
-                if content_item.element_info.name == memo_content:
-                    print(f"{memo_content} 메모확인")
-                    break
-
-    def delete_popup_action():
-        chart_window = ChartFunc.find_window()
-        chart_hwnd_wrapper = HwndWrapper(chart_window.handle)
-        chart_hwnd_wrapper.set_focus()
-
-        if chart_window is not None:
+            chart_window = ChartFunc.find_window()
             app = Application(backend="uia").connect(
                 handle=chart_window.handle)
             side_chart_window = app.window(handle=chart_window.handle).child_window(
                 class_name="Chrome_WidgetWin_0", found_index=1)
-            for side_memo_list in side_chart_window.children():
-                for item_list in side_memo_list.children():
-                    for item in item_list.children():
-                        for i in item.children():
-                            if i.element_info.name == "예" and i.element_info.control_type == "Button":
-                                i.click()
-                                print("사이드 메모 삭제 완료")
-                                break
+
+            if side_chart_window is not None:
+                for side_memo_list in side_chart_window.children():
+                    if side_memo_list.element_info.control_type == "Document":
+                        for memo_item in side_memo_list.children():
+                            for item_child in memo_item.children():
+                                for i in item_child.children():
+                                    if i.element_info.control_type == "Button" and i.element_info.name == "예":
+                                        i.click()
+                                        print(f"{memo_value} 삭제 완료")
+        except Exception as e:
+            print(f"메모 삭제 실패 : {e}")
 
     def side_memo_save():
-        ChartFunc.memo_save(0)
+        ChartFunc.memo_save(0, ChartFunc.side_memo_value)
+        time.sleep(1)
+
+    def side_memo_update():
+        ChartFunc.memo_update(ChartFunc.side_memo_value)
+        time.sleep(1)
+
+    def side_memo_delete():
+        ChartFunc.memo_delete(ChartFunc.side_memo_value)
+        time.sleep(1)
+
+    def resr_rece_memo_updqte():
+        ChartFunc.find_link()
+        if ChartFunc.memo_link_list is not None:
+            memo_link = ChartFunc.memo_link_list[1]
+            memo_link.click_input()
+        else:
+            print(f"{ChartFunc.rsvr_memo_value} 탭 이동 불가")
+        ChartFunc.memo_update(ChartFunc.rsvr_memo_value)
 
     def call_memo_save():
-        ChartFunc.memo_save(2)
+        ChartFunc.memo_save(2, ChartFunc.call_memo_value)
+        time.sleep(1)
+
+    def call_memo_update():
+        ChartFunc.memo_update(ChartFunc.call_memo_value)
+        time.sleep(1)
+
+    def call_memo_delete():
+        ChartFunc.memo_delete(ChartFunc.call_memo_value)
+        time.sleep(1)
 
     def past_chart_view():
-        return
+        ChartFunc.find_link(0)
+        chart_link = ChartFunc.memo_link_list[0]
+        chart_link.click_input()
+
+        ChartFunc.find_field(0)
+
+        # chart_view_btn = []
+        # if ChartFunc.chart_btn_list is not None:
+        #     for i in range(len(ChartFunc.chart_btn_list)):
+        #         if i % 2 != 0:
+        #             chart_view_btn.append(ChartFunc.chart_btn_list[i])
+
+        # random_view_btn = random.choice(chart_view_btn)
+        # random_view_btn.click()
 
     def past_resr_veiw():
         return
