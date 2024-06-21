@@ -8,16 +8,32 @@ import pyautogui
 
 
 screenshot_save_dir = "fail"
-RETRIES = 0
-MAX_RETRY = 3
+
+MAX_TRY = 3
+RETRY = 0
+
 
 def window_screen_shot(save_file_name):
+    global MAX_TRY
+    global RETRY
+    while RETRY <= MAX_TRY :
+        if os.path.exists(screenshot_save_dir):
+            ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
+            screenshot_path = os.path.join(
+                screenshot_save_dir, save_file_name + ".jpg")
+            save_image = ImageGrab.grab()
+            save_image.save(screenshot_path)
+            RETRY = 0
+            break
+        else:
+            print("스크린샷 동작되지 않아 경로 생성")
+            compare_folder()
+            RETRY +=1
+            continue
+        
     
-    ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)
-    screenshot_path = os.path.join(
-        screenshot_save_dir, save_file_name + ".jpg")
-    save_image = ImageGrab.grab()
-    save_image.save(screenshot_path)
+def compare_folder():
+    os.makedirs("fail")
 
 def is_admin():
     try:
