@@ -1,5 +1,6 @@
 from pywinauto import keyboard, findwindows
 from func.start.motion_starter import *
+from pywinauto.controls.hwndwrapper import HwndWrapper
 import time
 import random
 from func.publicFunc.public_func import *
@@ -127,10 +128,10 @@ class DashBoard():
     def notice_delete(motion_window, motion_app):
         try:
             print("공시사항 삭제 시작")
-            motion_web_window = motion_window.child_window(
-                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-            web_window = motion_web_window.children()
-            notice_list = []
+            # motion_web_window = motion_window.child_window(
+            #     class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            # web_window = motion_web_window.children()
+            # notice_list = []
             # for window_group in web_window:
             #     if window_group.element_info.control_type == "Document":
             #         notice_list.append(window_group)
@@ -146,15 +147,23 @@ class DashBoard():
             #                     for delete_item in list_item.children():
             #                         if delete_item.element_info.control_type == "Button" and delete_item.element_info.name == "닫기":
             #                             delete_item.click()
-                        
-            sub_check_popup = motion_window.child_window(
-                class_name="WindowsForms10.Window.8.app.0.33ec00f_r8_ad1", control_type="Window")           
-            sub_window = sub_check_popup.children()
-            sub_list = []
-            for sub_group in sub_window:
-                if sub_group.element_info.control_type == "Window":
-                    sub_list.append(sub_group)
-                    print(sub_list)
+            procs = findwindows.find_elements()
+            # print(procs)
+            for sub_procs in procs:
+                if sub_procs.automation_id=="RadMessageBox":
+                    for sub_button in sub_procs.children():
+                        if sub_button.automation_id == "radButton1":
+                            sub_button = HwndWrapper(sub_button)
+                            sub_button.click()
+            
+            # sub_check_popup = motion_window.child_window(
+            #     class_name="WindowsForms10.Window.8.app.0.33ec00f_r8_ad1", control_type="Window")           
+            # sub_window = sub_check_popup.children()
+            # sub_list = []
+            # for sub_group in sub_window:
+            #     if sub_group.element_info.control_type == "Window":
+            #         sub_list.append(sub_group)
+            #         print(sub_list)
                     
             #         notice_list.append(window_group)
             # notice_view = notice_list[0].children()
