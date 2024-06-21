@@ -67,7 +67,7 @@ class ChartFunc():
         now = datetime.datetime.now()
         current_year = now.strftime("%Y")
         if index_number == 0:
-            btach_list = []
+            batch_list = []
             list_item = None
             chart_list = ChartFunc.return_window(index_number)
             for chart_item in chart_list.children():
@@ -77,8 +77,19 @@ class ChartFunc():
                             ChartFunc.chart_child_list.append(item)
                         if item.element_info.control_type == "Button":
                             ChartFunc.chart_child_list.append(item)
-            for index in range(ChartFunc.chart_child_list):
-                print(index)
+            i = 0
+            patten_lenght = 2
+            while i <= len(ChartFunc.chart_child_list):
+                if ChartFunc.chart_child_list[i:i + patten_lenght] == patten_lenght:
+                    batch_list.append(ChartFunc.chart_child_list[i:i+ patten_lenght+1])
+                    i += patten_lenght+1
+                    print(i)
+                else:
+                    print("?")
+                    i += patten_lenght
+            print("?")
+            print(batch_list)
+                
              
         if index_number == 1:
             side_chart_window = ChartFunc.return_window(index_number)
