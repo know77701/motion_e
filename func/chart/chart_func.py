@@ -3,6 +3,7 @@ from pywinauto import Application, findwindows, keyboard
 import time
 from pywinauto.controls.hwndwrapper import HwndWrapper
 import datetime
+import pyautogui
 
 
 class ChartFunc():
@@ -42,12 +43,20 @@ class ChartFunc():
                 chart_window = window
         return chart_window
 
-    def return_window(index_number):
+    def return_window(index_number=None, class_name=None, auto_id=None):
+        chart_list = None
         chart_window = ChartFunc.find_window()
         app = Application(backend="uia").connect(
             handle=chart_window.handle)
-        chart_list = app.window(handle=chart_window.handle).child_window(
-            class_name="Chrome_WidgetWin_0", found_index=index_number)
+        if class_name != None and index_number != None:
+            chart_list = app.window(handle=chart_window.handle).child_window(
+                class_name=class_name, found_index=index_number)
+        elif auto_id != None and index_number != None:
+            chart_list = app.window(handle=chart_window.handle).child_window(
+                auto_id=auto_id, found_index=index_number)
+        elif auto_id != None:
+            chart_list = app.window(handle=chart_window.handle).child_window(
+                auto_id=auto_id)
         return chart_list
 
     def find_link(index_number):
@@ -56,7 +65,8 @@ class ChartFunc():
         chart_hwnd_wrapper.set_focus()
 
         if chart_window is not None:
-            chart_list = ChartFunc.return_window(index_number)
+            chart_list = ChartFunc.return_window(
+                index_number=index_number, class_name="Chrome_WidgetWin_0")
             for side_memo_list in chart_list.children():
                 for item_list in side_memo_list.children():
                     if item_list.element_info.control_type == "Hyperlink":
@@ -64,23 +74,33 @@ class ChartFunc():
 
     def find_field(index_number):
         now = datetime.datetime.now()
+
         current_year = now.strftime("%Y")
         if index_number == 0:
-            btach_list = []
-            list_item = None
-            chart_list = ChartFunc.return_window(index_number)
+            batch_list = []
+            chart_list = ChartFunc.return_window(
+                index_number=index_number, class_name="Chrome_WidgetWin_0")
             for chart_item in chart_list.children():
                 if chart_item.element_info.control_type == "Document":
                     for item in chart_item.children():
                         if current_year in item.element_info.name:
                             ChartFunc.chart_child_list.append(item)
+                            index = chart_item.children().index(item)
+                            if index + 2 < len(chart_item.children()):
+                                next_item = chart_item.children()[index + 2]
+                                ChartFunc.chart_child_list.append(next_item)
                         if item.element_info.control_type == "Button":
                             ChartFunc.chart_child_list.append(item)
-            for index in range(ChartFunc.chart_child_list):
-                print(index)
+            array_lenght = 4
+            for i in range(0, len(ChartFunc.chart_child_list), array_lenght):
+                batch = ChartFunc.chart_child_list[i:i + array_lenght]
+                batch_list.append(batch)
+            print(batch_list)
+            return batch_list
 
         if index_number == 1:
-            side_chart_window = ChartFunc.return_window(index_number)
+            side_chart_window = ChartFunc.return_window(
+                index_number=index_number, class_name="Chrome_WidgetWin_0")
             for side_memo_list in side_chart_window.children():
                 for item_list in side_memo_list.children():
                     if item_list.element_info.control_type == "Button" and item_list.element_info.name == "저장":
@@ -133,10 +153,8 @@ class ChartFunc():
             chart_window = ChartFunc.find_window()
 
             if chart_window is not None:
-                app = Application(backend="uia").connect(
-                    handle=chart_window.handle)
-                side_chart_window = app.window(handle=chart_window.handle).child_window(
-                    class_name="Chrome_WidgetWin_0", found_index=1)
+                side_chart_window = ChartFunc.return_window(
+                    index_number=1, class_name="Chrome_WidgetWin_0")
 
                 for side_memo_list in side_chart_window.children():
                     for item_list in side_memo_list.children():
@@ -218,20 +236,64 @@ class ChartFunc():
         time.sleep(1)
 
     def past_chart_view():
-        ChartFunc.find_link(0)
-        chart_link = ChartFunc.memo_link_list[0]
-        chart_link.click_input()
+        # ChartFunc.find_link(0)
+        # chart_link = ChartFunc.memo_link_list[0]
+        # chart_link.click_input()
 
-        ChartFunc.find_field(0)
+        chart_list = ChartFunc.find_field(0)
+        # pyautogui.moveTo(x=935, y=227)
+        # pyautogui.click()
+        random_chart_list = random.choice(chart_list)
+        chart_view_btn = None
+        chart_time = None
+        if random_chart_list is not None:
+            for item in random_chart_list:
+                if item.element_info.control_type == "Text":
+                    chart_time = item.element_info.name
+                chart_view_btn = item
+        # chart_view_btn.click()
+        window_list = ChartFunc.return_window(
+            index_number=0, class_name="Chrome_WidgetWin_0")
 
-        # chart_view_btn = []
-        # if ChartFunc.chart_btn_list is not None:
-        #     for i in range(len(ChartFunc.chart_btn_list)):
-        #         if i % 2 != 0:
-        #             chart_view_btn.append(ChartFunc.chart_btn_list[i])
+        # for doc_list in window_list.children():
+        #     if doc_list.element_info.control_type == "Document":
+        #         for list_item in doc_list.children():
+        #             for item in list_item.children():
+        #                 if item.element_info.control_type == "Group":
+        #                     for i in item.children():
+        #                         if i.element_info.control_type == "Button" and i.element_info.name == "예":
+        #                             i.click()
+        # receipt_window = ChartFunc.return_window(auto_id="radScrollablePanel1")
 
-        # random_view_btn = random.choice(chart_view_btn)
-        # random_view_btn.click()
+        # receipt_time = None
+        # for receipt_list in receipt_window.children():
+        #     for list_item in receipt_list.children():
+        #         for items in list_item.children():
+        #             for item in items.children():
+        #                 if item.element_info.automation_id == "radPanel1":
+        #                     for child in item.children():
+        #                         if child.element_info.automation_id == "pnlDiagHide":
+        #                             for i in child.children():
+        #                                 if i.element_info.control_type == "Pane":
+        #                                     receipt_time = i.element_info.name
+        # parts = receipt_time.split()
+        # date_part = parts[0]
+        # time_part = parts[1]
+        # hour_min_str = parts[2]
+
+        # date_str = date_part.replace('-', '')
+        # hour_min_parts = hour_min_str.split(':')
+        # hour = int(hour_min_parts[0])
+        # if '오후' in time_part:
+        #     hour += 12
+        # minute = int(hour_min_parts[1])
+        # compare_tiem = f"{date_str} {hour}{minute}"
+        # print(compare_tiem)
+        # print(chart_time)
+        # if compare_tiem == chart_time:
+        #     print("과거 차트 진입 완료")
+        # else:
+        #     print("차트진입 실패")
 
     def past_resr_veiw():
         return
