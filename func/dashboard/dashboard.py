@@ -43,14 +43,18 @@ class DashBoard():
 
         # 등록 환자 예약/비교
         dto.btn_title = "예약하기"
-        DashBoard.search_btn_click(dto.motion_window, dto.chart_number, dto.btn_title)
+
+        DashBoard.search_btn_click(
+            dto.motion_window, dto.chart_number, dto.btn_title)
         DashBoard.reserve(dto)
         DashBoard.reserve_cancel(dto.motion_window, dto.chart_number)
 
 
         # 등록 환자 접수/비교
         dto.btn_title = "접수하기"
-        DashBoard.search_btn_click(dto.motion_window, dto.chart_number, dto.btn_title)
+        DashBoard.search_btn_click(
+            dto.motion_window, dto.chart_number, dto.btn_title)
+
         DashBoard.receipt(dto)
         DashBoard.receipt_cancel(dto.motion_window, dto.chart_number)
 
@@ -395,12 +399,14 @@ class DashBoard():
         try:
             for wrapper in window_name:
                 popup = wrapper.children()
-                for child in popup:
-                    if child.element_info.control_type == 'Group':
-                        fr_child = child.children()
-                        for i in fr_child:
-                            if i.element_info.name == "예" and i.element_info.control_type == 'Button':
-                                i.click()
+
+                for pop_child in popup:
+                    if pop_child.element_info.control_type == 'Group':
+                        fr_child = pop_child.children()
+                        for child in fr_child:
+                            if child.element_info.name == "예" and child.element_info.control_type == 'Button':
+                                child.click()
+
                                 break
         except Exception as e:
             print(e)
@@ -408,19 +414,23 @@ class DashBoard():
 
     def receipt_cancel(motion_window, chart_number):
         try:
+
             print("접수 취소 시작")
             DashBoard.user_card_cancel(motion_window, chart_number, 2)
             motion_web_window = motion_window.child_window(
                 class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
             motion_web_window.wait(wait_for='exists enabled', timeout=30)
+            time.sleep(1.5)
             cancel_popup = motion_web_window.children()
-            DashBoard.popup_cancle_action(cancel_popup)
-            print("접수 취소 완료")
-            
-        except Exception as e:
-            print(f"접수 취소 실패 : {e}")
-            window_screen_shot("receipt_cancel")
+            DashBoard.popup_cancle_action(
+                cancel_popup, "접수를 취소 하시겠습니까")
+
+        except TimeoutError as e:
+            print("타임 아웃 : ", e)
             return
+        except Exception as e:
+            print(e)
+            window_screen_shot("receipt_cancel")
 
     def reserve_cancel(motion_window, chart_number):
         try:
