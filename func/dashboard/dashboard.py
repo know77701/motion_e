@@ -14,7 +14,7 @@ class DashBoard():
     """
     RETRIES = 0
     MAX_RETRY = 3
-    notice_content = ["테스트","TEST","CHECK NOTICE"]
+    notice_content = ["테스트","TEST","CHECK NOTICE","안드로이드","아이오에스"]
     content_random = random.choice(notice_content)
 
     def dashboard_starter(dto: DashboardDto):
@@ -144,21 +144,27 @@ class DashBoard():
             print(DashBoard.content_random)
             for window_item in notice_view:
                 if window_item.element_info.control_type == "List":
-                    # notice_list.append(window_item)
+                    notice_list.append(window_item)
                     for list_item in window_item.children():
                         for select_item in list_item.children():
                             if select_item.element_info.control_type == "Text" and select_item.element_info.name == DashBoard.content_random:
+                                print(select_item.children)
                                 for delete_item in list_item.children():
+                                    print(list_item.children)
                                     if delete_item.element_info.control_type == "Button" and delete_item.element_info.name == "닫기":
                                         delete_item.click()
             procs = findwindows.find_elements()
             # print(procs)
             for sub_procs in procs:
                 if sub_procs.automation_id=="RadMessageBox":
+                    time.sleep(1)
                     for sub_button in sub_procs.children():
                         if sub_button.automation_id == "radButton1":
                             sub_button = HwndWrapper(sub_button)
                             sub_button.click()
+                            time.sleep(1)
+                            # break
+                            
             
             # sub_check_popup = motion_window.child_window(
             #     class_name="WindowsForms10.Window.8.app.0.33ec00f_r8_ad1", control_type="Window")           
@@ -174,9 +180,7 @@ class DashBoard():
                         
             # notice_list = motion_web_window.child_window(
             #     auto_id="notice-list", control_type="List")
-            
-            
-
+        
             # for list_item in notice_list.children():
             #     for item in list_item.children():
             #         if item.element_info.control_type == "Text" and item.element_info.name == DashBoard.content_random:
@@ -190,7 +194,7 @@ class DashBoard():
             #                     radBtn.click()
             #                     print("공지사항 삭제 성공")
             #                     break
-            time.sleep(1)                    
+            time.sleep(1)
         except Exception as err:
             print("공지사항 삭제 실패", err)
 

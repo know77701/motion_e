@@ -40,15 +40,12 @@ class ProcessFunc():
         # user_delete(start_sub_process_event,
         #             sub_process_done_event, motion_window)
         # DashBoard.dashboard_starter(dto)
-<<<<<<< HEAD
         # window_screen_shot("FAIL")
         # DashBoard.notice_create(motion_window)
         DashBoard.notice_create(motion_window)
         DashBoard.notice_delete(motion_window,motion_app)
 
-=======
-        ChartFunc.chart_starter()
->>>>>>> 793cfa3ac6d93b4d384d12cc43ad265f0bd9e653
+        # ChartFunc.chart_starter()
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
