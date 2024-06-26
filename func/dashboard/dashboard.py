@@ -128,25 +128,25 @@ class DashBoard():
     def notice_delete(motion_window, motion_app):
         try:
             print("공시사항 삭제 시작")
-            # motion_web_window = motion_window.child_window(
-            #     class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-            # web_window = motion_web_window.children()
-            # notice_list = []
-            # for window_group in web_window:
-            #     if window_group.element_info.control_type == "Document":
-            #         notice_list.append(window_group)
-            # notice_view = notice_list[0].children()
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            web_window = motion_web_window.children()
+            notice_list = []
+            for window_group in web_window:
+                if window_group.element_info.control_type == "Document":
+                    notice_list.append(window_group)
+            notice_view = notice_list[0].children()
             
-            # print(DashBoard.content_random)
-            # for window_item in notice_view:
-            #     if window_item.element_info.control_type == "List":
-            #         # notice_list.append(window_item)
-            #         for list_item in window_item.children():
-            #             for select_item in list_item.children():
-            #                 if select_item.element_info.control_type == "Text" and select_item.element_info.name == DashBoard.content_random:
-            #                     for delete_item in list_item.children():
-            #                         if delete_item.element_info.control_type == "Button" and delete_item.element_info.name == "닫기":
-            #                             delete_item.click()
+            print(DashBoard.content_random)
+            for window_item in notice_view:
+                if window_item.element_info.control_type == "List":
+                    # notice_list.append(window_item)
+                    for list_item in window_item.children():
+                        for select_item in list_item.children():
+                            if select_item.element_info.control_type == "Text" and select_item.element_info.name == DashBoard.content_random:
+                                for delete_item in list_item.children():
+                                    if delete_item.element_info.control_type == "Button" and delete_item.element_info.name == "닫기":
+                                        delete_item.click()
             procs = findwindows.find_elements()
             # print(procs)
             for sub_procs in procs:

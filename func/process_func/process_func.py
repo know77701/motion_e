@@ -40,6 +40,7 @@ class ProcessFunc():
         # DashBoard.dashboard_starter(dto)
         # window_screen_shot("FAIL")
         # DashBoard.notice_create(motion_window)
+        DashBoard.notice_create(motion_window)
         DashBoard.notice_delete(motion_window,motion_app)
 
 
