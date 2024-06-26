@@ -23,6 +23,7 @@ class ChartFunc():
     rsvr_memo_value = "예약/접수 메모"
     now = datetime.datetime.now()
     current_year = now.strftime("%Y")
+    explore_child_list = []
 
     def chart_starter():
         # ChartFunc.side_memo_save(0)
@@ -32,7 +33,7 @@ class ChartFunc():
         # ChartFunc.call_memo_save(2)
         # ChartFunc.call_memo_update()
         # ChartFunc.call_memo_delete()
-        ChartFunc.past_chart_view()
+        ChartFunc.past_resr_veiw()
 
     def window_resize(motion_app):
         return
@@ -75,7 +76,6 @@ class ChartFunc():
                         ChartFunc.memo_link_list.append(item_list)
 
     def find_field(index_number):
-
         if index_number == 0:
             batch_list = []
             chart_list = ChartFunc.return_window(
@@ -240,8 +240,7 @@ class ChartFunc():
         chart_link.click_input()
 
         chart_list = ChartFunc.find_field(0)
-        pyautogui.moveTo(x=935, y=227)
-        pyautogui.click()
+        ChartFunc.view_tab(935,227)
         random_chart_list = random.choice(chart_list)
         chart_view_btn = None
         chart_time = None
@@ -296,9 +295,67 @@ class ChartFunc():
             print("과거 차트 진입 완료")
         else:
             print("차트진입 실패")
+            
+    def view_tab(x,y):
+        pyautogui.moveTo(x=x, y=y)
+        pyautogui.click()
+        
+    def explore_children(element, depth=0, max_depth=0):
+        if ChartFunc.explore_child_list is None:
+            ChartFunc.explore_child_list = []
+        
+        if depth > max_depth:
+            return
+
+        if depth == 4:
+            ChartFunc.explore_child_list.append(element)
+        
+        # print(f"{' ' * depth * 2}Level {depth}: {element.element_info.name} - {element.element_info.control_type}")
+        
+        for child in element.children():
+            ChartFunc.explore_children(child, depth + 1, max_depth)
 
     def past_resr_veiw():
-        return
+        # ChartFunc.view_tab(761,221)
+        # ChartFunc.explore_children(resr_window, depth=0, max_depth=4)
+        resr_window = ChartFunc.return_window(auto_id="예약")
+        
+        ChartFunc.explore_children(resr_window, depth=0, max_depth=5)
+        fr_cilhd_list = ChartFunc.explore_child_list[0].children()
+        sec_child_list = ChartFunc.explore_child_list[1].children()
+        list_items = ChartFunc.explore_child_list[2].children()
+        
+        change_btn = None
+        cancle_btn = None
+        new_resr_btn = None
+        
+        for fr_i in fr_cilhd_list:
+            for i in fr_i.children():
+                print(i)
+        for sec_i in sec_child_list:
+            for i in sec_i.children():
+                print(i)
+        for item in list_items:
+            if item.element_info.name == "예약 변경" and item.element_info.control_type == "Button":
+                change_btn = item
+            if item.element_info.name == "예약 취소" and item.element_info.control_type == "Button":
+                cancle_btn = item
+            if item.element_info.name == "신규 예약" and item.element_info.control_type == "Button":
+                new_resr_btn = item
+            if item.element_info.name == "RdrdDIAG_FLD_CD" and item.element_info.control_type == "ComboBox":
+                print(item.children())
+            if item.element_info.name == "cmbRsrvMoprTpCd" and item.element_info.control_type == "ComboBox":
+                print(item.children())
+            if item.element_info.name == "cmbRsrvCfrId" and item.element_info.control_type == "ComboBox":
+                print(item.children())
+            if item.element_info.name == "cmbRsrvChrgDrId" and item.element_info.control_type == "ComboBox":
+                print(item.children())
+            if item.element_info.name == "cmbDiag_RN_CD" and item.element_info.control_type == "ComboBox":
+                print(item.children())
+            if item.element_info.control_type == "Edit":
+                print(item.get_value())
+
+        
 
     def resr_update():
         return
