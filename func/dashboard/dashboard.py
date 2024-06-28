@@ -123,6 +123,7 @@ class DashBoard():
             for notice_group in notice_view:
                 if notice_group.element_info.control_type == "Edit":
                     notice_group.set_text(DashBoard.content_random)
+                    time.sleep(0.5)
                     keyboard.send_keys("{ENTER}")                    
             time.sleep(1)
         except Exception as err:
@@ -141,6 +142,7 @@ class DashBoard():
                     notice_list.append(window_group)
             notice_view = notice_list[0].children()
             
+            random_item = []
             print(DashBoard.content_random)
             for window_item in notice_view:
                 if window_item.element_info.control_type == "List":
@@ -148,11 +150,16 @@ class DashBoard():
                     for list_item in window_item.children():
                         for select_item in list_item.children():
                             if select_item.element_info.control_type == "Text" and select_item.element_info.name == DashBoard.content_random:
-                                print(select_item.children)
-                                for delete_item in list_item.children():
-                                    print(list_item.children)
-                                    if delete_item.element_info.control_type == "Button" and delete_item.element_info.name == "닫기":
-                                        delete_item.click()
+                                random_item.append(list_item.children())
+                                
+            random_select = random.choice(random_item)
+            print(random_select)
+            for delete_item in random_select:
+                print(delete_item)
+                if delete_item.element_info.control_type == "Button" and delete_item.element_info.name == "닫기":
+                    delete_item.click()
+
+            
             procs = findwindows.find_elements()
             # print(procs)
             for sub_procs in procs:
