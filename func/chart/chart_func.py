@@ -32,7 +32,8 @@ class ChartFunc():
         # ChartFunc.call_memo_save(2)
         # ChartFunc.call_memo_update()
         # ChartFunc.call_memo_delete()
-        ChartFunc.past_chart_view()
+        # ChartFunc.past_chart_view()
+        ChartFunc.factorial(0)
 
     def window_resize(motion_app):
         return
@@ -298,6 +299,10 @@ class ChartFunc():
             print("차트진입 실패")
 
     def past_resr_veiw():
+        resr_window = ChartFunc.return_window(auto_id="예약")
+
+        for i in range(resr_window.childrne()*5):
+            print(i)
         return
 
     def resr_update():
