@@ -16,16 +16,22 @@ class ChartFunc():
     memo_delete_btn_list = []
     memo_content_list = []
     chart_child_list = []
-    # chart_compare_list = []
-    # chart_btn_list = []
     side_memo_value = "사이드메모"
     call_memo_value = "콜메모"
-    rsvr_memo_value = "예약/접수 메모"
+    rsrv_memo_value = "예약/접수 메모"
     now = datetime.datetime.now()
     current_year = now.strftime("%Y")
     explore_child_list = []
+    doctor_user = ["(주)트라이업", "김지헌", "강남언니", "김다빈", "김보람", "김산호", "김준하", "김한빛",
+                   "나혜은", "배석민", "변지혜", "김시별", "심평원", "김승철", "오준일", "유경화", "최영지", "이선희", "오승철"]
+    management_user = ["김미리", "김정수", "김태현", "최성우",
+                       "이예진", "이준혁", "강은지", "정예령", "정은지", "신지윤"]
+    consulting_user = ["심수빈", "이건", "설형일", "남종호", "김지헌", "탁재훈", "전은일", "강기혁", "남궁상호", "정재훈", "최규영",
+                       "김의사", "김지연", "류소원", "노승범", "배윤민", "박세미", "오인우", "정진용", "이은지", "이혜라", "정근화", "정예지", "표해남"]
+    nurse_user = ["설해남", "맹효뢰", "배석민", "송준", "정은용", "신효진", "이승현", "정세희", "지유진"]
+    coordinator_user = ["류미희", "오혜선"]
 
-    def chart_starter():
+    def chart_starter(start_sub_process_event, sub_process_done_event):
         # ChartFunc.side_memo_save(0)
         # ChartFunc.memo_update()
         # ChartFunc.memo_delete()
@@ -33,7 +39,8 @@ class ChartFunc():
         # ChartFunc.call_memo_save(2)
         # ChartFunc.call_memo_update()
         # ChartFunc.call_memo_delete()
-        ChartFunc.past_resr_veiw()
+        # ChartFunc.past_resr_veiw(start_sub_process_event)
+        ChartFunc.rsrv_cancle(start_sub_process_event)
 
     def window_resize(motion_app):
         return
@@ -219,8 +226,8 @@ class ChartFunc():
             memo_link = ChartFunc.memo_link_list[1]
             memo_link.click_input()
         else:
-            print(f"{ChartFunc.rsvr_memo_value} 탭 이동 불가")
-        ChartFunc.memo_update(ChartFunc.rsvr_memo_value)
+            print(f"{ChartFunc.rsrv_memo_value} 탭 이동 불가")
+        ChartFunc.memo_update(ChartFunc.rsrv_memo_value)
 
     def call_memo_save():
         ChartFunc.memo_save(2, ChartFunc.call_memo_value)
@@ -240,7 +247,7 @@ class ChartFunc():
         chart_link.click_input()
 
         chart_list = ChartFunc.find_field(0)
-        ChartFunc.view_tab(935,227)
+        ChartFunc.view_tab(935, 227)
         random_chart_list = random.choice(chart_list)
         chart_view_btn = None
         chart_time = None
@@ -295,67 +302,169 @@ class ChartFunc():
             print("과거 차트 진입 완료")
         else:
             print("차트진입 실패")
-            
-    def view_tab(x,y):
+
+    def view_tab(x, y):
         pyautogui.moveTo(x=x, y=y)
         pyautogui.click()
-        
-    def explore_children(element, depth=0, max_depth=0):
+
+    def explore_children(element, depth=0, max_depth=0, index_number=0):
         if ChartFunc.explore_child_list is None:
             ChartFunc.explore_child_list = []
-        
+
         if depth > max_depth:
             return
-
-        if depth == 4:
+        if depth == index_number:
             ChartFunc.explore_child_list.append(element)
-        
-        # print(f"{' ' * depth * 2}Level {depth}: {element.element_info.name} - {element.element_info.control_type}")
-        
+        # print(f"{depth} level = {element}")
         for child in element.children():
-            ChartFunc.explore_children(child, depth + 1, max_depth)
+            ChartFunc.explore_children(
+                child, depth + 1, max_depth, index_number=index_number)
 
-    def past_resr_veiw():
-        # ChartFunc.view_tab(761,221)
-        # ChartFunc.explore_children(resr_window, depth=0, max_depth=4)
+    # def public_code_get(,search_value):
+    #     return
+
+    # def get_user():
+    #     return
+
+    def random_value(array):
+        return random.choice(array)
+
+    def rsvr_update(start_sub_process_event):
+        ChartFunc.view_tab(761, 221)
+        ChartFunc.explore_children(resr_window, depth=0, max_depth=4)
         resr_window = ChartFunc.return_window(auto_id="예약")
-        
-        ChartFunc.explore_children(resr_window, depth=0, max_depth=5)
+
+        ChartFunc.explore_children(
+            resr_window, depth=0, max_depth=5, index_number=4)
         fr_cilhd_list = ChartFunc.explore_child_list[0].children()
         sec_child_list = ChartFunc.explore_child_list[1].children()
         list_items = ChartFunc.explore_child_list[2].children()
-        
+
         change_btn = None
-        cancle_btn = None
-        new_resr_btn = None
-        
-        for fr_i in fr_cilhd_list:
-            for i in fr_i.children():
-                print(i)
-        for sec_i in sec_child_list:
-            for i in sec_i.children():
-                print(i)
+
+        _btn = None
+        content_reset_btn = None
+        rsrv_item = None
+        rsrv_date = None
+        rsrv_status = None
+        rsrv_tiem_table = None
+        rdrddiag_fld_cd_edit = None
+        cmb_rsrv_mopr_tp_cd_edit = None
+        cmb_rsrv_cfr_id_edit = None
+        cmb_rsrv_chrg_dr_id = None
+        cmb_diag_rn_dc = None
+        edit_list = []
+
+        rsrv_value = ["미지정", "아쿠아필/듀클레어", "제모", "피코슈어", "보톡스", "필러", "모피우스",
+                      "울쎄라", "올리지오", "볼뉴머", "티타늄", "온다 리프팅", "인모드/슈링크", "F/U&진료"]
+        rsrv_significant = ["미지정", "complain", "f/u", "상담"]
+        rsrv_non_surgical = ["미지정", "필러", "윤곽/조각/지방파괴주사", "리프팅", "색소/홍조",
+                             "여드름자국/여드름흉터", "여드름", "스킨케어", "스킨부스터", "체형", "일반진료", "다이어트진료", "제모", "염증주사"]
+        ran_rsrv_value = ChartFunc.random_value(rsrv_value)
+        ran_rsrv_significant_value = ChartFunc.random_value(rsrv_significant)
+        ran_rsrv_non_surgical_value = ChartFunc.random_value(rsrv_non_surgical)
+        rna_doc_user_value = ChartFunc.random_value(ChartFunc.doctor_user)
+        rna_consulting_user_value = ChartFunc.random_value(
+            ChartFunc.consulting_user)
+
         for item in list_items:
+            if item.element_info.control_type == "Pane" and item.element_info.automation_id == "panel30":
+                rsrv_tiem_table = item
             if item.element_info.name == "예약 변경" and item.element_info.control_type == "Button":
                 change_btn = item
-            if item.element_info.name == "예약 취소" and item.element_info.control_type == "Button":
-                cancle_btn = item
             if item.element_info.name == "신규 예약" and item.element_info.control_type == "Button":
                 new_resr_btn = item
-            if item.element_info.name == "RdrdDIAG_FLD_CD" and item.element_info.control_type == "ComboBox":
-                print(item.children())
-            if item.element_info.name == "cmbRsrvMoprTpCd" and item.element_info.control_type == "ComboBox":
-                print(item.children())
-            if item.element_info.name == "cmbRsrvCfrId" and item.element_info.control_type == "ComboBox":
-                print(item.children())
-            if item.element_info.name == "cmbRsrvChrgDrId" and item.element_info.control_type == "ComboBox":
-                print(item.children())
-            if item.element_info.name == "cmbDiag_RN_CD" and item.element_info.control_type == "ComboBox":
-                print(item.children())
             if item.element_info.control_type == "Edit":
-                print(item.get_value())
+                edit_list.append(item)
+            if item.element_info.name == "RdrdDIAG_FLD_CD" and item.element_info.control_type == "ComboBox":
+                rdrddiag_fld_cd_edit = item.children()
+                rdrddiag_fld_cd_edit[0].set_text(ran_rsrv_value)
+            if item.element_info.name == "cmbRsrvMoprTpCd" and item.element_info.control_type == "ComboBox":
+                cmb_rsrv_mopr_tp_cd_edit = item.children()
+                cmb_rsrv_mopr_tp_cd_edit[0].set_text(
+                    ran_rsrv_non_surgical_value)
+            if item.element_info.name == "cmbRsrvCfrId" and item.element_info.control_type == "ComboBox":
+                cmb_rsrv_cfr_id_edit = item.children()
+                cmb_rsrv_cfr_id_edit[0].set_text(rna_consulting_user_value)
+            if item.element_info.name == "cmbRsrvChrgDrId" and item.element_info.control_type == "ComboBox":
+                cmb_rsrv_chrg_dr_id = item.children()
+                cmb_rsrv_chrg_dr_id[0].set_text(rna_doc_user_value)
+            if item.element_info.name == "cmbDiag_RN_CD" and item.element_info.control_type == "ComboBox":
+                cmb_diag_rn_dc = item.children()
+                cmb_diag_rn_dc[0].set_text(ran_rsrv_significant_value)
 
-        
+        compare_time = f"{ChartFunc.now.hour}:{ChartFunc.now.minute}"
+        ChartFunc.explore_child_list = []
+        ChartFunc.explore_children(
+            rsrv_tiem_table, depth=0, max_depth=5, index_number=4)
+        if ChartFunc.explore_child_list:
+            while True:
+                random_time_table = random.choice(ChartFunc.explore_child_list)
+                print(random_time_table)
+                if compare_time > random_time_table.element_info.name:
+                    continue
+                if random_time_table.element_info.name == "20:00" or random_time_table.element_info.name == "20:15" or random_time_table.element_info.name == "20:30" or random_time_table.element_info.name == "20:45" or random_time_table.element_info.name == "21:00" or random_time_table.element_info.name == "21:15" or random_time_table.element_info.name == "21:30":
+                    continue
+                else:
+                    random_time_table.click_input()
+                    break
 
-    def resr_update():
+        # scroll_bar = None
+        # for items in rsrv_tiem_table.children():
+        #     for item in items.children():
+        #         if item.element_info.control_type == "ScrollBar":
+        #             scroll_bar = item
+        # scroll_bar.wheel_mouse_input(wheel_dist=1)
+        # scroll_bar.wheel_mouse_input(wheel_dist=-1)
+
+        if len(edit_list) >= 2:
+            fr_edit = edit_list[0]
+            sec_edit = edit_list[1]
+
+            time.sleep(0.5)
+            fr_edit.set_text("전달메모 테스트")
+            sec_edit.set_text("예약메모 테스트")
+            change_btn.click()
+            start_sub_process_event.set()
+        else:
+            print("메모 입력 불가")
+
+    def rsrv_cancle(start_sub_process_event):
+        resr_window = ChartFunc.return_window(auto_id="예약")
+
+        ChartFunc.explore_children(
+            resr_window, depth=0, max_depth=5, index_number=4)
+        sec_child_list = ChartFunc.explore_child_list[1].children()
+        list_items = ChartFunc.explore_child_list[2].children()
+        cancle_btn = None
+
+        rsrv_list = []
+        list_view_btn = None
+
+        for sec_i in sec_child_list:
+            for items in sec_i.children():
+                if items.element_info.control_type == "Pane":
+                    list_view_btn = items.children()
+
+        list_view_btn[0].click()
+
+        for sec_i in sec_child_list:
+            for items in sec_i.children():
+                if items.element_info.control_type == "Custom":
+                    rsrv_list.append(items)
+
+        random_rsrv_list = random.choice(rsrv_list)
+        random_rsrv_list.click_input()
+
+        for item in list_items:
+            if item.element_info.name == "예약 취소" and item.element_info.control_type == "Button":
+                cancle_btn = item
+        cancle_btn.click()
+        print("테스트")
+        # cancle_window = ChartFunc.return_window(auto_id="PopReservationCancel")
+
+        # for list in cancle_window.children():
+        #     print(list)
+
+    def rsrv_create():
         return
