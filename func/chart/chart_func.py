@@ -328,13 +328,15 @@ class ChartFunc():
         change_btn = None
         cancle_btn = None
         new_resr_btn = None
-        
-        for fr_i in fr_cilhd_list:
-            for i in fr_i.children():
-                print(i)
-        for sec_i in sec_child_list:
-            for i in sec_i.children():
-                print(i)
+        combo = None
+        # for fr_i in fr_cilhd_list:
+        #     for item in fr_i.children():
+        #         print(item.children())
+        # for sec_items in sec_child_list:
+        #     for sec_item in sec_items.children():
+        #         if sec_item.element_info.control_type == "Pane":
+        #             print(sec_item.children())
+                    
         for item in list_items:
             if item.element_info.name == "예약 변경" and item.element_info.control_type == "Button":
                 change_btn = item
@@ -343,19 +345,27 @@ class ChartFunc():
             if item.element_info.name == "신규 예약" and item.element_info.control_type == "Button":
                 new_resr_btn = item
             if item.element_info.name == "RdrdDIAG_FLD_CD" and item.element_info.control_type == "ComboBox":
-                print(item.children())
-            if item.element_info.name == "cmbRsrvMoprTpCd" and item.element_info.control_type == "ComboBox":
-                print(item.children())
-            if item.element_info.name == "cmbRsrvCfrId" and item.element_info.control_type == "ComboBox":
-                print(item.children())
-            if item.element_info.name == "cmbRsrvChrgDrId" and item.element_info.control_type == "ComboBox":
-                print(item.children())
-            if item.element_info.name == "cmbDiag_RN_CD" and item.element_info.control_type == "ComboBox":
-                print(item.children())
-            if item.element_info.control_type == "Edit":
-                print(item.get_value())
+                
+                
+                combo = item
+            # if item.element_info.name == "cmbRsrvMoprTpCd" and item.element_info.control_type == "ComboBox":
+            #     for i in item.children():
+            #         i.set_text("테스트2")
+            # if item.element_info.name == "cmbRsrvCfrId" and item.element_info.control_type == "ComboBox":
+            #     for i in item.children():
+            #         i.set_text("테스트3")
+            # if item.element_info.name == "cmbRsrvChrgDrId" and item.element_info.control_type == "ComboBox":
+            #     for i in item.children():
+            #         i.set_text("테스트4")
+            # if item.element_info.name == "cmbDiag_RN_CD" and item.element_info.control_type == "ComboBox":
+            #     for i in item.children():
+            #         i.set_text("테스트5")
+            # if item.element_info.control_type == "Edit":
+            #     print("test6")
+            #     print(item.set_text("테스트6"))
 
-        
+        texts = combo.texts()
+        print(texts)
 
     def resr_update():
         return
