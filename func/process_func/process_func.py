@@ -40,12 +40,10 @@ class ProcessFunc():
         # user_delete(start_sub_process_event,
         #             sub_process_done_event, motion_window)
         # DashBoard.dashboard_starter(dto)
-        # window_screen_shot("FAIL")
-        # DashBoard.notice_create(motion_window)
-        # DashBoard.notice_create(motion_window)
-        DashBoard.notice_delete(motion_window,motion_app)
 
-        # ChartFunc.chart_starter()
+        ChartFunc.chart_starter(dto.start_sub_process_event,
+                                dto.sub_process_done_event)
+
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
@@ -92,17 +90,22 @@ class ProcessFunc():
             break
 
         if "삭제할환자를선택해주세요." in item_tle:
-            print("삭제할 환자 없음")
             item_btn = HwndWrapper(item_btn)
             item_btn.click()
         elif "이름을 입력하세요" in item_tle:
             item_btn = HwndWrapper(item_btn)
             item_btn.click()
-        elif "삭제되었습니다." in item_tle or "저장되었습니다" in item_tle or "예약이완료되었습니다!" in item_tle or "접수완료되었습니다." in item_tle or "완료되었습니다." in item_tle:
+        elif "삭제되었습니다." in item_tle or "저장되었습니다" in item_tle or "예약이완료되었습니다!" in item_tle or "접수완료되었습니다." in item_tle or "완료되었습니다." in item_tle or "예약되었습니다." in item_tle:
             item_btn = HwndWrapper(item_btn)
             item_btn.click()
             start_sub_process_event.clear()
         elif "접수하시겠습니까?" in item_tle:
+            item_btn = HwndWrapper(item_btn)
+            item_btn.click()
+            start_sub_process_event.set()
+            time.sleep(2)
+            sub_process_done_event.wait()
+        elif "예약을취소하시겠습니까?" in item_tle:
             item_btn = HwndWrapper(item_btn)
             item_btn.click()
             start_sub_process_event.set()
@@ -120,6 +123,8 @@ class ProcessFunc():
             start_sub_process_event.set()
             time.sleep(2)
             sub_process_done_event.wait()
+        else:
+            raise Exception('팝업 확인필요')
 
     def notice_popup_close(motion_app):
         procs = findwindows.find_elements()
