@@ -40,7 +40,8 @@ class ChartFunc():
         # ChartFunc.call_memo_update()
         # ChartFunc.call_memo_delete()
         # ChartFunc.past_resr_veiw(start_sub_process_event)
-        ChartFunc.rsrv_cancle(start_sub_process_event)
+        # ChartFunc.rsrv_cancle(start_sub_process_event)
+        ChartFunc.cons_create()
 
     def window_resize(motion_app):
         return
@@ -315,7 +316,7 @@ class ChartFunc():
             return
         if depth == index_number:
             ChartFunc.explore_child_list.append(element)
-        # print(f"{depth} level = {element}")
+        print(f"{depth} level = {element}")
         for child in element.children():
             ChartFunc.explore_children(
                 child, depth + 1, max_depth, index_number=index_number)
@@ -329,8 +330,29 @@ class ChartFunc():
     def random_value(array):
         return random.choice(array)
 
-    def rsvr_update(start_sub_process_event):
+    def rsrv_tab_view():
         ChartFunc.view_tab(761, 221)
+
+    def cons_tab_view():
+        ChartFunc.view_tab(852, 221)
+
+    def receipt_tab_view():
+        ChartFunc.view_tab(937, 221)
+
+    def panchart_tab_view():
+        ChartFunc.view_tab(1027, 221)
+
+    def receipt_image_tab_view():
+        ChartFunc.view_tab(1117, 221)
+
+    def agreement_tab_view():
+        ChartFunc.view_tab(1207, 221)
+
+    def acceptance_tab_view():
+        ChartFunc.view_tab(1287, 221)
+
+    def rsvr_update(start_sub_process_event):
+        ChartFunc.rsrv_tab_view()
         ChartFunc.explore_children(resr_window, depth=0, max_depth=4)
         resr_window = ChartFunc.return_window(auto_id="예약")
 
@@ -468,3 +490,14 @@ class ChartFunc():
 
     def rsrv_create():
         return
+
+    def cons_create():
+        cons_window = ChartFunc.return_window(auto_id="상담")
+
+        ChartFunc.explore_children(
+            cons_window, depth=0, max_depth=6, index_number=6)
+        print(ChartFunc.explore_child_list[0].children())
+        print(ChartFunc.explore_child_list[1].children())
+        print(ChartFunc.explore_child_list[2].children())
+        print(ChartFunc.explore_child_list[3].children())
+        print(ChartFunc.explore_child_list[4].children())
