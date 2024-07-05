@@ -31,43 +31,43 @@ class DashBoard():
             dto.chart_number = 접수/예약 후 비교 숫자
         """
         
-        # # 화면 초기화
-        # DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
+        # 화면 초기화
+        DashBoard.dashboard_reset(dto.motion_window, dto.motion_app)
 
-        # # 공지사항 등록/비교/삭제
-        # DashBoard.notice_create(dto.motion_window)
-        # DashBoard.notice_delete(dto.motion_window, dto.motion_app)
+        # 공지사항 등록/비교/삭제
+        DashBoard.notice_create(dto.motion_window)
+        DashBoard.notice_delete(dto.motion_window, dto.motion_app)
 
-        # # 신환 등록
-        # DashBoard.user_save(dto)
+        # 신환 등록
+        DashBoard.user_save(dto)
 
-        # # 등록 환자 예약/비교
-        # dto.btn_title = "예약하기"
+        # 등록 환자 예약/비교
+        dto.btn_title = "예약하기"
 
-        # DashBoard.search_btn_click(
-        #     dto.motion_window, dto.chart_number, dto.btn_title)
-        # DashBoard.reserve(dto)
-        # DashBoard.reserve_cancel(dto.motion_window, dto.chart_number)
+        DashBoard.search_btn_click(
+            dto.motion_window, dto.chart_number, dto.btn_title)
+        DashBoard.reserve(dto)
+        DashBoard.reserve_cancel(dto.motion_window, dto.chart_number)
 
 
-        # # 등록 환자 접수/비교
-        # dto.btn_title = "접수하기"
-        # DashBoard.search_btn_click(
-        #     dto.motion_window, dto.chart_number, dto.btn_title)
+        # 등록 환자 접수/비교
+        dto.btn_title = "접수하기"
+        DashBoard.search_btn_click(
+            dto.motion_window, dto.chart_number, dto.btn_title)
 
-        # DashBoard.receipt(dto)
-        # DashBoard.receipt_cancel(dto.motion_window, dto.chart_number)
+        DashBoard.receipt(dto)
+        DashBoard.receipt_cancel(dto.motion_window, dto.chart_number)
 
-        # # # 고객등록 예약
-        # dto.search_name = dto.search_name + "예약"
-        # DashBoard.save_reserve_popup(dto)
+        # # 고객등록 예약
+        dto.search_name = dto.search_name + "예약"
+        DashBoard.save_reserve_popup(dto)
 
-        # # 고객등록 접수
-        # dto.search_name = dto.search_name + "접수"
-        # DashBoard.save_receipt_popup(dto)
+        # 고객등록 접수
+        dto.search_name = dto.search_name + "접수"
+        DashBoard.save_receipt_popup(dto)
         
         # 환자차트 진입
-        DashBoard.view_user_chart(dto.motion_window, 3, dto.chart_number)
+        DashBoard.view_user_chart(dto.motion_window, 1, dto.chart_number)
         
         ChartFunc.chart_starter()
 
@@ -99,12 +99,13 @@ class DashBoard():
                 if window_list.element_info.automation_id == "menuBar":
                     for item in window_list.children():
                         if item.element_info.control_type == "MenuItem" and item.element_info.name == "Dashboard":
-                            item.select()
-                if window_list.element_info.automation_id == "TitleBar":
-                    for item in window_list.children():
-                        if window_list.elemen_info.automation_id == "Maximize-Restore" and item.element.control_type == "Button":
-                            item.click()
-                            break
+                            item.click_input()
+            if windows.element_info.control_type == "TitleBar":
+                for item in windows.children():
+                    if item.element_info.name == "최대화" and item.element_info.control_type == "Button":
+                        item.click()
+                        break
+        keyboard.send_keys("{F5}")
         print("리셋 함수 종료")
         time.sleep(2)
 
@@ -123,8 +124,9 @@ class DashBoard():
             for notice_group in notice_view:
                 if notice_group.element_info.control_type == "Edit":
                     notice_group.set_text(DashBoard.content_random)
-                    time.sleep(0.5)
-                    keyboard.send_keys("{ENTER}")                    
+                    time.sleep(1)
+                    keyboard.send_keys("{ENTER}") 
+                    print("테스트")                
             time.sleep(1)
         except Exception as err:
             keyboard.send_keys('{F5}')

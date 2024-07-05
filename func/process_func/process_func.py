@@ -37,12 +37,12 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         # ProcessFunc.notice_popup_close(motion_app)
-        DashBoard.dashboard_starter(dto)
+        # DashBoard.dashboard_starter(dto)
 
         
 
-        # ChartFunc.chart_starter(dto.start_sub_process_event,
-        #                         dto.sub_process_done_event)
+        ChartFunc.chart_starter(dto.start_sub_process_event,
+                                dto.sub_process_done_event)
 
 
     def sub_process_func(start_sub_process_event, sub_process_done_event):
