@@ -126,7 +126,6 @@ class DashBoard():
                     notice_group.set_text(DashBoard.content_random)
                     time.sleep(1)
                     keyboard.send_keys("{ENTER}") 
-                    print("테스트")                
             time.sleep(1)
         except Exception as err:
             keyboard.send_keys('{F5}')

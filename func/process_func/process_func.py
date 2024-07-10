@@ -108,7 +108,7 @@ class ProcessFunc():
         elif "이름을 입력하세요" in item_tle:
             item_btn = HwndWrapper(item_btn)
             item_btn.click()
-        elif "삭제되었습니다." in item_tle or "저장되었습니다" in item_tle or "예약이완료되었습니다!" in item_tle or "접수완료되었습니다." in item_tle or "완료되었습니다." in item_tle or "예약되었습니다." in item_tle:
+        elif "삭제되었습니다." in item_tle or "저장되었습니다" in item_tle or "예약이완료되었습니다!" in item_tle or "접수완료되었습니다." in item_tle or "완료되었습니다." in item_tle or "예약되었습니다." in item_tle or "DUR완료" in item_tle:
             item_btn = HwndWrapper(item_btn)
             item_btn.click()
             start_sub_process_event.clear()
