@@ -14,14 +14,20 @@ if not is_admin():
 if __name__ == "__main__":
     start_sub_process_event = multiprocessing.Event()
     sub_process_done_event = multiprocessing.Event()
+    
 
     main_process = multiprocessing.Process(
         target=ProcessFunc.main_process_func, args=(start_sub_process_event, sub_process_done_event))
     sub_process = multiprocessing.Process(
         target=ProcessFunc.sub_process_func, args=(start_sub_process_event, sub_process_done_event))
+    chart_sub_process = multiprocessing.Process(
+        target=ProcessFunc.chart_sub_process, args=(start_sub_process_event,sub_process_done_event))
+    
     
     main_process.start()
     sub_process.start()
+    chart_sub_process.start()
 
     main_process.join()
     sub_process.terminate()
+    chart_sub_process.terminate()

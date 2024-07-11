@@ -139,6 +139,9 @@ class ProcessFunc():
         else:
             raise Exception('팝업 확인필요')
 
+    def chart_sub_process(start_sub_process_event, sub_process_done_event):
+        print("테스트")
+
     def notice_popup_close(motion_app):
         procs = findwindows.find_elements()
         notice_procs = None

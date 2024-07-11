@@ -570,41 +570,45 @@ class ChartFunc():
             ChartFunc.receipt_save(start_sub_process_event)
             
     def penchart_template_save():
-        save_btn = None
-        drawing_save_btn = None
-        drawing_rotat_btn = None
-        drawing_load_image_btn = None
-        drawing_save_btn = None
-        
-        
-        penchart_window = ChartFunc.return_window(auto_id="펜차트")
-        for penchart_list in penchart_window.children():
-            for list_item in penchart_list.children():
-                if list_item.element_info.control_type == "Pane":
-                    for items in list_item.children():
-                        if items.element_info.control_type == "Button" and items.element_info.name == "등록":
-                            save_btn = items
-                            
-        if save_btn is not None:
-            save_btn.click()
-        drawing_form = ChartFunc.return_window(auto_id="DrawingForm")
-        print("테스트")
-        for form_list in drawing_form.children():
-            print(form_list)
-            if form_list.element_info.control_type == "Pane" and form_list.element_info.automation_id == "radPanel1":
-                for btn_item_list in form_list.children():
-                    if btn_item_list.element_info.control_type == "Button" and form_list.element_info.automation_id == "radbuttonRotation":
-                        drawing_rotat_btn = btn_item_list
-                    if btn_item_list.element_info.control_type == "Button" and form_list.element_info.automation_id == "radButtonLoadImage":
-                        drawing_load_image_btn = btn_item_list
-                    if btn_item_list.element_info.control_type == "Button" and form_list.element_info.automation_id == "radButtonSave":
-                        drawing_save_btn = btn_item_list
-            if form_list.element_info.control_type == "Pane" and form_list.element_info.automation_id == "radPanel2":
-                for items in form_list.children():
-                    for item in items.children():
-                        print(item)
-        
-        
+        try:
+            
+            save_btn = None
+            drawing_save_btn = None
+            drawing_rotat_btn = None
+            drawing_load_image_btn = None
+            drawing_save_btn = None
+            
+            
+            penchart_window = ChartFunc.return_window(auto_id="펜차트")
+            for penchart_list in penchart_window.children():
+                for list_item in penchart_list.children():
+                    if list_item.element_info.control_type == "Pane":
+                        for items in list_item.children():
+                            if items.element_info.control_type == "Button" and items.element_info.name == "등록":
+                                save_btn = items
+                                
+            if save_btn is not None:
+                save_btn.click()
+            drawing_form = ChartFunc.return_window(auto_id="DrawingForm")
+            print("테스트")
+            for form_list in drawing_form.children():
+                print(form_list)
+                if form_list.element_info.control_type == "Pane" and form_list.element_info.automation_id == "radPanel1":
+                    for btn_item_list in form_list.children():
+                        if btn_item_list.element_info.control_type == "Button" and form_list.element_info.automation_id == "radbuttonRotation":
+                            drawing_rotat_btn = btn_item_list
+                        if btn_item_list.element_info.control_type == "Button" and form_list.element_info.automation_id == "radButtonLoadImage":
+                            drawing_load_image_btn = btn_item_list
+                        if btn_item_list.element_info.control_type == "Button" and form_list.element_info.automation_id == "radButtonSave":
+                            drawing_save_btn = btn_item_list
+                if form_list.element_info.control_type == "Pane" and form_list.element_info.automation_id == "radPanel2":
+                    for items in form_list.children():
+                        for item in items.children():
+                            print(item)
+        except findwindows.ElementNotFoundError as e:
+            ChartFunc.tab_view("펜차트")
+            ChartFunc.penchart_template_save()
+            
         
     def penchart_get():
         return
