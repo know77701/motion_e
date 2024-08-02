@@ -8,26 +8,28 @@ from func.chart.chart_func import *
 
 
 class ProcessFunc():
-    MAX_RETRY = 3
-    rad_box = None
-    retries = 0
-    win32_value = 'win32'
-    uia_value = 'uia'
-    motion_value = '모션.ver'
-    notice_value = '안내사항'
-    sucess_value = False
-    dto_search_name = "QA9"
-    dto_phone_number = "01074417631"
+    
+    def __init__(self):
+        self.MAX_RETRY = 3
+        self.rad_box = None
+        self.retries = 0
+        self.win32_value = 'win32'
+        self.uia_value = 'uia'
+        self.motion_value = '모션.ver'
+        self.notice_value = '안내사항'
+        self.sucess_value = False
+        self.dto_search_name = "QA9"
+        self.dto_phone_number = "01074417631"
 
-    def main_process_func(start_sub_process_event, sub_process_done_event):
+    def main_process_func(self, start_sub_process_event, sub_process_done_event):
 
-        win32_app = application.Application(backend=ProcessFunc.win32_value)
-        motion_app = application.Application(backend=ProcessFunc.uia_value)
-        MotionStarter.app_connect(win32_app, motion_app)
+        win32_app = application.Application(backend=self.win32_value)
+        motion_app = application.Application(backend=self.uia_value)
+        MotionStarter.app_connect(self,win32_app, self,motion_app)
         motion_window = motion_app.window(
-            title=MotionStarter.version_search(ProcessFunc.motion_value))
+            title=MotionStarter.version_search(self.motion_value))
 
-        dto = DashboardDto(motion_window, motion_app, ProcessFunc.dto_search_name, ProcessFunc.dto_phone_number,
+        dto = DashboardDto(motion_window, motion_app, self.dto_search_name, self.dto_phone_number,
                            start_sub_process_event, sub_process_done_event, "", "0123456789")
 
         # 서브프로세스 통신용
@@ -36,39 +38,39 @@ class ProcessFunc():
         # 서브프로세스 대기용
         dto.sub_process_done_event.wait()
 
-        # ProcessFunc.notice_popup_close(motion_app)
-        # DashBoard.dashboard_starter(dto)
+        self.notice_popup_close(motion_app)
+        DashBoard.dashboard_starter(dto)
 
         
 
-        ChartFunc.chart_starter(dto.start_sub_process_event,
+        ChartFunc.chart_starter(self, dto.start_sub_process_event,
                                 dto.sub_process_done_event)
 
 
-    def sub_process_func(start_sub_process_event, sub_process_done_event):
+    def sub_process_func(self, start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()
-        win32_app = application.Application(backend=ProcessFunc.win32_value)
-        motion_app = application.Application(backend=ProcessFunc.uia_value)
+        win32_app = application.Application(backend=self.win32_value)
+        motion_app = application.Application(backend=self.uia_value)
         MotionStarter.app_connect(win32_app, motion_app)
         sub_process_done_event.set()
 
         # start_sub_process_event.clear()
 
-        while ProcessFunc.retries <= ProcessFunc.MAX_RETRY:
+        while self.retries <= self.MAX_RETRY:
             try:
                 start_sub_process_event.wait()
-                ProcessFunc.rad_button_click(
+                self.rad_button_click(
                     start_sub_process_event, sub_process_done_event)
                 sub_process_done_event.set()
                 # start_sub_process_event.clear()
-                ProcessFunc.retries = 0
+                self.retries = 0
                 continue
 
             except Exception as e:
                 print("서브 모듈 동작 실패 : ", e)
                 sub_process_done_event.set()
                 # start_sub_process_event.clear()
-                ProcessFunc.retries += 1
+                self.retries += 1
                 continue
 
     def rad_button_click(start_sub_process_event, sub_process_done_event):
@@ -142,7 +144,7 @@ class ProcessFunc():
     def chart_sub_process(start_sub_process_event, sub_process_done_event):
         print("테스트")
 
-    def notice_popup_close(motion_app):
+    def notice_popup_close(self,motion_app):
         procs = findwindows.find_elements()
         notice_procs = None
         for pro in procs:
@@ -152,7 +154,7 @@ class ProcessFunc():
 
         if notice_procs is not None:
             notice_window = motion_app.window(
-                title=MotionStarter.version_search(ProcessFunc.notice_value))
+                title=MotionStarter.version_search(self.notice_value))
             notice_list = notice_window.children()
             for item_list in notice_list:
                 if item_list.element_info.control_type == "TitleBar":
