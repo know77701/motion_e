@@ -32,16 +32,16 @@ class ChartFunc():
     coordinator_user = ["류미희", "오혜선"]
 
     def chart_starter(start_sub_process_event, sub_process_done_event):
-        ChartFunc.side_memo_save()
-        # ChartFunc.memo_update()
-        # ChartFunc.memo_delete()
+        # ChartFunc.side_memo_save()
+        # ChartFunc.side_memo_update()
+        # ChartFunc.side_memo_delete()
 
         # ChartFunc.call_memo_save(2)
         # ChartFunc.call_memo_update()
         # ChartFunc.call_memo_delete()
         # ChartFunc.past_resr_veiw(start_sub_process_event)
         # ChartFunc.rsrv_cancle(start_sub_process_event)
-        # ChartFunc.receipt_save()
+        ChartFunc.penchart_template_save()
         
 
     def window_resize(motion_app):
@@ -479,83 +479,142 @@ class ChartFunc():
     def rsrv_save():
         return
 
-    def receipt_save():
-        # ChartFunc.receipt_tab_view()
+    def receipt_save(start_sub_process_event):
     
         try:    
-            cons_window = ChartFunc.return_window(auto_id="진료")
-            cons_edit_list = []
-            product_edit = None
-
-            ChartFunc.explore_children(cons_window, depth=0, max_depth=6, index_number=6)
+            receipt_window = ChartFunc.return_window(auto_id="진료")
+            ChartFunc.explore_children(receipt_window, depth=0, max_depth=6, index_number=6)
             
-            fr_list = ChartFunc.explore_child_list[0]
             sec_list = ChartFunc.explore_child_list[1]
             th_list = ChartFunc.explore_child_list[2]
-            four_list = ChartFunc.explore_child_list[3]
             five_list = ChartFunc.explore_child_list[4]
             
             print_btn = None
             save_btn = None
-            reim_str = None
-            non_reim_str = None
-            acceptance_str = None
             prescription_edit = None
             corporal_edit = None
-            edit_list = None
+            edit_list = []
+            corporal_item_list = None
             
-            # print(fr_list)
-            # for fr_item in fr_list.children():
-            #     print(fr_item)
+            
             for sec_item in sec_list.children():
                 for items in sec_item.children():
                     if items.element_info.name == "처방전 출력" and items.element_info.control_type == "Button":
                         print_btn = items
                     if items.element_info.name == "저장" and items.element_info.control_type == "Button":
                         save_btn = items
-                    if items.element_info.automation_id == "lblTotPayAmt":
-                        acceptance_str = items
-                    if items.element_info.automation_id == "lblNPayAmt":
-                        non_reim_str = items
-                    if items.element_info.automation_id == "lblPayAmt":
-                        reim_str = items
         
                     
             # 처방 입력영역
             for th_item in th_list.children():
                 for items in th_item.children():
-                    # print(items)
-                    prescription_edit = items
-            # # 세트처방 라인
-            # for four_item in four_list.children():
-            #     for items in four_item.children():
-            #         for item in items.children():
-            #             print(item)
+                    if items.element_info.control_type == "Edit":
+                        prescription_edit = items
+            
+            random_doc_user= random.choice(ChartFunc.doctor_user)
+            
             for five_item in five_list.children():
                 for items in five_item.children():
                     if items.element_info.control_type == "Pane":
                         for item in items.children():
-                            if item.element_info.control_type == "Edit" and item.element_info.automation_id == "pnlDiagMemoDetail" or item.element_info.automation_id == "pnlSymtPrgsDetail":
-                                print(item)
-                                # edit_list.append(item)
+                            if item.element_info.control_type == "Edit":
+                                edit_list.append(item)
+                    # 상병입력
                     if items.element_info.control_type == "Edit" and items.element_info.automation_id == "txtSrchSick":
                         corporal_edit = items
-                    if items.element_info.control_type == "ComboBox" and items.element_info.automation_id == "radDropDownListINSU":
-                        item_child = items.children()
-                        print(item_child)
-                        item = item_child[0]
-                        item.set_text("test1")
+                    # 담당의
                     if items.element_info.control_type == "ComboBox" and items.element_info.automation_id == "cmbChrgDrId":
-                        item_child = items.children()
-                        print(item_child)
-                        item = item_child[0]
-                        item.set_text("test2")
-                    if items.element_info.control_type == "ComboBox" and items.element_info.automation_id == "cmbDgrsltTpCd":
-                        item_child = items.children()
-                        item = item_child[0]
-                        item.set_text("test3")
+                        sec_item = items.children()
+                        sec_item[0].set_text(random_doc_user)
+            
             if corporal_edit is not None:
-                corporal_edit.set_text("상병입력란 입력 테스트")
+                corporal_edit.set_text("감기")
+                keyboard.send_keys("{ENTER}")
+            else:
+                print("상병입력 불가")
+            
+            if prescription_edit is not None:
+                prescription_edit.set_text("프로")
+            else:
+                print("처방 입력 불가")
+                
+            if edit_list is not []:
+                edit_list[0].set_text("증상경과 작성")
+                edit_list[1].set_text("진료기록 작성")
+            else:
+                print("증상경과 진료기록 입력 불가")    
+            panle_window = ChartFunc.return_window(auto_id="spnlDiag")
+
+            for window_list in panle_window.children():
+                for list_item in window_list.children():
+                    if list_item.element_info.control_type == "Pane" and list_item.element_info.automation_id == "pnlSetPrscOrdr":
+                        for order_items in list_item.children():
+                            if order_items.element_info.control_type == "Table":
+                                corporal_item_list = random.choice(order_items.children())
+                    if list_item.element_info.control_type == "Pane" and list_item.element_info.automation_id == "cpnlSetPrscSrchSick":
+                        for items in list_item.children():
+                            for item in items.children():
+                                for item_child in item.children():
+                                    for i in item_child.children():
+                                        if i.element_info.control_type == "Table" and i.element_info.automation_id == "gvSrchSickList":
+                                            prescription_item = random.choice(i.children())
+
+            corporal_item_list.click_input()
+            time.sleep(1)
+            prescription_item.click_input()
+            time.sleep(1)
+            start_sub_process_event.set()
+            save_btn.click()
         except findwindows.ElementNotFoundError:
             ChartFunc.tab_view("진료")
-            ChartFunc.receipt_save()
+            ChartFunc.receipt_save(start_sub_process_event)
+            
+    def penchart_template_save():
+        try:
+            
+            save_btn = None
+            drawing_save_btn = None
+            drawing_rotat_btn = None
+            drawing_load_image_btn = None
+            drawing_save_btn = None
+            
+            
+            penchart_window = ChartFunc.return_window(auto_id="펜차트")
+            for penchart_list in penchart_window.children():
+                for list_item in penchart_list.children():
+                    if list_item.element_info.control_type == "Pane":
+                        for items in list_item.children():
+                            if items.element_info.control_type == "Button" and items.element_info.name == "등록":
+                                save_btn = items
+                                
+            if save_btn is not None:
+                save_btn.click()
+            drawing_form = ChartFunc.return_window(auto_id="DrawingForm")
+            print("테스트")
+            for form_list in drawing_form.children():
+                print(form_list)
+                if form_list.element_info.control_type == "Pane" and form_list.element_info.automation_id == "radPanel1":
+                    for btn_item_list in form_list.children():
+                        if btn_item_list.element_info.control_type == "Button" and form_list.element_info.automation_id == "radbuttonRotation":
+                            drawing_rotat_btn = btn_item_list
+                        if btn_item_list.element_info.control_type == "Button" and form_list.element_info.automation_id == "radButtonLoadImage":
+                            drawing_load_image_btn = btn_item_list
+                        if btn_item_list.element_info.control_type == "Button" and form_list.element_info.automation_id == "radButtonSave":
+                            drawing_save_btn = btn_item_list
+                if form_list.element_info.control_type == "Pane" and form_list.element_info.automation_id == "radPanel2":
+                    for items in form_list.children():
+                        for item in items.children():
+                            print(item)
+        except findwindows.ElementNotFoundError as e:
+            ChartFunc.tab_view("펜차트")
+            ChartFunc.penchart_template_save()
+            
+        
+    def penchart_get():
+        return
+
+    def penchart_update():
+        return
+
+    def penchart_delete():
+        return
