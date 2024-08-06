@@ -20,14 +20,15 @@ class ProcessFunc():
         self.sucess_value = False
         self.dto_search_name = "QA9"
         self.dto_phone_number = "01074417631"
+        self.motion_starter = MotionStarter()
+        self.dashBoard = DashBoard()
+        self.chart_func = ChartFunc()
 
-    def main_process_func(self, start_sub_process_event, sub_process_done_event):
-
+    def main_process_func(self,start_sub_process_event, sub_process_done_event):
         win32_app = application.Application(backend=self.win32_value)
         motion_app = application.Application(backend=self.uia_value)
-        MotionStarter.app_connect(self,win32_app, self,motion_app)
-        motion_window = motion_app.window(
-            title=MotionStarter.version_search(self.motion_value))
+        self.motion_starter.app_connect(win32_app, motion_app)
+        motion_window = motion_app.window(title=self.motion_starter.version_search(self.motion_value))
 
         dto = DashboardDto(motion_window, motion_app, self.dto_search_name, self.dto_phone_number,
                            start_sub_process_event, sub_process_done_event, "", "0123456789")
@@ -39,11 +40,11 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         self.notice_popup_close(motion_app)
-        DashBoard.dashboard_starter(dto)
+        self.dashBoard.dashboard_starter(dto)
 
         
 
-        ChartFunc.chart_starter(self, dto.start_sub_process_event,
+        self.chart_func.chart_starter(dto.start_sub_process_event,
                                 dto.sub_process_done_event)
 
 
@@ -51,7 +52,7 @@ class ProcessFunc():
         start_sub_process_event.wait()
         win32_app = application.Application(backend=self.win32_value)
         motion_app = application.Application(backend=self.uia_value)
-        MotionStarter.app_connect(win32_app, motion_app)
+        self.motion_starter.app_connect(win32_app, motion_app)
         sub_process_done_event.set()
 
         # start_sub_process_event.clear()
@@ -73,7 +74,7 @@ class ProcessFunc():
                 self.retries += 1
                 continue
 
-    def rad_button_click(start_sub_process_event, sub_process_done_event):
+    def rad_button_click(self,start_sub_process_event, sub_process_done_event):
         item_tle = None
         item_btn = None
         while True:
@@ -141,7 +142,7 @@ class ProcessFunc():
         else:
             raise Exception('팝업 확인필요')
 
-    def chart_sub_process(start_sub_process_event, sub_process_done_event):
+    def chart_sub_process(self, start_sub_process_event, sub_process_done_event):
         print("테스트")
 
     def notice_popup_close(self,motion_app):
@@ -154,7 +155,7 @@ class ProcessFunc():
 
         if notice_procs is not None:
             notice_window = motion_app.window(
-                title=MotionStarter.version_search(self.notice_value))
+                title=self.motion_starter.version_search(self.notice_value))
             notice_list = notice_window.children()
             for item_list in notice_list:
                 if item_list.element_info.control_type == "TitleBar":
