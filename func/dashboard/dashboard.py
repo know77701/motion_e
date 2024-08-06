@@ -17,6 +17,7 @@ class DashBoard():
         self.MAX_RETRY = 3
         self.notice_content = ["테스트","TEST","CHECK NOTICE","안드로이드","아이오에스"]
         self.content_random = random.choice(self.notice_content)
+        self.chart_view_result = False
         self.chart_fucn = ChartFunc()
         self.motion_starter = MotionStarter()
 
@@ -34,41 +35,39 @@ class DashBoard():
             dto.chart_number = 접수/예약 후 비교 숫자
         """
         
-        # 화면 초기화
-        self.dashboard_reset(dto.motion_window, dto.motion_app)
+        # # 화면 초기화
+        # self.dashboard_reset(dto.motion_window, dto.motion_app)
 
-        # 공지사항 등록/비교/삭제
-        self.notice_create(dto.motion_window)
-        self.notice_delete(dto.motion_window)
+        # # 공지사항 등록/비교/삭제
+        # self.notice_create(dto.motion_window)
+        # self.notice_delete(dto.motion_window)
 
-        # 신환 등록
-        self.user_save(dto)
+        # # 신환 등록
+        # self.user_save(dto)
 
-        # 등록 환자 예약/비교
-        dto.btn_title = "예약하기"
-
-        
-        self.reserve(dto)
-        self.reserve_cancel(dto.motion_window, dto.chart_number)
+        # # 등록 환자 예약/비교
+        # dto.btn_title = "예약하기"
+        # self.reserve(dto)
+        # self.reserve_cancel(dto.motion_window, dto.chart_number)
 
 
-        # 등록 환자 접수/비교
-        
+        # # 등록 환자 접수/비교
+        # self.receipt(dto)
+        # self.receipt_cancel(dto.motion_window, dto.chart_number)
 
-        self.receipt(dto)
-        self.receipt_cancel(dto.motion_window, dto.chart_number)
+        # # # 고객등록 예약
+        # dto.search_name = dto.search_name + "예약"
+        # self.save_reserve_popup(dto)
 
-        # # 고객등록 예약
-        dto.search_name = dto.search_name + "예약"
-        self.save_reserve_popup(dto)
-
-        # 고객등록 접수
-        dto.search_name = dto.search_name + "접수"
-        self.save_receipt_popup(dto)
+        # # 고객등록 접수
+        # dto.search_name = dto.search_name + "접수"
+        # self.save_receipt_popup(dto)
         
         # 환자차트 진입
+        dto.chart_number = "0000002351"
         self.view_user_chart(dto.motion_window, 1, dto.chart_number)
-        self.chart_fucn.chart_starter()
+        if self.chart_view_result:
+            self.chart_fucn.chart_starter()
 
     def dashboard_reset(self,motion_window, motion_app):
         print("대시보드 리셋 동작 시작")
@@ -608,18 +607,18 @@ class DashBoard():
             index_number = 예약리스트 2 / 접수리스트 3
         """
         try:
-            # motion_web_window = motion_window.child_window(
-            #     class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
-            # motion_web_list = motion_web_window.children()
-            # chart_item = None
-            # doc_list = []
-            # for web_item in motion_web_list:
-            #     if web_item.element_info.control_type == "Document":
-            #         doc_list.append(web_item)
+            motion_web_window = motion_window.child_window(
+                class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
+            motion_web_list = motion_web_window.children()
+            chart_item = None
+            doc_list = []
+            for web_item in motion_web_list:
+                if web_item.element_info.control_type == "Document":
+                    doc_list.append(web_item)
 
-            # doc_item = doc_list[index_number]
+            doc_item = doc_list[index_number]
 
-            # doc_child = doc_item.children()
+            doc_child = doc_item.children()
             doc_child = self.return_list(motion_window, index_number)
             for items in doc_child:
                 if items.element_info.control_type == "List":
@@ -627,14 +626,18 @@ class DashBoard():
                         for i in item.children():
                             if chart_number in i.element_info.name:
                                 chart_item = i
-
+            chart_item.click_input()
             if not chart_item == None:
                 chart_item.click_input()
-                print(f"{chart_item.element_info.name} chart view")
+                print(f"{chart_item.element_info.name} 차트 진입")
+                self.chart_view_result = True
+                return self.chart_view_result
             elif chart_number == 2:
                 print(f"{chart_item.element_info.name} 예약카드 미존재")
             elif chart_number == 3:
                 print(f"{chart_item.element_info.name} 접수카드 미존재")
+            else:
+                print(f"{chart_item.element_info.name} 해당 차트 없음")
         except Exception as e:
             print(e)
             window_screen_shot("view_user_chart_fail")
