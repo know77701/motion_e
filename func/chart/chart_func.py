@@ -48,7 +48,7 @@ class ChartFunc():
     def window_resize(self, motion_app):
         return
 
-    def find_window(self, ):
+    def find_window(self):
         procs = findwindows.find_elements()
         chart_window = None
         for window in procs:
