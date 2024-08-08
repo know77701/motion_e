@@ -40,7 +40,7 @@ class ProcessFunc():
         dto.sub_process_done_event.wait()
 
         self.notice_popup_close(motion_app)
-        self.dashBoard.dashboard_starter(dto)
+        # self.dashBoard.dashboard_starter(dto)
 
         
 
