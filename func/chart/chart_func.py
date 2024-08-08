@@ -572,13 +572,11 @@ class ChartFunc():
             
     def penchart_template_save(self):
         try:
-            
             save_btn = None
             drawing_save_btn = None
             drawing_rotat_btn = None
             drawing_load_image_btn = None
             drawing_save_btn = None
-            
             
             penchart_window = self.return_window(auto_id="펜차트")
             for penchart_list in penchart_window.children():
@@ -591,7 +589,6 @@ class ChartFunc():
             if save_btn is not None:
                 save_btn.click()
             drawing_form = self.return_window(auto_id="DrawingForm")
-            print("테스트")
             for form_list in drawing_form.children():
                 print(form_list)
                 if form_list.element_info.control_type == "Pane" and form_list.element_info.automation_id == "radPanel1":
@@ -605,6 +602,7 @@ class ChartFunc():
                 if form_list.element_info.control_type == "Pane" and form_list.element_info.automation_id == "radPanel2":
                     for items in form_list.children():
                         for item in items.children():
+                            
                             print(item)
         except findwindows.ElementNotFoundError as e:
             self.tab_view("펜차트")
