@@ -14,8 +14,6 @@ RETRY = 0
 
 
 def window_screen_shot(save_file_name):
-    global MAX_TRY
-    global RETRY
     while RETRY <= MAX_TRY :
         if os.path.exists(screenshot_save_dir):
             ImageGrab.grab = partial(ImageGrab.grab, all_screens=True)

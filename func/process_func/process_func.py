@@ -39,14 +39,8 @@ class ProcessFunc():
         # 서브프로세스 대기용
         dto.sub_process_done_event.wait()
 
-        self.notice_popup_close(motion_app)
-        # self.dashBoard.dashboard_starter(dto)
-
-        
-
-        self.chart_func.chart_starter(dto.start_sub_process_event,
-                                dto.sub_process_done_event)
-
+        # self.notice_popup_close(motion_app)
+        self.dashBoard.dashboard_starter(dto)
 
     def sub_process_func(self, start_sub_process_event, sub_process_done_event):
         start_sub_process_event.wait()

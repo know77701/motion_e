@@ -1,4 +1,4 @@
-from pywinauto import keyboard, findwindows
+from pywinauto import keyboard, findwindows, mouse
 from func.start.motion_starter import *
 from pywinauto.controls.hwndwrapper import HwndWrapper
 import time
@@ -35,40 +35,45 @@ class DashBoard():
             dto.chart_number = 접수/예약 후 비교 숫자
         """
         
-        # 화면 초기화
-        self.dashboard_reset(dto.motion_window, dto.motion_app)
-
-        # 공지사항 등록/비교/삭제
-        self.notice_create(dto.motion_window)
-        self.notice_delete(dto.motion_window)
-
-        # 신환 등록
-        self.user_save(dto)
-
-        # 등록 환자 예약/비교
-        dto.btn_title = "예약하기"
-        self.reserve(dto)
-        self.reserve_cancel(dto.motion_window, dto.chart_number)
-
-
-        # 등록 환자 접수/비교
-        self.receipt(dto)
-        self.receipt_cancel(dto.motion_window, dto.chart_number)
-
-        # # 고객등록 예약
-        dto.search_name = dto.search_name + "예약"
-        self.save_reserve_popup(dto)
-
-        # 고객등록 접수
-        dto.search_name = dto.search_name + "접수"
-        self.save_receipt_popup(dto)
         
-        # 환자차트 진입
+        # 화면 초기화
+        # self.dashboard_reset(dto.motion_window, dto.motion_app)
         dto.chart_number = "0000002351"
-        self.receipt_cancel(dto.motion_window, dto.chart_number)
-        self.view_user_chart(dto.motion_window, 1, dto.chart_number)
-        if self.chart_view_result:
-            self.chart_fucn.chart_starter()
+        self.mouse_atcion(dto.motion_window,1, dto.chart_number)
+
+        
+        # # 공지사항 등록/비교/삭제
+        # self.notice_create(dto.motion_window)
+        # self.notice_delete(dto.motion_window)
+
+        # # 신환 등록
+        # self.user_save(dto)
+
+        # # 등록 환자 예약/비교
+        # dto.btn_title = "예약하기"
+        # self.reserve(dto)
+        # self.reserve_cancel(dto.motion_window, dto.chart_number)
+
+
+        # # 등록 환자 접수/비교
+        # self.receipt(dto)
+        # self.receipt_cancel(dto.motion_window, dto.chart_number)
+
+        # # # 고객등록 예약
+        # dto.search_name = dto.search_name + "예약"
+        # self.save_reserve_popup(dto)
+
+        # # 고객등록 접수
+        # dto.search_name = dto.search_name + "접수"
+        # self.save_receipt_popup(dto)
+        
+        # # 환자차트 진입
+        # dto.chart_number = "0000002351"
+        # self.receipt_cancel(dto.motion_window, dto.chart_number)
+        # self.view_user_chart(dto.motion_window, 1, dto.chart_number)
+        # if self.chart_view_result:
+        #     self.chart_fucn.chart_starter()
+        
 
     def dashboard_reset(self,motion_window, motion_app):
         print("대시보드 리셋 동작 시작")
@@ -174,10 +179,12 @@ class DashBoard():
             print("공지사항 삭제 실패", err)
 
     def search_user(self,motion_window, search_name):
+        
         motion_web_window = motion_window.child_window(
             class_name="Chrome_RenderWidgetHostHWND", control_type="Document")
         child_list = motion_web_window.children()
         search_btn = None
+        
         for item in child_list:
             if item.element_info.control_type == "Edit":
                 item.set_text("")
@@ -577,6 +584,21 @@ class DashBoard():
         except Exception as e:
             print(e)
             window_screen_shot("receipt_fail")
+
+    def mouse_atcion(self, motion_window, index_number, chart_number):
+        card_window = self.return_list(motion_window,index_number)
+        for window_child in card_window:
+            for list_child in window_child.children():
+                for child in list_child.children():
+                    if child.element_info.control_type == "Text" and child.element_info.name == chart_number:
+                        rect = child.rectangle()
+                        center = rect.mid_point()
+                        mouse.right_click(coords=(center.x, center.y))
+                        
+    
+        card_window = self.return_list(motion_window,index_number)
+                            
+                            
 
     def view_user_chart(self, motion_window, index_number, chart_number):
         """

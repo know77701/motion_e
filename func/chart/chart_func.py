@@ -33,15 +33,15 @@ class ChartFunc():
         self.coordinator_user = ["류미희", "오혜선"]
 
     def chart_starter(self, start_sub_process_event, sub_process_done_event):
-        # ChartFunc.side_memo_save()
-        # ChartFunc.side_memo_update()
-        # ChartFunc.side_memo_delete()
+        self.side_memo_save()
+        self.side_memo_update()
+        self.side_memo_delete()
 
-        # ChartFunc.call_memo_save(2)
-        # ChartFunc.call_memo_update()
-        # ChartFunc.call_memo_delete()
-        # ChartFunc.past_resr_veiw(start_sub_process_event)
-        # ChartFunc.rsrv_cancle(start_sub_process_event)
+        self.call_memo_save()
+        self.call_memo_update()
+        self.call_memo_delete()
+        self.past_resr_veiw(start_sub_process_event)
+        self.rsrv_cancle(start_sub_process_event)
         self.penchart_template_save()
         
 
@@ -57,20 +57,23 @@ class ChartFunc():
         return chart_window
 
     def return_window(self,index_number=None, class_name=None, auto_id=None):
-        chart_list = None
-        chart_window = self.find_window()
-        app = Application(backend="uia").connect(
-            handle=chart_window.handle)
-        if class_name != None and index_number != None:
-            chart_list = app.window(handle=chart_window.handle).child_window(
-                class_name=class_name, found_index=index_number)
-        elif auto_id != None and index_number != None:
-            chart_list = app.window(handle=chart_window.handle).child_window(
-                auto_id=auto_id, found_index=index_number)
-        elif auto_id != None:
-            chart_list = app.window(handle=chart_window.handle).child_window(
-                auto_id=auto_id)
-        return chart_list
+        try:
+            chart_list = None
+            chart_window = self.find_window()
+            app = Application(backend="uia").connect(
+                handle=chart_window.handle)
+            if class_name != None and index_number != None:
+                chart_list = app.window(handle=chart_window.handle).child_window(
+                    class_name=class_name, found_index=index_number)
+            elif auto_id != None and index_number != None:
+                chart_list = app.window(handle=chart_window.handle).child_window(
+                    auto_id=auto_id, found_index=index_number)
+            elif auto_id != None:
+                chart_list = app.window(handle=chart_window.handle).child_window(
+                    auto_id=auto_id)
+            return chart_list
+        except AttributeError as e:
+            print("not")
 
     def find_link(self, index_number):
         chart_window = self.find_window()
